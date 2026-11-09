@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
 <meta name="description" content="A portfolio of selected work.">
-<meta name="theme-color" content="#eadac4">
+<meta name="theme-color" content="#474a4f">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Allwood Archives">
 <meta property="og:description" content="A portfolio of selected work.">
@@ -21,16 +21,16 @@
 -->
 <style>
   :root {
-    /* Light mocha palette. Nothing in the site is darker than --ink (mocha). */
-    --bg: #eadac4;        /* background: toasted latte */
-    --ink: #664734;       /* main text: deep mocha */
-    --muted: #735542;     /* menu + small text */
-    --tile: #dcc5a8;      /* boxes behind photos / placeholders / map water */
-    --ph: #735542;        /* text on placeholder boxes */
-    --line: #c9ae8e;
-    --panel: #f6eee2;     /* info window, popups, map land: the lightest surface */
-    --rgb-ink: 102, 71, 52;
-    --rgb-bg: 234, 218, 196;
+    /* Iron gray palette: a mid charcoal background with soft off-white text. */
+    --bg: #474a4f;        /* background: iron gray */
+    --ink: #f1efea;       /* main text: warm off-white */
+    --muted: #c9c7c1;     /* menu + small text */
+    --tile: #383b3f;      /* boxes behind photos / placeholders / map water */
+    --ph: #c9c7c1;        /* text on placeholder boxes */
+    --line: #686b71;
+    --panel: #585b61;     /* info window, popups, map land: the raised surface */
+    --rgb-ink: 241, 239, 234;
+    --rgb-bg: 71, 74, 79;
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
        files, it is used automatically; otherwise Inter (free) is used. */
@@ -66,7 +66,7 @@
   /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
   .scrim {
     position: fixed; inset: 0; z-index: 19;
-    background: rgba(234, 218, 196, 0.35);
+    background: rgba(71, 74, 79, 0.40);
     -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
     opacity: 0; pointer-events: none;
@@ -80,7 +80,7 @@
     .sidebar:not(.closed):hover,
     .sidebar:not(.closed):focus-within {
       width: min(var(--sidebar-open, 250px), 70vw);
-      box-shadow: 8px 0 28px rgba(102, 71, 52, 0.07);
+      box-shadow: 8px 0 28px rgba(0, 0, 0, 0.25);
     }
     .sidebar:not(.closed):hover ~ .scrim,
     .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
@@ -170,7 +170,20 @@
   .view { display: none; flex: 1; padding-right: 36px; }
   .view.on { display: block; }
   #view-home { padding-right: 0; }
-  #view-home.on { display: flex; align-items: center; }
+  #view-home.on { display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+
+  /* Home only: the logo moves out of the sidebar and becomes a big centred header */
+  .home-logo {
+    display: block; align-self: center; text-decoration: none; color: var(--ink);
+    --hl: clamp(300px, 34vw, 540px);
+    width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;   /* trims the empty margin round the logo */
+  }
+  .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
+    transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite; }
+  .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
+  body:not(.is-home) .home-logo { display: none; }
+  body.is-home .sidebar .logo { visibility: hidden; }
+  body.is-home { --m-h: clamp(170px, calc(100vh - 430px), 600px); }
 
   /* ---------- home marquee (drag it, or let it drift) ---------- */
   .marquee {
@@ -295,7 +308,7 @@
     user-select: none; -webkit-user-select: none;
   }
   .globe-wrap.dragging { cursor: grabbing; }
-  .zoomctl { position: absolute; right: 36px; bottom: 18px; z-index: 3; display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 6px 18px rgba(102, 71, 52, 0.18); }
+  .zoomctl { position: absolute; right: 36px; bottom: 18px; z-index: 3; display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
   .zoomctl button { width: 40px; height: 40px; font-size: 22px; line-height: 1; color: var(--ink); cursor: pointer; }
   .zoomctl button + button { border-top: 1px solid var(--line); }
   .zoomctl button:hover:not(:disabled) { background: var(--tile); }
@@ -308,7 +321,7 @@
     border-radius: 50%;
     background: var(--ink);
     border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px rgba(102, 71, 52, 0.3);
+    box-shadow: 0 0 0 1px rgba(241, 239, 234, 0.45);
     display: flex; align-items: center; justify-content: center;
     color: var(--bg); font-size: 9px; font-weight: 700; line-height: 1;
     opacity: 0; pointer-events: none;
@@ -326,7 +339,7 @@
     from { transform: scale(0.55); opacity: 0.55; }
     to   { transform: scale(1.5);  opacity: 0; }
   }
-  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(102, 71, 52, 0.2); outline: none; }
+  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(241, 239, 234, 0.22); outline: none; }
   .globe-hint {
     margin: 16px 0 0; padding-right: 36px;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
@@ -345,7 +358,7 @@
     width: min(320px, calc(100vw - 24px));
     background: var(--panel);
     border: 1px solid var(--line);
-    box-shadow: 0 14px 36px rgba(102, 71, 52, 0.16);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
     font-size: 12px; line-height: 1.4;
   }
   .gpop[hidden] { display: none; }
@@ -364,7 +377,7 @@
     color: var(--muted);
   }
   .gp-item .d { font-size: 11px; white-space: nowrap; }
-  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(102, 71, 52, 0.045); }
+  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(241, 239, 234, 0.07); }
   .gp-mq { overflow: hidden; }
   .gp-track {
     display: flex; width: max-content;
@@ -550,7 +563,7 @@
   /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(234, 218, 196, 0.98);
+    background: rgba(71, 74, 79, 0.98);
     display: none;
   }
   .lb.on { display: flex; flex-direction: row; }
@@ -634,6 +647,10 @@
       border-bottom: 1px solid var(--line);
     }
     .logo { margin: 0; }
+    body.is-home .sidebar .logo { display: none; }
+    body.is-home .menu-toggle { margin-left: auto; }
+    body.is-home { --m-h: clamp(150px, 34vh, 300px); }
+    .home-logo { --hl: min(78vw, 420px); }
     .logo img { width: min(var(--logo-width), 120px); }
     .menu-toggle { display: block; min-height: 44px; min-width: 44px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
     .nav { display: none; width: 100%; padding-top: 22px; }
@@ -674,6 +691,10 @@
   <!-- home: marquee of cover photos -->
   <section class="view on" id="view-home">
     <h1 class="sr-only">Allwood Archives</h1>
+    <a class="home-logo" href="#home" id="homeLogo" aria-label="Allwood Archives">
+      <img id="homeLogoImg" alt="" style="display:none">
+      <span class="logo-text" id="homeLogoText" style="display:none"></span>
+    </a>
     <div class="marquee" id="marquee">
       <div class="track" id="track"></div>
     </div>
@@ -833,6 +854,14 @@ document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0)
   img.onerror = () => { img.style.display = 'none'; txt.style.display = 'block'; };
   img.src = site.logo || 'images/logo.png';
 })();
+(function setupHomeLogo() {
+  const img = $('homeLogoImg'), txt = $('homeLogoText');
+  txt.textContent = SITE_NAME;
+  img.alt = '';
+  img.onload = () => { img.style.display = 'block'; txt.style.display = 'none'; };
+  img.onerror = () => { img.style.display = 'none'; txt.style.display = 'block'; };
+  img.src = site.logo || 'images/logo.png';
+})();
 
 (function setupTextPages() {
   const about = Array.isArray(site.about) ? site.about : [];
@@ -946,6 +975,7 @@ sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'))
 
 function showView(name) {
   views.forEach(v => $('view-' + v).classList.toggle('on', v === name));
+  document.body.classList.toggle('is-home', name === 'home');
 }
 
 /* ---------- home marquee ----------
@@ -1106,8 +1136,8 @@ function refreshGlobeColors() {
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const ink = css('--rgb-ink');
   g.colors = {
-    land: css('--panel'),
-    explored: '#d4ab7e',                           // a deeper tan: "this place has been explored"
+    land: '#7a7d83',
+    explored: '#51545a',                           // a deeper shade of the land: "this place has been explored"
     coast: 'rgba(' + ink + ', 0.38)',
     country: 'rgba(' + ink + ', 0.5)',
     state: 'rgba(' + ink + ', 0.30)'
@@ -1889,7 +1919,7 @@ requestAnimationFrame(frame);
       const x = rnd() * S, y = rnd() * S, r = 60 + rnd() * 170;
       const dark = rnd() < 0.55;
       const gr = c.createRadialGradient(x, y, 0, x, y, r);
-      gr.addColorStop(0, dark ? 'rgba(' + ink + ',0.022)' : 'rgba(255,248,235,0.07)');
+      gr.addColorStop(0, dark ? 'rgba(0,0,0,0.10)' : 'rgba(' + ink + ',0.028)');
       gr.addColorStop(1, 'rgba(0,0,0,0)');
       c.fillStyle = gr;
       for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { c.save(); c.translate(ox, oy); c.fillRect(x - r, y - r, r * 2, r * 2); c.restore(); }
@@ -1901,7 +1931,7 @@ requestAnimationFrame(frame);
       const y = gy * step + step / 2 + (rnd() - 0.5) * 2.6;
       const major = (gx % 5 === 0 && gy % 5 === 0);         // every fifth dot is a little stronger
       const r = (major ? 1.35 : 0.85) * (0.75 + rnd() * 0.6);
-      const a = (major ? 0.46 : 0.30) * (0.45 + rnd() * 0.85);
+      const a = (major ? 0.34 : 0.20) * (0.45 + rnd() * 0.85);
       c.fillStyle = 'rgba(' + ink + ',' + a.toFixed(3) + ')';
       c.beginPath(); c.ellipse(x, y, r * (0.9 + rnd() * 0.25), r * (0.9 + rnd() * 0.25), rnd() * 3, 0, 6.283); c.fill();
       if (rnd() < 0.02) { c.beginPath(); c.arc(x + (rnd() - 0.5) * 3, y + (rnd() - 0.5) * 3, r * 0.7, 0, 6.283); c.fill(); }  // doubled print
@@ -1909,7 +1939,7 @@ requestAnimationFrame(frame);
     // fine grain and stray specks
     for (let i = 0; i < 2600; i++) {
       const x = rnd() * S, y = rnd() * S;
-      c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(255,250,240,' + (0.05 + rnd() * 0.10).toFixed(3) + ')';
+      c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(0,0,0,' + (0.05 + rnd() * 0.10).toFixed(3) + ')';
       const r = 0.3 + rnd() * 0.6; c.fillRect(x, y, r, r);
     }
     for (let i = 0; i < 14; i++) {                          // a few little fibres
