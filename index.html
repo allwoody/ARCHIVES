@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
-<meta name="description" content="Allwood Archives: a portfolio of selected work.">
+<meta name="description" content="A portfolio of selected work.">
+<!--
+  index.html is the CODE of the site. Your content (events, photos, About,
+  Contact) lives in events.js, so you can replace this file with a newer
+  version at any time without losing anything you typed.
+-->
 <style>
   :root {
     --bg: #dedad1;        /* background. Darker: #d8d4ca   Lighter: #e4e0d8 */
@@ -13,9 +18,9 @@
     --tile: #cdc9bf;      /* boxes behind photos / placeholders */
     --ph: #7d776c;        /* text on placeholder boxes */
     --line: #cbc7bc;
-    --panel: #e6e2da;     /* info window in the fullscreen viewer */
+    --panel: #e6e2da;     /* info window, popups, globe land */
     --sidebar: 250px;
-    --logo-width: 150px;  /* change this number to make your logo bigger or smaller */
+    --logo-width: 150px;  /* set from SETTINGS.logoWidth in events.js */
     --m-h: clamp(190px, 54vh, 620px);   /* height of the photos in the Home marquee */
     --m-gap: 18px;                      /* space between marquee photos */
     --gap: 10px;                        /* space between photos in a collection */
@@ -167,7 +172,7 @@
   .m-cap span { color: var(--muted); }
   .m-item:hover .m-cap span { color: var(--ink); }
 
-  /* ---------- collection page ---------- */
+  /* ---------- page headings (collection + globe) ---------- */
   .collection-head { margin: 0 0 26px; }
   .ch-title {
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
@@ -220,22 +225,112 @@
     color: var(--ph); letter-spacing: 0.12em; font-size: 12px;
   }
 
-  /* ---------- index page (list of every event) ---------- */
-  .index { max-width: 900px; }
-  .ix-row {
-    display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr 70px;
-    gap: 16px;
-    align-items: baseline;
-    padding: 14px 0;
+  /* ---------- globe ---------- */
+  .globe-area { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+  .globe-wrap {
+    position: relative;
+    border-radius: 50%;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.10);
+    touch-action: none;
+    cursor: grab;
+    user-select: none; -webkit-user-select: none;
+  }
+  .globe-wrap.dragging { cursor: grabbing; }
+  .globe-wrap canvas { display: block; }
+  .pins { position: absolute; inset: 0; pointer-events: none; }
+  .pin {
+    position: absolute; left: 0; top: 0;
+    width: 16px; height: 16px; margin: -8px 0 0 -8px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px rgba(42, 40, 36, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--bg); font-size: 9px; font-weight: 700; line-height: 1;
+    opacity: 0; pointer-events: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease, box-shadow 0.15s ease;
+  }
+  .pin.multi { width: 22px; height: 22px; margin: -11px 0 0 -11px; font-size: 11px; }
+  .pin::after {
+    content: ""; position: absolute; inset: -6px;
+    border-radius: 50%; border: 1px solid var(--ink);
+    animation: pin-pulse 2.4s ease-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pin-pulse {
+    from { transform: scale(0.55); opacity: 0.55; }
+    to   { transform: scale(1.5);  opacity: 0; }
+  }
+  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(42, 40, 36, 0.2); outline: none; }
+  .globe-hint {
+    margin: 22px 0 0;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
+    color: var(--muted);
+  }
+  .globe-fallback { max-width: 560px; font-size: 14px; line-height: 1.6; }
+  .globe-fallback h3 {
+    margin: 22px 0 6px; font-size: 12px; font-weight: normal;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+  }
+  .globe-fallback a { display: block; text-decoration: underline; text-underline-offset: 3px; }
+
+  /* popup that appears when you hover a pin */
+  .gpop {
+    position: fixed; z-index: 30;
+    width: min(320px, calc(100vw - 24px));
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+    font-size: 12px; line-height: 1.4;
+  }
+  .gpop[hidden] { display: none; }
+  .gp-place {
+    padding: 12px 14px 10px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
+    color: var(--muted);
+  }
+  .gp-list { border-top: 1px solid var(--line); }
+  .gp-item {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--line);
     text-decoration: none;
-    text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted);
   }
-  .ix-head { color: var(--muted); font-size: 11px; padding-top: 0; }
-  a.ix-row span:nth-child(n+2) { color: var(--muted); }
-  a.ix-row:hover span { color: var(--ink); }
-  .ix-row span:last-child { text-align: right; }
+  .gp-item .d { font-size: 11px; white-space: nowrap; }
+  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(42, 40, 36, 0.045); }
+  .gp-mq { overflow: hidden; }
+  .gp-track {
+    display: flex; width: max-content;
+    animation: gp-scroll 20s linear infinite;
+  }
+  .gp-group { display: flex; flex-shrink: 0; }
+  @keyframes gp-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .gp-thumb {
+    position: relative; display: block;
+    flex: 0 0 120px; width: 120px; height: 80px;
+    margin-right: 6px;
+    background: var(--tile);
+    overflow: hidden;
+  }
+  .gp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gp-thumb .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ph); letter-spacing: 0.12em; font-size: 11px;
+  }
+  .gp-empty { padding: 14px; color: var(--muted); }
+  .gp-foot {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 10px 14px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+  }
+  .gp-foot a { color: var(--ink); text-decoration: none; }
+  .gp-foot a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
   /* ---------- text pages ---------- */
   .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
@@ -251,7 +346,7 @@
     font-size: 11px; color: var(--muted);
   }
 
-  /* ---------- hover preview (desktop): photo goes fullscreen while you hover it ---------- */
+  /* ---------- hover preview (desktop): photo goes fullscreen while you rest on it ---------- */
   .peek {
     position: fixed; inset: 0; z-index: 40;
     background: var(--bg);
@@ -269,7 +364,6 @@
     display: flex; align-items: center; justify-content: center;
     color: var(--ph); letter-spacing: 0.12em;
   }
-
   #peekStage {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
@@ -374,11 +468,15 @@
     .view { padding-right: 12px; }
     footer { padding-right: 12px; }
     .layout-grid, .layout-wide { --cols: 1; }
-    .ix-row { grid-template-columns: 1fr auto; }
-    .ix-row span:nth-child(3), .ix-row span:nth-child(4) { display: none; }
     .layout-square { --cols: 2; }
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pin::after { animation: none; opacity: 0; }
+    .gp-track { animation: none; }
+    .gp-mq { overflow-x: auto; }
+    .gp-group[aria-hidden="true"] { display: none; }
   }
 </style>
 </head>
@@ -386,10 +484,8 @@
 
 <aside class="sidebar">
   <a class="logo" href="#home" id="logo">
-    <!-- LOGO: upload your logo to the images folder as logo.png, or change the src below -->
-    <img src="images/logo.png" alt="Allwood Archives"
-         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-    <span class="logo-text" style="display:none">Allwood<br>Archives</span>
+    <img id="logoImg" alt="" style="display:none">
+    <span class="logo-text" id="logoText" style="display:none"></span>
   </a>
   <button class="menu-toggle" id="menuToggle" aria-expanded="false">Menu</button>
   <ul class="nav" id="nav"></ul>
@@ -404,6 +500,22 @@
     </div>
   </section>
 
+  <!-- globe: every event on a map of the world -->
+  <section class="view" id="view-globe">
+    <div class="collection-head">
+      <div class="ch-title">Globe</div>
+      <div class="ch-meta" id="globeMeta"></div>
+    </div>
+    <div class="globe-area" id="globeArea">
+      <div class="globe-wrap" id="globeWrap">
+        <canvas id="globeCanvas"></canvas>
+        <div class="pins" id="pins"></div>
+      </div>
+      <p class="globe-hint" id="globeHint">Drag to turn the globe &middot; hover a pin to see its events</p>
+      <div class="globe-fallback" id="globeFallback" hidden></div>
+    </div>
+  </section>
+
   <!-- collection: photos for one event -->
   <section class="view" id="view-collection">
     <div class="collection-head">
@@ -414,21 +526,11 @@
     <div class="grid" id="grid"></div>
   </section>
 
-  <!-- index: a list of every event -->
-  <section class="view" id="view-index">
-    <div class="collection-head">
-      <div class="ch-title">Index</div>
-      <div class="ch-meta" id="indexMeta"></div>
-    </div>
-    <div class="index" id="indexList"></div>
-  </section>
-
   <!-- about -->
   <section class="view" id="view-about">
     <div class="text-page">
       <h1>About</h1>
-      <p>Write a few sentences here about who you are and what Allwood Archives is.</p>
-      <p>A second paragraph is optional. This is a good place for your background, your process, or what you are working on now.</p>
+      <div id="aboutBody"></div>
     </div>
   </section>
 
@@ -436,13 +538,15 @@
   <section class="view" id="view-contact">
     <div class="text-page">
       <h1>Contact</h1>
-      <p>For inquiries, email <a href="mailto:you@example.com">you@example.com</a>.</p>
-      <p><a href="#">Instagram</a><br><a href="#">LinkedIn</a></p>
+      <div id="contactBody"></div>
     </div>
   </section>
 
-  <footer>&copy; <span id="yr">2026</span> Allwood Archives. All rights reserved.</footer>
+  <footer>&copy; <span id="yr">2026</span> <span id="siteName"></span>. All rights reserved.</footer>
 </main>
+
+<!-- globe pin popup -->
+<div class="gpop" id="gpop" role="dialog" aria-label="Events at this location" hidden></div>
 
 <!-- hover preview -->
 <div class="peek" id="peek" aria-hidden="true">
@@ -463,129 +567,77 @@
   <aside class="lb-info" id="lbInfo"></aside>
 </div>
 
+<!-- your content -->
+<script src="events.js"></script>
+<!-- map tools for the globe (loaded from a public CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+
 <script>
 /* ============================================================
-   EDIT THIS SECTION
-
-   Each event below is one collection. It becomes:
-     - one cover photo in the Home marquee
-     - a link in the left menu under PROJECTS
-     - its own page of photos
-
-   EVENT FIELDS
-     id           short lowercase name, no spaces
-     title        name shown on the site
-     date         shown on the page and in the info window
-     location     shown on the page and in the info window
-     description  a sentence or two about the event
-     latest       put  latest: true,  on ONE event and the "Latest" link under
-                  Home opens it. (If none is marked, the last event is used.)
-     layout       how the photos are arranged:
-                    "grid"    3 across, all cropped to the same shape
-                    "square"  4 across, square tiles
-                    "wide"    2 across, large widescreen tiles
-                    "masonry" 3 columns, photos keep their own shape
-     gear         camera + lens used for the whole event (optional).
-                  It shows in the info window for every photo,
-                  unless a photo has its own camera or lens.
-     cover        the single photo shown on Home.
-                  Leave "" to use the first photo in the list.
-     photos       the photos, in the order you want them on the grid.
-
-   PHOTO FIELDS (all optional except src)
-     A photo can be just a path:      "images/event-one/01.jpg"
-     or a path plus info:
-       { src: "images/event-one/01.jpg",
-         caption: "Opening night",
-         focal: "35mm", aperture: "f/2.8", shutter: "1/250s", iso: "400",
-         camera: "...", lens: "..." }          <- only if different from gear
-     Anything you leave out is simply hidden in the info window.
-     Leave src as "" to show a grey placeholder.
-
-   Put your images in the "images" folder in your repo, one
-   sub-folder per event (images/event-one/, images/event-two/ ...).
+   The site's code. You should not need to edit anything below:
+   all your content and settings live in events.js.
    ============================================================ */
-const COLLECTIONS = [
-  {
-    id: "event-one",
-    title: "Event One",
-    date: "January 2026",
-    location: "City, State",
-    description: "A short description of this event. What it was, who was there, what you shot.",
-    layout: "grid",
-    gear: { camera: "Camera model", lens: "Lens" },
-    cover: "",
-    photos: [
-      { src: "", caption: "Optional note about this photo", focal: "35mm", aperture: "f/2.8", shutter: "1/250s", iso: "400" },
-      { src: "", focal: "50mm", aperture: "f/1.8", shutter: "1/500s", iso: "200" },
-      { src: "", focal: "35mm", aperture: "f/4", shutter: "1/125s", iso: "800" },
-      "", "", "", "", "", ""
-    ]
-  },
-  {
-    id: "event-two",
-    title: "Event Two",
-    date: "February 2026",
-    location: "City, State",
-    description: "A short description of this event.",
-    layout: "masonry",
-    gear: { camera: "Camera model", lens: "Lens" },
-    cover: "",
-    photos: ["", "", "", "", "", "", "", ""]
-  },
-  {
-    id: "event-three",
-    title: "Event Three",
-    date: "March 2026",
-    location: "City, State",
-    description: "A short description of this event.",
-    layout: "square",
-    gear: { camera: "Camera model", lens: "Lens" },
-    cover: "",
-    photos: ["", "", "", "", "", "", "", ""]
-  },
-  {
-    id: "event-four",
-    title: "Event Four",
-    date: "April 2026",
-    location: "City, State",
-    description: "A short description of this event.",
-    layout: "wide",
-    gear: { camera: "Camera model", lens: "Lens" },
-    cover: "",
-    photos: ["", "", "", "", "", ""]
-  },
-  {
-    id: "event-five",
-    title: "Event Five",
-    date: "May 2026",
-    latest: true,
-    location: "City, State",
-    description: "A short description of this event.",
-    layout: "grid",
-    gear: { camera: "Camera model", lens: "Lens" },
-    cover: "",
-    photos: ["", "", "", "", "", ""]
-  }
-];
 
-const MARQUEE_SPEED = 50;   // how fast the Home row drifts, in pixels per second (lower = slower)
-const PEEK_DELAY    = 2500; // how long the cursor must rest on a photo before it goes fullscreen (1000 = 1 second)
-/* ============================================================ */
+if (typeof COLLECTIONS === 'undefined') {
+  document.body.innerHTML = '<p style="font:15px/1.6 Helvetica,Arial,sans-serif;padding:40px;max-width:560px">' +
+    'events.js was not found. Upload events.js to the same place as index.html in your repo.</p>';
+  throw new Error('events.js is missing');
+}
+
+const site = (typeof SITE !== 'undefined' && SITE) || {};
+const CFG = Object.assign(
+  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150 },
+  (typeof SETTINGS !== 'undefined' && SETTINGS) || {}
+);
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 const pad = n => String(n).padStart(2, '0');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
-const views = ['home', 'index', 'collection', 'about', 'contact'];
+const views = ['home', 'globe', 'collection', 'about', 'contact'];
 const homeOn = () => $('view-home').classList.contains('on');
+const globeOn = () => $('view-globe').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+/* ---------- site name, logo, About, Contact (all from events.js) ---------- */
+const SITE_NAME = site.name || 'Allwood Archives';
+document.title = SITE_NAME;
+$('siteName').textContent = SITE_NAME;
+document.documentElement.style.setProperty('--logo-width', (Number(CFG.logoWidth) || 150) + 'px');
+
+(function setupLogo() {
+  const img = $('logoImg'), txt = $('logoText');
+  txt.innerHTML = esc(SITE_NAME).replace(' ', '<br>');
+  img.alt = SITE_NAME;
+  img.onload = () => { img.style.display = 'block'; txt.style.display = 'none'; };
+  img.onerror = () => { img.style.display = 'none'; txt.style.display = 'block'; };
+  img.src = site.logo || 'images/logo.png';
+})();
+
+(function setupTextPages() {
+  const about = Array.isArray(site.about) ? site.about : [];
+  $('aboutBody').innerHTML = about.map(p => `<p>${esc(p)}</p>`).join('');
+
+  const ct = site.contact || {};
+  let h = '';
+  if (ct.email) h += `<p>For inquiries, email <a href="mailto:${esc(ct.email)}">${esc(ct.email)}</a>.</p>`;
+  const links = Array.isArray(ct.links) ? ct.links : [];
+  if (links.length) {
+    h += '<p>' + links.map(l => {
+      const ext = /^https?:/i.test(l.url || '');
+      return `<a href="${esc(l.url || '#')}"${ext ? ' target="_blank" rel="noopener"' : ''}>${esc(l.label)}</a>`;
+    }).join('<br>') + '</p>';
+  }
+  $('contactBody').innerHTML = h;
+})();
+
 /* a photo can be written as just a path or as an object; make them all objects */
 COLLECTIONS.forEach(c => {
-  c.photos = c.photos.map(p => (typeof p === 'string' ? { src: p } : p));
+  c.photos = (c.photos || []).map(p => (typeof p === 'string' ? { src: p } : p));
 });
 
 let currentColl = null;
@@ -600,7 +652,7 @@ function buildNav() {
   const latest = COLLECTIONS.find(c => c.latest) || COLLECTIONS[COLLECTIONS.length - 1];
   let html = `<li class="head"><a href="#home" data-route="home">Home</a></li>`;
   if (latest) html += `<li><a href="#${esc(latest.id)}" data-route="latest" title="${esc(latest.title)}">Latest</a></li>`;
-  html += `<li><a href="#index" data-route="index">Index</a></li>`;
+  html += `<li><a href="#globe" data-route="globe">Globe</a></li>`;
   html += `<li class="head">Projects</li>`;
   COLLECTIONS.forEach(c => {
     html += `<li><a href="#${esc(c.id)}" data-route="${esc(c.id)}">${esc(c.title)}</a></li>`;
@@ -689,20 +741,16 @@ function buildMarquee() {
   track.style.transform = `translate3d(${-offset}px,0,0)`;
 }
 
-function frame(now) {
-  const dt = Math.min(0.05, (now - lastFrame) / 1000);
-  lastFrame = now;
-  if (homeOn() && groupW) {
-    if (!dragging) {
-      const base = (hovering || reduceMotion) ? 0 : MARQUEE_SPEED;   // pauses while the mouse is over it
-      offset += (base + vel) * dt;
-      vel *= Math.exp(-3.5 * dt);                                    // let-go momentum fades out
-      if (Math.abs(vel) < 2) vel = 0;
-    }
-    wrapOffset();
-    track.style.transform = `translate3d(${-offset}px,0,0)`;
+function marqueeStep(dt) {
+  if (!groupW) return;
+  if (!dragging) {
+    const base = (hovering || reduceMotion) ? 0 : CFG.marqueeSpeed;   // pauses while the mouse is over it
+    offset += (base + vel) * dt;
+    vel *= Math.exp(-3.5 * dt);                                       // let-go momentum fades out
+    if (Math.abs(vel) < 2) vel = 0;
   }
-  requestAnimationFrame(frame);
+  wrapOffset();
+  track.style.transform = `translate3d(${-offset}px,0,0)`;
 }
 
 marquee.addEventListener('pointerdown', e => {
@@ -732,7 +780,7 @@ function endDrag() {
   dragging = false;
   marquee.classList.remove('dragging');
   if (performance.now() - lastT > 90) vel = 0;                       // held still before letting go
-  vel = Math.max(-2500, Math.min(2500, vel));
+  vel = clamp(vel, -2500, 2500);
   if (moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
 }
 marquee.addEventListener('pointerup', endDrag);
@@ -747,10 +795,335 @@ marquee.addEventListener('wheel', e => {                              // trackpa
   if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); offset += e.deltaX; }
 }, { passive: false });
 
+/* ---------- globe ----------
+   An orthographic globe drawn on a canvas with d3-geo. Each event with
+   coords gets a pin. Events at the same spot share one pin. */
+const LAND_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json';
+const hasD3 = typeof d3 !== 'undefined' && !!d3.geoOrthographic;
+const gwrap = $('globeWrap'), gcanvas = $('globeCanvas'), gpins = $('pins'), gpop = $('gpop');
+
+/* group events that share a location */
+const groups = [];
+COLLECTIONS.forEach(c => {
+  if (!Array.isArray(c.coords) || c.coords.length < 2) return;
+  const lat = Number(c.coords[0]), lon = Number(c.coords[1]);
+  if (!isFinite(lat) || !isFinite(lon)) return;
+  const key = lat.toFixed(2) + ',' + lon.toFixed(2);
+  let grp = groups.find(x => x.key === key);
+  if (!grp) { grp = { key, lat, lon, place: c.location || 'Location', events: [] }; groups.push(grp); }
+  grp.events.push(c);
+});
+
+const g = {
+  size: 0, rot: [-20, -20], vel: [0, 0],
+  down: false, moved: false, dragging: false, hover: false,
+  sx: 0, sy: 0, lx: 0, ly: 0, lt: 0,
+  land: null, pins: [], colors: null
+};
+let proj = null, gpath = null, grat = null, gctx = null, globeInit = false;
+
+function refreshGlobeColors() {
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  g.colors = {
+    ocean: css('--tile'),
+    land: css('--panel'),
+    coast: 'rgba(95, 91, 83, 0.55)',
+    grat: 'rgba(42, 40, 36, 0.07)',
+    rim: 'rgba(42, 40, 36, 0.35)'
+  };
+}
+
+function sizeGlobe() {
+  const area = $('globeArea');
+  if (!area.clientWidth) return;
+  const s = Math.floor(Math.min(area.clientWidth, window.innerHeight * 0.7, 780));
+  g.size = s;
+  gwrap.style.width = s + 'px';
+  gwrap.style.height = s + 'px';
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  gcanvas.width = Math.round(s * dpr);
+  gcanvas.height = Math.round(s * dpr);
+  gcanvas.style.width = s + 'px';
+  gcanvas.style.height = s + 'px';
+  gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  proj.translate([s / 2, s / 2]).scale(s / 2 - 4);
+}
+
+function drawGlobe() {
+  const s = g.size, c = g.colors;
+  proj.rotate([g.rot[0], g.rot[1]]);
+  const sphere = { type: 'Sphere' };
+  gctx.clearRect(0, 0, s, s);
+
+  gctx.beginPath(); gpath(sphere);
+  gctx.fillStyle = c.ocean; gctx.fill();
+
+  gctx.beginPath(); gpath(grat);
+  gctx.strokeStyle = c.grat; gctx.lineWidth = 0.6; gctx.stroke();
+
+  if (g.land) {
+    gctx.beginPath(); gpath(g.land);
+    gctx.fillStyle = c.land; gctx.fill();
+    gctx.strokeStyle = c.coast; gctx.lineWidth = 0.7; gctx.stroke();
+  }
+
+  /* soft shading so it reads as a ball */
+  const grad = gctx.createRadialGradient(s * 0.36, s * 0.32, s * 0.08, s / 2, s / 2, s / 2);
+  grad.addColorStop(0, 'rgba(255, 255, 255, 0.20)');
+  grad.addColorStop(0.6, 'rgba(255, 255, 255, 0)');
+  grad.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
+  gctx.beginPath(); gpath(sphere);
+  gctx.fillStyle = grad; gctx.fill();
+
+  gctx.beginPath(); gpath(sphere);
+  gctx.strokeStyle = c.rim; gctx.lineWidth = 1; gctx.stroke();
+}
+
+function placePins() {
+  const center = [-g.rot[0], -g.rot[1]];
+  g.pins.forEach(p => {
+    const xy = proj([p.lon, p.lat]);
+    if (!xy) { p.el.style.opacity = 0; p.el.style.pointerEvents = 'none'; return; }
+    const front = Math.cos(d3.geoDistance([p.lon, p.lat], center));   // > 0 means it faces us
+    const o = clamp(front * 6, 0, 1);                                  // fades out near the edge
+    p.el.style.transform = `translate(${xy[0].toFixed(1)}px, ${xy[1].toFixed(1)}px)`;
+    p.el.style.opacity = o;
+    const live = o > 0.4;
+    p.el.style.pointerEvents = live ? 'auto' : 'none';
+    p.el.tabIndex = live ? 0 : -1;
+  });
+}
+
+function globeStep(dt) {
+  if (!globeInit || !g.size) return;
+  if (!g.dragging) {
+    const spin = (CFG.globeSpin > 0 && !reduceMotion && !g.hover && gpop.hidden) ? CFG.globeSpin : 0;
+    g.rot[0] += (spin + g.vel[0]) * dt;
+    g.rot[1] = clamp(g.rot[1] + g.vel[1] * dt, -75, 75);
+    const k = Math.exp(-3 * dt);
+    g.vel[0] *= k; g.vel[1] *= k;
+    if (Math.abs(g.vel[0]) < 0.05) g.vel[0] = 0;
+    if (Math.abs(g.vel[1]) < 0.05) g.vel[1] = 0;
+    if (Math.abs(g.rot[0]) > 360) g.rot[0] %= 360;
+  }
+  drawGlobe();
+  placePins();
+}
+
+/* the popup that opens when you hover a pin: a small menu of that place's events
+   plus a mini marquee of the highlighted event's photos */
+let popGroup = null, popPin = null, popTimer = null;
+
+function thumb(p, i) {
+  return `<span class="gp-thumb">` +
+    (p.src ? `<img src="${esc(p.src)}" alt="" loading="lazy" draggable="false">`
+           : `<span class="ph">${pad(i + 1)}</span>`) +
+    `</span>`;
+}
+function miniMarquee(c) {
+  const list = c.photos.length ? c.photos.slice(0, 12) : (c.cover ? [{ src: c.cover }] : []);
+  if (!list.length) return `<div class="gp-empty">No photos yet</div>`;
+  const unit = 126;                                                    // thumbnail + gap
+  const reps = Math.max(1, Math.ceil(340 / (list.length * unit)));    // repeat so a short set still fills the width
+  let one = '';
+  for (let r = 0; r < reps; r++) list.forEach((p, i) => { one += thumb(p, i); });
+  const dur = Math.max(8, (list.length * reps * unit) / 32);
+  return `<div class="gp-mq"><div class="gp-track" style="animation-duration:${dur}s">` +
+           `<div class="gp-group">${one}</div><div class="gp-group" aria-hidden="true">${one}</div>` +
+         `</div></div>`;
+}
+function popBody(c) {
+  const n = c.photos.length;
+  return miniMarquee(c) +
+    `<div class="gp-foot"><span>${n} photo${n === 1 ? '' : 's'}</span>` +
+    `<a href="#${esc(c.id)}">View event &rarr;</a></div>`;
+}
+function popHTML(grp) {
+  const rows = grp.events.map((c, i) =>
+    `<a class="gp-item${i === 0 ? ' on' : ''}" href="#${esc(c.id)}" data-i="${i}">` +
+      `<span>${esc(c.title)}</span><span class="d">${esc(c.date || '')}</span></a>`
+  ).join('');
+  return `<div class="gp-place">${esc(grp.place)}</div>` +
+         `<div class="gp-list">${rows}</div>` +
+         `<div class="gp-body">${popBody(grp.events[0])}</div>`;
+}
+function setPopActive(i) {
+  if (!popGroup) return;
+  gpop.querySelectorAll('.gp-item').forEach((el, k) => el.classList.toggle('on', k === i));
+  gpop.querySelector('.gp-body').innerHTML = popBody(popGroup.events[i]);
+}
+function positionPop(pinEl) {
+  const r = pinEl.getBoundingClientRect();
+  const w = gpop.offsetWidth, h = gpop.offsetHeight;
+  let left, top;
+  if (window.innerWidth < 640) {                                       // phones: centered under (or over) the pin
+    left = Math.max(12, (window.innerWidth - w) / 2);
+    top = r.bottom + 14;
+    if (top + h > window.innerHeight - 12) top = r.top - h - 14;
+  } else {
+    left = r.right + 14;
+    if (left + w > window.innerWidth - 12) left = r.left - w - 14;
+    top = r.top + r.height / 2 - 28;
+  }
+  left = clamp(left, 12, Math.max(12, window.innerWidth - w - 12));
+  top = clamp(top, 12, Math.max(12, window.innerHeight - h - 12));
+  gpop.style.left = left + 'px';
+  gpop.style.top = top + 'px';
+}
+function openPop(grp, pinEl) {
+  clearTimeout(popTimer);
+  if (popGroup === grp && !gpop.hidden) return;
+  if (popPin) popPin.classList.remove('on');
+  popGroup = grp; popPin = pinEl;
+  pinEl.classList.add('on');
+  gpop.innerHTML = popHTML(grp);
+  gpop.querySelectorAll('.gp-item').forEach((el, i) => {
+    el.addEventListener('mouseenter', () => setPopActive(i));
+    el.addEventListener('focus', () => setPopActive(i));
+  });
+  gpop.hidden = false;
+  positionPop(pinEl);
+}
+function closePop() {
+  clearTimeout(popTimer);
+  if (popPin) popPin.classList.remove('on');
+  gpop.hidden = true;
+  popGroup = null; popPin = null;
+}
+function schedulePopClose() {
+  clearTimeout(popTimer);
+  popTimer = setTimeout(closePop, 260);                                // a short grace period to move from pin to popup
+}
+gpop.addEventListener('mouseenter', () => clearTimeout(popTimer));
+gpop.addEventListener('mouseleave', schedulePopClose);
+gpop.addEventListener('focusin', () => clearTimeout(popTimer));
+gpop.addEventListener('focusout', schedulePopClose);
+document.addEventListener('pointerdown', e => {                        // tap or click anywhere else closes it
+  if (!gpop.hidden && !gpop.contains(e.target) && !(e.target.closest && e.target.closest('.pin'))) closePop();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !gpop.hidden) closePop(); });
+
+function buildPins() {
+  gpins.innerHTML = '';
+  g.pins = groups.map(grp => {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'pin' + (grp.events.length > 1 ? ' multi' : '');
+    el.textContent = grp.events.length > 1 ? String(grp.events.length) : '';
+    el.setAttribute('aria-label', `${grp.place}: ${grp.events.length} event${grp.events.length === 1 ? '' : 's'}`);
+    el.addEventListener('mouseenter', () => openPop(grp, el));
+    el.addEventListener('mouseleave', schedulePopClose);
+    el.addEventListener('focus', () => openPop(grp, el));
+    el.addEventListener('blur', schedulePopClose);
+    el.addEventListener('click', () => openPop(grp, el));
+    gpins.appendChild(el);
+    return { grp, el, lat: grp.lat, lon: grp.lon };
+  });
+}
+
+/* drag to turn the globe */
+gwrap.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  g.down = true; g.moved = false;
+  g.sx = g.lx = e.clientX; g.sy = g.ly = e.clientY;
+  g.lt = performance.now();
+  g.vel = [0, 0];
+});
+gwrap.addEventListener('pointermove', e => {
+  if (!g.down) return;
+  if (!g.moved && Math.hypot(e.clientX - g.sx, e.clientY - g.sy) > 5) {
+    g.moved = true; g.dragging = true;
+    gwrap.classList.add('dragging');
+    closePop();
+    try { gwrap.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+  if (!g.moved || !g.size) return;
+  const k = 180 / (Math.PI * (g.size / 2));                            // degrees per pixel at the centre
+  const ddx = e.clientX - g.lx, ddy = e.clientY - g.ly;
+  g.rot[0] += ddx * k;
+  g.rot[1] = clamp(g.rot[1] - ddy * k, -75, 75);
+  const now = performance.now(), dtm = (now - g.lt) / 1000;
+  if (dtm > 0) {
+    g.vel[0] = g.vel[0] * 0.6 + ((ddx * k) / dtm) * 0.4;
+    g.vel[1] = g.vel[1] * 0.6 + ((-ddy * k) / dtm) * 0.4;
+  }
+  g.lx = e.clientX; g.ly = e.clientY; g.lt = now;
+});
+function endGlobeDrag() {
+  if (!g.down) return;
+  g.down = false; g.dragging = false;
+  gwrap.classList.remove('dragging');
+  if (performance.now() - g.lt > 90) g.vel = [0, 0];
+  g.vel = [clamp(g.vel[0], -300, 300), clamp(g.vel[1], -300, 300)];
+}
+gwrap.addEventListener('pointerup', endGlobeDrag);
+gwrap.addEventListener('pointercancel', endGlobeDrag);
+gwrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') g.hover = true; });   // stops spinning so pins hold still
+gwrap.addEventListener('pointerleave', () => { g.hover = false; });
+
+function initGlobe() {
+  globeInit = true;
+  gctx = gcanvas.getContext('2d');
+  proj = d3.geoOrthographic().clipAngle(90).precision(0.6);
+  gpath = d3.geoPath(proj, gctx);
+  grat = d3.geoGraticule10();
+  if (groups.length) g.rot = [-groups[0].lon, clamp(-groups[0].lat, -60, 60)];   // start facing the first pin
+  buildPins();
+  if (typeof topojson !== 'undefined') {
+    fetch(LAND_URL)
+      .then(r => r.json())
+      .then(topo => { g.land = topojson.feature(topo, topo.objects.land); })
+      .catch(() => {});                                                          // no map data: the globe still works, just without continents
+  }
+}
+
+/* plain list shown if the map tools could not load, or no event has coords yet */
+function showGlobeFallback(message) {
+  gwrap.style.display = 'none';
+  $('globeHint').style.display = 'none';
+  const box = $('globeFallback');
+  let h = `<p>${esc(message)}</p>`;
+  groups.forEach(grp => {
+    h += `<h3>${esc(grp.place)}</h3>` +
+         grp.events.map(c => `<a href="#${esc(c.id)}">${esc(c.title)}${c.date ? ' \u00b7 ' + esc(c.date) : ''}</a>`).join('');
+  });
+  box.innerHTML = h;
+  box.hidden = false;
+}
+
+function openGlobe() {
+  const n = groups.reduce((sum, grp) => sum + grp.events.length, 0);
+  $('globeMeta').textContent = `${n} event${n === 1 ? '' : 's'} \u00b7 ${groups.length} place${groups.length === 1 ? '' : 's'}`;
+  if (!groups.length) {
+    showGlobeFallback('No events have a location on the map yet. Add coords: [latitude, longitude] to an event in events.js.');
+    return;
+  }
+  if (!hasD3) {
+    showGlobeFallback('The globe could not load (it needs an internet connection). Here are your events by place:');
+    return;
+  }
+  if (!globeInit) initGlobe();
+  refreshGlobeColors();
+  sizeGlobe();
+}
+
+/* ---------- one animation loop for the marquee and the globe ---------- */
+function frame(now) {
+  const dt = Math.min(0.05, (now - lastFrame) / 1000);
+  lastFrame = now;
+  if (homeOn()) marqueeStep(dt);
+  else if (globeOn()) globeStep(dt);
+  requestAnimationFrame(frame);
+}
+
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => { if (homeOn()) buildMarquee(); }, 200);
+  resizeTimer = setTimeout(() => {
+    measureSidebar();
+    if (homeOn()) buildMarquee();
+    if (globeOn() && globeInit) { closePop(); sizeGlobe(); }
+  }, 200);
 });
 
 /* ---------- hover preview (desktop only) ---------- */
@@ -783,18 +1156,6 @@ function showPeek(c, p, idx) {
 function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
 
 /* ---------- collection page ---------- */
-function renderIndex() {
-  $('indexMeta').textContent = COLLECTIONS.length + (COLLECTIONS.length === 1 ? ' event' : ' events');
-  let h = `<div class="ix-row ix-head"><span>Event</span><span>Date</span><span>Location</span><span>Photos</span></div>`;
-  COLLECTIONS.forEach(c => {
-    h += `<a class="ix-row" href="#${esc(c.id)}">` +
-           `<span>${esc(c.title)}</span><span>${esc(c.date || '')}</span>` +
-           `<span>${esc(c.location || '')}</span><span>${c.photos.length}</span>` +
-         `</a>`;
-  });
-  $('indexList').innerHTML = h;
-}
-
 function renderCollection(c) {
   currentColl = c;
   hidePeek();
@@ -820,7 +1181,7 @@ function renderCollection(c) {
       let ax = 0, ay = 0;                                   // where the cursor started resting
       const arm = () => {
         clearTimeout(peekTimer);
-        peekTimer = setTimeout(() => showPeek(c, p, idx), PEEK_DELAY);
+        peekTimer = setTimeout(() => showPeek(c, p, idx), CFG.peekDelay);
       };
       b.addEventListener('mouseenter', e => { ax = e.clientX; ay = e.clientY; arm(); });
       b.addEventListener('mousemove', e => {
@@ -842,9 +1203,10 @@ function route() {
   const coll = COLLECTIONS.find(c => c.id === target);
 
   hidePeek();
+  closePop();
   if (target === 'about') showView('about');
   else if (target === 'contact') showView('contact');
-  else if (target === 'index') { renderIndex(); showView('index'); }
+  else if (target === 'globe') { showView('globe'); openGlobe(); }
   else if (coll) { renderCollection(coll); showView('collection'); }
   else {
     target = 'home';
@@ -957,7 +1319,6 @@ $('yr').textContent = new Date().getFullYear();
 buildNav();
 measureSidebar();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSidebar);
-window.addEventListener('resize', measureSidebar);
 window.addEventListener('hashchange', route);
 route();
 requestAnimationFrame(frame);
