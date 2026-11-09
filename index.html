@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allwood Archives</title>
+<meta name="description" content="Allwood Archives: a portfolio of selected work.">
+<style>
+  :root {
+    --paper: #f5f0e6;
+    --ink: #1f1b16;
+    --muted: #6b6257;
+    --line: #d9d0bf;
+    --accent: #8a3b24;
+    --card: #fbf8f1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #17140f;
+      --ink: #ece5d6;
+      --muted: #9b9181;
+      --line: #332d24;
+      --accent: #d98a6a;
+      --card: #1e1a14;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.65;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header.site {
+    border-bottom: 1px solid var(--line);
+    padding: 20px 0;
+  }
+  header.site .wrap {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .brand { font-size: 1.15rem; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
+  nav a { margin-left: 20px; color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+  nav a:hover { color: var(--accent); }
+
+  .hero { padding: 96px 0 72px; }
+  .hero .eyebrow { color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; margin: 0 0 16px; }
+  .hero h1 { font-size: clamp(2.6rem, 7vw, 4.8rem); line-height: 1.05; margin: 0 0 24px; font-weight: normal; }
+  .hero p.lead { font-size: 1.25rem; max-width: 36em; color: var(--muted); margin: 0; }
+
+  section { padding: 64px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: normal; margin: 0 0 32px; }
+
+  .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .card .num { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.15em; }
+  .card h3 { margin: 0; font-size: 1.25rem; font-weight: normal; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.97rem; }
+  .card .year { margin-top: auto; padding-top: 12px; font-size: 0.85rem; color: var(--muted); }
+
+  .about { display: grid; gap: 32px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .about { grid-template-columns: 2fr 1fr; } }
+  .about p { margin: 0 0 1em; font-size: 1.08rem; }
+  .facts { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; color: var(--muted); }
+  .facts li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .facts li:last-child { border-bottom: 0; }
+
+  .contact p { font-size: 1.2rem; margin: 0 0 8px; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top">Allwood Archives</a>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Allwood Archives</h1>
+      <p class="lead">A collection of selected work, kept in one place. Replace this line with a sentence about what you do.</p>
+    </div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <h2>Selected Work</h2>
+      <div class="grid">
+        <article class="card">
+          <span class="num">01</span>
+          <h3>Project Title One</h3>
+          <p>A short description of this piece of work. Say what it is and what you did.</p>
+          <span class="year">2026</span>
+        </article>
+        <article class="card">
+          <span class="num">02</span>
+          <h3>Project Title Two</h3>
+          <p>A short description of this piece of work. Say what it is and what you did.</p>
+          <span class="year">2025</span>
+        </article>
+        <article class="card">
+          <span class="num">03</span>
+          <h3>Project Title Three</h3>
+          <p>A short description of this piece of work. Say what it is and what you did.</p>
+          <span class="year">2025</span>
+        </article>
+        <article class="card">
+          <span class="num">04</span>
+          <h3>Project Title Four</h3>
+          <p>A short description of this piece of work. Say what it is and what you did.</p>
+          <span class="year">2024</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <h2>About</h2>
+      <div class="about">
+        <div>
+          <p>Write a few sentences here about who you are, what Allwood Archives is, and what kind of work you do.</p>
+          <p>A second paragraph is optional. This is a good place for your background or what you are working on now.</p>
+        </div>
+        <ul class="facts">
+          <li>Based in: Your location</li>
+          <li>Focus: Your specialty</li>
+          <li>Available for: Commissions, collaborations</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2>Contact</h2>
+      <p>Get in touch: <a href="mailto:you@example.com">you@example.com</a></p>
+      <p><a href="#">Instagram</a> &middot; <a href="#">LinkedIn</a> &middot; <a href="#">GitHub</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">&copy; <span id="yr">2026</span> Allwood Archives. All rights reserved.</div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
