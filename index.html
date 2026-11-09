@@ -388,6 +388,73 @@
   a.ix-row:hover span { color: var(--ink); }
   .ix-row span:last-child { text-align: right; }
 
+  /* ---------- search (Index page) ---------- */
+  .sx { max-width: 900px; margin: 0 0 32px; }
+  .sx-bar { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--ink); }
+  .sx-bar input {
+    flex: 1; min-width: 0;
+    background: none; border: 0; outline: none; border-radius: 0;
+    padding: 12px 0;
+    font: inherit; font-size: 16px; color: var(--ink);
+    -webkit-appearance: none; appearance: none;
+  }
+  .sx-bar input::placeholder { color: var(--muted); }
+  .sx-bar input::-webkit-search-cancel-button { display: none; }
+  .sx-clear { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; color: var(--muted); }
+  .sx-clear:hover { color: var(--ink); }
+  .sx-tools {
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px;
+    margin: 20px 0 12px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; color: var(--muted);
+  }
+  .sx-mode button {
+    padding: 2px 7px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; color: var(--muted);
+  }
+  .sx-mode button:hover { color: var(--ink); }
+  .sx-mode button[aria-pressed="true"] { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; }
+  .sx-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sx-chip {
+    display: inline-flex; align-items: baseline; gap: 8px;
+    padding: 7px 13px;
+    border: 1px solid var(--line); border-radius: 999px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink);
+    transition: background 0.15s, color 0.15s, border-color 0.15s, opacity 0.15s;
+  }
+  .sx-chip span { font-size: 10px; color: var(--muted); }
+  .sx-chip:hover { border-color: var(--ink); }
+  .sx-chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .sx-chip[aria-pressed="true"] span { color: var(--bg); opacity: 0.7; }
+  .sx-chip.zero { opacity: 0.3; cursor: default; }
+  .sx-chip.zero:hover { border-color: var(--line); }
+  .sx-status {
+    margin: 18px 0 0;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; color: var(--muted);
+  }
+  .sx-note { grid-column: 1 / -1; margin: 0; max-width: 560px; font-size: 14px; line-height: 1.6; color: var(--muted); }
+  .res {
+    display: grid; gap: 22px var(--gap);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    --ratio: 3 / 2;
+  }
+  .res[hidden], .index[hidden] { display: none; }
+  .res-cap { margin-top: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
+  .res-cap span { color: var(--muted); margin-left: 6px; }
+
+  /* tag chips on event pages + in the viewer's info window */
+  .ch-tags, .i-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ch-tags { margin-top: 16px; }
+  .ch-tags:empty { display: none; }
+  .i-tags { gap: 6px; }
+  .ch-tag, .i-tag {
+    padding: 4px 10px;
+    border: 1px solid var(--line); border-radius: 999px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    text-decoration: none; color: var(--muted);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ch-tag:hover, .i-tag:hover { color: var(--ink); border-color: var(--ink); }
+
   /* ---------- text pages ---------- */
   .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
   .text-page h1 {
@@ -581,6 +648,23 @@
       <div class="ch-title">Index</div>
       <div class="ch-meta" id="indexMeta"></div>
     </div>
+
+    <div class="sx">
+      <div class="sx-bar">
+        <input id="sxInput" type="search" placeholder="Search photos by tag, event or place" autocomplete="off" spellcheck="false" aria-label="Search photos">
+        <button class="sx-clear" id="sxClear" type="button" hidden>Clear</button>
+      </div>
+      <div class="sx-tools" id="sxTools">
+        <span>Filter by tag</span>
+        <span class="sx-mode">Match
+          <button type="button" id="sxModeAll" aria-pressed="true" title="Only photos that have every selected tag">All</button><button type="button" id="sxModeAny" aria-pressed="false" title="Photos that have at least one selected tag">Any</button>
+        </span>
+      </div>
+      <div class="sx-tags" id="sxTags"></div>
+      <p class="sx-status" id="sxStatus"></p>
+    </div>
+
+    <div class="res" id="sxResults" hidden></div>
     <div class="index" id="indexList"></div>
   </section>
 
@@ -590,6 +674,7 @@
       <div class="ch-title" id="collTitle"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
+      <div class="ch-tags" id="collTags"></div>
     </div>
     <div class="grid" id="grid"></div>
   </section>
@@ -710,11 +795,47 @@ COLLECTIONS.forEach(c => {
 });
 
 let currentColl = null;
+let lbList = [];     // what the fullscreen viewer is stepping through: [{ c: event, p: photo, idx }]
 let lbIndex = 0;
 
 function coverOf(c) {
   return c.cover || (c.photos.find(p => p.src) || {}).src || '';
 }
+
+/* ---------- tags + search data ----------
+   A tag can go on a whole event (every photo in it gets the tag) or on a single photo.
+   Tags are matched without caring about capital letters. */
+function toTagList(v) {
+  if (v == null) return [];
+  const arr = Array.isArray(v) ? v : String(v).split(',');
+  return arr.map(t => String(t).trim()).filter(Boolean);
+}
+const TAG_LABEL = new Map();     // lowercase tag -> how you typed it
+const TAG_TOTAL = new Map();     // lowercase tag -> how many photos have it
+const PHOTOS = [];               // every photo with its event, for searching
+COLLECTIONS.forEach(c => {
+  const note = t => { const k = t.toLowerCase(); if (!TAG_LABEL.has(k)) TAG_LABEL.set(k, t); return k; };
+  const evKeys = [];
+  toTagList(c.tags).forEach(t => { const k = note(t); if (!evKeys.includes(k)) evKeys.push(k); });
+  const eventKeys = evKeys.slice();
+  const gear = c.gear || {};
+  c.photos.forEach((p, idx) => {
+    const keys = evKeys.slice();
+    toTagList(p.tags).forEach(t => {
+      const k = note(t);
+      if (!keys.includes(k)) keys.push(k);
+      if (!eventKeys.includes(k)) eventKeys.push(k);
+    });
+    keys.forEach(k => TAG_TOTAL.set(k, (TAG_TOTAL.get(k) || 0) + 1));
+    p._tags = keys;
+    const hay = [c.title, c.location, c.date, p.caption, p.camera || gear.camera, p.lens || gear.lens, p.focal,
+                 keys.map(k => TAG_LABEL.get(k)).join(' ')].filter(Boolean).join(' ').toLowerCase();
+    PHOTOS.push({ c, p, idx, keys, hay });
+  });
+  c._tagKeys = eventKeys;
+});
+const TAG_ORDER = [...TAG_TOTAL.keys()].sort((a, b) =>
+  TAG_TOTAL.get(b) - TAG_TOTAL.get(a) || TAG_LABEL.get(a).localeCompare(TAG_LABEL.get(b)));
 
 /* ---------- nav ---------- */
 function buildNav() {
@@ -1237,9 +1358,97 @@ function showPeek(c, p, idx) {
 }
 function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
 
-/* ---------- index page ---------- */
+/* ---------- index page: events table + search by tag ---------- */
+const sx = { q: '', sel: [], mode: 'all' };
+const sxInput = $('sxInput');
+
+function sxMatch(e, sel, mode, tokens) {
+  if (sel.length) {
+    if (mode === 'any') { if (!sel.some(k => e.keys.includes(k))) return false; }
+    else if (!sel.every(k => e.keys.includes(k))) return false;
+  }
+  return tokens.every(t => e.hay.includes(t));
+}
+function sxLoad(query) {
+  const params = new URLSearchParams(query || '');
+  sx.q = params.get('q') || '';
+  sx.mode = params.get('mode') === 'any' ? 'any' : 'all';
+  sx.sel = (params.get('tags') || '').split(',').map(t => t.trim().toLowerCase()).filter(k => k && TAG_TOTAL.has(k));
+  sxInput.value = sx.q;
+}
+function sxSync() {                            // keep the address bar in step so a search can be shared
+  const parts = [];
+  if (sx.sel.length) parts.push('tags=' + sx.sel.map(encodeURIComponent).join(','));
+  if (sx.q.trim()) parts.push('q=' + encodeURIComponent(sx.q.trim()));
+  if (sx.mode === 'any' && sx.sel.length > 1) parts.push('mode=any');
+  try { history.replaceState(null, '', '#index' + (parts.length ? '?' + parts.join('&') : '')); } catch (_) {}
+}
+
+function renderSearch() {
+  const tokens = sx.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const filtering = sx.sel.length > 0 || tokens.length > 0;
+  const results = filtering ? PHOTOS.filter(e => sxMatch(e, sx.sel, sx.mode, tokens)) : [];
+
+  /* tag chips. In "All" mode each count is how many photos you would have if you added that tag,
+     and tags that would leave nothing are dimmed, so you can't search yourself into a dead end. */
+  const tagsBox = $('sxTags');
+  if (!TAG_ORDER.length) {
+    tagsBox.innerHTML = '<p class="sx-note">No tags yet. Add <code>tags: ["sports", "nature"]</code> to a photo or an event in events.js and they will show up here. You can already search by event name, place or notes above.</p>';
+    $('sxTools').hidden = true;
+  } else {
+    $('sxTools').hidden = false;
+    tagsBox.innerHTML = TAG_ORDER.map(k => {
+      const selected = sx.sel.includes(k);
+      const n = sx.mode === 'any'
+        ? PHOTOS.filter(e => e.keys.includes(k) && tokens.every(t => e.hay.includes(t))).length
+        : PHOTOS.filter(e => sxMatch(e, selected ? sx.sel : sx.sel.concat(k), 'all', tokens)).length;
+      const zero = !selected && n === 0;
+      return `<button type="button" class="sx-chip${zero ? ' zero' : ''}" data-k="${esc(k)}" aria-pressed="${selected}"` +
+             `${zero ? ' aria-disabled="true"' : ''}>${esc(TAG_LABEL.get(k))}<span>${n}</span></button>`;
+    }).join('');
+  }
+  $('sxModeAll').setAttribute('aria-pressed', sx.mode === 'all');
+  $('sxModeAny').setAttribute('aria-pressed', sx.mode === 'any');
+  $('sxClear').hidden = !filtering;
+
+  $('sxStatus').textContent = filtering
+    ? `${results.length} of ${PHOTOS.length} photo${PHOTOS.length === 1 ? '' : 's'}`
+    : `${PHOTOS.length} photo${PHOTOS.length === 1 ? '' : 's'} · ${TAG_ORDER.length} tag${TAG_ORDER.length === 1 ? '' : 's'}`;
+
+  /* results replace the events table while you are searching */
+  const box = $('sxResults');
+  box.innerHTML = '';
+  box.hidden = !filtering;
+  $('indexList').hidden = filtering;
+  if (!filtering) return;
+  if (!results.length) {
+    box.innerHTML = '<p class="sx-note">No photos match. Try removing a tag, or switch Match to &ldquo;Any&rdquo;.</p>';
+    return;
+  }
+  results.forEach((e, i) => {
+    const item = document.createElement('div');
+    item.className = 'res-item';
+    const b = document.createElement('button');
+    b.className = 'tile';
+    b.setAttribute('aria-label', `View photo ${e.idx + 1} of ${e.c.title}`);
+    b.innerHTML = e.p.src
+      ? `<img src="${esc(e.p.src)}" alt="${esc(e.p.caption || e.c.title + ' photo ' + (e.idx + 1))}" loading="lazy">`
+      : `<span class="ph">${pad(e.idx + 1)}</span>`;
+    b.addEventListener('click', () => openLb(i, results));
+    attachPeek(b, e.c, e.p, e.idx);
+    const cap = document.createElement('div');
+    cap.className = 'res-cap';
+    const labels = e.keys.slice(0, 4).map(k => TAG_LABEL.get(k)).join(' · ');
+    cap.innerHTML = esc(e.c.title) + (labels ? `<span>${esc(labels)}</span>` : '');
+    item.appendChild(b);
+    item.appendChild(cap);
+    box.appendChild(item);
+  });
+}
+
 function renderIndex() {
-  $('indexMeta').textContent = COLLECTIONS.length + (COLLECTIONS.length === 1 ? ' event' : ' events');
+  const n = COLLECTIONS.length;
+  $('indexMeta').textContent = n + (n === 1 ? ' event' : ' events');
   let h = `<div class="ix-row ix-head"><span>Event</span><span>Date</span><span>Location</span><span>Photos</span></div>`;
   COLLECTIONS.forEach(c => {
     h += `<a class="ix-row" href="#${esc(c.id)}">` +
@@ -1248,17 +1457,65 @@ function renderIndex() {
          `</a>`;
   });
   $('indexList').innerHTML = h;
+  renderSearch();
+}
+
+sxInput.addEventListener('input', () => { sx.q = sxInput.value; sxSync(); renderSearch(); });
+sxInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && sxInput.value) { sxInput.value = ''; sx.q = ''; sxSync(); renderSearch(); }
+});
+$('sxTags').addEventListener('click', e => {
+  const b = e.target.closest('.sx-chip');
+  if (!b || b.classList.contains('zero')) return;
+  const k = b.dataset.k, i = sx.sel.indexOf(k);
+  if (i >= 0) sx.sel.splice(i, 1); else sx.sel.push(k);
+  sxSync(); renderSearch();
+  const again = [...$('sxTags').querySelectorAll('.sx-chip')].find(x => x.dataset.k === k);
+  if (again) again.focus({ preventScroll: true });
+});
+$('sxModeAll').addEventListener('click', () => { sx.mode = 'all'; sxSync(); renderSearch(); });
+$('sxModeAny').addEventListener('click', () => { sx.mode = 'any'; sxSync(); renderSearch(); });
+$('sxClear').addEventListener('click', () => {
+  sx.q = ''; sx.sel = []; sx.mode = 'all'; sxInput.value = '';
+  sxSync(); renderSearch(); sxInput.focus();
+});
+
+/* open the Index page already filtered by a tag (used by tag chips elsewhere) */
+function goToTag(k) {
+  const h = '#index?tags=' + encodeURIComponent(k);
+  if (location.hash === h) route(); else location.hash = h;
+}
+
+/* ---------- hover preview on a photo tile (desktop only) ---------- */
+function attachPeek(b, c, p, idx) {
+  if (!canHover) return;
+  let ax = 0, ay = 0;                                     // where the cursor started resting
+  const arm = () => {
+    clearTimeout(peekTimer);
+    peekTimer = setTimeout(() => showPeek(c, p, idx), CFG.peekDelay);
+  };
+  b.addEventListener('mouseenter', e => { ax = e.clientX; ay = e.clientY; arm(); });
+  b.addEventListener('mousemove', e => {
+    if (peek.classList.contains('on')) return;            // already enlarged
+    if (Math.hypot(e.clientX - ax, e.clientY - ay) > 12) {   // cursor moved: start the wait over
+      ax = e.clientX; ay = e.clientY; arm();
+    }
+  });
+  b.addEventListener('mouseleave', hidePeek);
 }
 
 /* ---------- collection page ---------- */
 function renderCollection(c) {
   currentColl = c;
+  lbList = c.photos.map((p, idx) => ({ c, p, idx }));
   hidePeek();
   $('collTitle').textContent = c.title;
   $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
-    .filter(Boolean).join('  \u00b7  ');
+    .filter(Boolean).join('  ·  ');
   $('collDesc').textContent = c.description || '';
   $('collDesc').style.display = c.description ? '' : 'none';
+  $('collTags').innerHTML = (c._tagKeys || []).map(k =>
+    `<a class="ch-tag" href="#index?tags=${encodeURIComponent(k)}">${esc(TAG_LABEL.get(k))}</a>`).join('');
 
   const layout = ['grid', 'square', 'wide', 'masonry'].includes(c.layout) ? c.layout : 'grid';
   grid.className = 'grid layout-' + layout;
@@ -1272,29 +1529,17 @@ function renderCollection(c) {
       ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">`
       : `<span class="ph">${pad(idx + 1)}</span>`;
     b.addEventListener('click', () => openLb(idx));
-    if (canHover) {
-      let ax = 0, ay = 0;                                   // where the cursor started resting
-      const arm = () => {
-        clearTimeout(peekTimer);
-        peekTimer = setTimeout(() => showPeek(c, p, idx), CFG.peekDelay);
-      };
-      b.addEventListener('mouseenter', e => { ax = e.clientX; ay = e.clientY; arm(); });
-      b.addEventListener('mousemove', e => {
-        if (peek.classList.contains('on')) return;          // already enlarged
-        if (Math.hypot(e.clientX - ax, e.clientY - ay) > 12) {   // cursor moved: start the wait over
-          ax = e.clientX; ay = e.clientY; arm();
-        }
-      });
-      b.addEventListener('mouseleave', hidePeek);
-    }
+    attachPeek(b, c, p, idx);
     grid.appendChild(b);
   });
 }
 
 /* ---------- routing ---------- */
 function route() {
-  const hash = (location.hash || '').replace('#', '');
-  let target = hash || 'home';
+  const raw = (location.hash || '').replace('#', '');
+  const qi = raw.indexOf('?');                              // e.g.  index?tags=sports,nature
+  const name = qi < 0 ? raw : raw.slice(0, qi);
+  let target = name || 'home';
   const coll = COLLECTIONS.find(c => c.id === target);
 
   hidePeek();
@@ -1302,7 +1547,7 @@ function route() {
   if (target === 'about') showView('about');
   else if (target === 'contact') showView('contact');
   else if (target === 'globe') { showView('globe'); openGlobe(); }
-  else if (target === 'index') { renderIndex(); showView('index'); }
+  else if (target === 'index') { sxLoad(qi < 0 ? '' : raw.slice(qi + 1)); renderIndex(); showView('index'); }
   else if (coll) { renderCollection(coll); showView('collection'); }
   else {
     target = 'home';
@@ -1342,6 +1587,12 @@ function infoHTML(c, p) {
   if (cam.length) {
     h += `<div class="i-sec"><div class="i-head">Camera</div>${cam.map(r => infoRow(r[0], r[1])).join('')}</div>`;
   }
+  const tags = p._tags || [];
+  if (tags.length) {
+    h += `<div class="i-sec"><div class="i-head">Tags</div><div class="i-tags">` +
+         tags.map(k => `<a class="i-tag" href="#index?tags=${encodeURIComponent(k)}" data-tag="${esc(k)}">${esc(TAG_LABEL.get(k))}</a>`).join('') +
+         `</div></div>`;
+  }
   if (p.caption) {
     h += `<div class="i-sec"><div class="i-head">Notes</div><p class="i-desc">${esc(p.caption)}</p></div>`;
   }
@@ -1349,20 +1600,22 @@ function infoHTML(c, p) {
 }
 
 function drawLb() {
-  const photos = currentColl.photos;
-  const p = photos[lbIndex];
-  lbStage.innerHTML = p.src
-    ? `<img src="${esc(p.src)}" alt="${esc(p.caption || currentColl.title)}">`
-    : `<div class="ph-big">${pad(lbIndex + 1)}</div>`;
-  lbCount.textContent = `${lbIndex + 1} / ${photos.length}`;
-  lbInfo.innerHTML = infoHTML(currentColl, p);
+  const e = lbList[lbIndex];
+  if (!e) return;
+  lbStage.innerHTML = e.p.src
+    ? `<img src="${esc(e.p.src)}" alt="${esc(e.p.caption || e.c.title)}">`
+    : `<div class="ph-big">${pad(e.idx + 1)}</div>`;
+  lbCount.textContent = `${lbIndex + 1} / ${lbList.length}`;
+  lbInfo.innerHTML = infoHTML(e.c, e.p);
 }
 function setInfo(open) {
   infoOpen = open;
   lb.classList.toggle('info-on', open);
   $('lbInfoBtn').setAttribute('aria-pressed', open);
 }
-function openLb(i) {
+function openLb(i, list) {
+  if (list) lbList = list;
+  if (!lbList.length) return;
   hidePeek();
   lbIndex = i;
   setInfo(infoOpen);
@@ -1377,7 +1630,7 @@ function closeLb() {
   document.body.style.overflow = '';
 }
 function stepLb(d) {
-  const n = currentColl.photos.length;
+  const n = lbList.length;
   if (!n) return;
   lbIndex = (lbIndex + d + n) % n;
   drawLb();
@@ -1388,6 +1641,13 @@ $('lbPrev').addEventListener('click', () => stepLb(-1));
 $('lbNext').addEventListener('click', () => stepLb(1));
 $('lbInfoBtn').addEventListener('click', () => setInfo(!infoOpen));
 $('lbMain').addEventListener('click', e => { if (e.target === $('lbMain') || e.target === lbStage) closeLb(); });
+lbInfo.addEventListener('click', e => {                       // a tag in the info window searches for it
+  const a = e.target.closest('a[data-tag]');
+  if (!a) return;
+  e.preventDefault();
+  closeLb();
+  goToTag(a.dataset.tag);
+});
 document.addEventListener('keydown', e => {
   if (!lb.classList.contains('on')) return;
   if (e.key === 'Escape') closeLb();
