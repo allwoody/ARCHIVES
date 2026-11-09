@@ -31,7 +31,7 @@ const SITE = {
       { label: "Instagram", url: "https://www.instagram.com/4llwood/" },
       { label: "Letterboxd",  url: "https://letterboxd.com/allwoody/" },
       { label: "Youtube",  url: "https://www.youtube.com/@allwoody" }
-      // add more like:  { label: "YouTube", url: "https://youtube.com/..." },
+      // add more like:  { label: "YouTube", url: "https://youtube.com/..." }
     ]
   }
 };
@@ -173,7 +173,6 @@ const COLLECTIONS = [
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1620.jpg", focal: "200mm", aperture: "f/5", shutter: "1/1600s", iso: "2000", tags: ["pitcher", "portrait"] },
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1636.jpg", focal: "136mm", aperture: "f/5", shutter: "1/1600s", iso: "2000", tags: ["pitcher", "portrait"] },
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1669.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/1600s", iso: "2000", tags: ["batter", "swing"] },
-      { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1709.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/1600s", iso: "2000", tags: ["batter", "swing"] },
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1784.jpg", focal: "126mm", aperture: "f/5.6", shutter: "1/1600s", iso: "2000", tags: ["batter", "swing", "closeup", "helmet", "portrait"] },
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1805.jpg", focal: "179mm", aperture: "f/5", shutter: "1/1600s", iso: "2000", tags: ["batter", "swing", "teammates"] },
       { src: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1807.jpg", focal: "179mm", aperture: "f/5", shutter: "1/1600s", iso: "2000", tags: ["batter", "swing", "teammates"] },
@@ -266,7 +265,6 @@ const COLLECTIONS = [
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-2931.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["dugout", "mound"] },
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-2940.jpg", focal: "135mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["catcher"] },
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-2985.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["pitcher", "mound", "delivery"] },
-      { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-2997.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["pitcher", "mound", "delivery"] },
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-3003.jpg", focal: "200mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["pitcher", "mound", "delivery"] },
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-3016.jpg", focal: "105mm", aperture: "f/4.5", shutter: "1/500s", iso: "1250", tags: ["batter", "swing", "umpire"] },
       { src: "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-3065.jpg", focal: "118mm", aperture: "f/4.5", shutter: "1/500s", iso: "1600", tags: ["batter", "swing", "umpire"] },
@@ -443,7 +441,6 @@ const COLLECTIONS = [
       { src: "images/duke-sep-2026/dsc08926.jpg", focal: "116mm", aperture: "f/2.8", shutter: "1/500s", iso: "1250", tags: ["flags", "spirit squad", "flip"] },
       { src: "images/duke-sep-2026/dsc08930.jpg", focal: "173mm", aperture: "f/2.8", shutter: "1/500s", iso: "1250", tags: ["flags", "spirit squad", "flip"] },
       { src: "images/duke-sep-2026/dsc08957.jpg", focal: "200mm", aperture: "f/2.8", shutter: "1/500s", iso: "1250", tags: ["action"] },
-      { src: "images/duke-sep-2026/dsc08970.jpg", focal: "121mm", aperture: "f/2.8", shutter: "1/500s", iso: "1600", tags: ["action", "photographers", "behind the scenes"] },
       { src: "images/duke-sep-2026/dsc08979.jpg", focal: "200mm", aperture: "f/2.8", shutter: "1/500s", iso: "1600", tags: ["action"] },
       { src: "images/duke-sep-2026/dsc09016.jpg", focal: "70mm", aperture: "f/2.8", shutter: "1/500s", iso: "1600", tags: ["scoreboard", "fireworks", "duke wins", "victory", "portrait orientation", "black and white"] },
       { src: "images/duke-sep-2026/dsc09017.jpg", focal: "70mm", aperture: "f/2.8", shutter: "1/500s", iso: "1600", tags: ["scoreboard", "fireworks", "duke wins", "victory", "portrait orientation"] },
@@ -671,7 +668,7 @@ const COLLECTIONS = [
   },
   {
     id: "wyoming",
-    title: "Wyoming",
+    title: "Grand Teton National Park",
     date: "August 22-29, 2026",
     location: "Grand Teton National Park, WY",
     coords: [43.7904, -110.6818],
@@ -681,7 +678,6 @@ const COLLECTIONS = [
     tags: ["travel", "grand teton national park", "wyoming", "tetons", "mountains", "lake", "national park", "outdoors", "landscape", "august", "summer"],
     cover: "images/wyoming-aug-2026/dsc07418.jpg",
     photos: [
-      { src: "images/wyoming-aug-2026/acain/dsc07288.jpg", focal: "70mm", aperture: "f/10", shutter: "1/200s", iso: "800", tags: ["wildflowers", "hiking"] },
       { src: "images/wyoming-aug-2026/acain/dsc07470.jpg", focal: "70mm", aperture: "f/5", shutter: "1/250s", iso: "1250", tags: ["lake", "portrait"] },
       { src: "images/wyoming-aug-2026/acain/dsc07473.jpg", focal: "70mm", aperture: "f/5", shutter: "1/250s", iso: "1250", tags: ["lake", "portrait", "wading"] },
       { src: "images/wyoming-aug-2026/acain/dsc07477.jpg", focal: "70mm", aperture: "f/5.6", shutter: "1/250s", iso: "800", tags: ["lake", "portrait", "wading"] },
@@ -778,7 +774,6 @@ const COLLECTIONS = [
       { src: "images/wyoming-aug-2026/meeks/dsc07644.jpg", focal: "159mm", aperture: "f/3.5", shutter: "1/250s", iso: "800", tags: ["photographer", "camera", "portrait", "lake"] },
       { src: "images/wyoming-aug-2026/meeks/dsc07646.jpg", focal: "200mm", aperture: "f/3.5", shutter: "1/250s", iso: "800", tags: ["photographer", "camera", "portrait", "lake"] },
       { src: "images/wyoming-aug-2026/meeks/dsc07871.jpg", focal: "150mm", aperture: "f/3.5", shutter: "1/200s", iso: "1250", tags: ["portrait", "swimming", "lake"] },
-      { src: "images/wyoming-aug-2026/rearick/dsc07594.jpg", focal: "70mm", aperture: "f/6.3", shutter: "1/250s", iso: "800", tags: ["closeup", "phone", "candid"] },
       { src: "images/wyoming-aug-2026/rearick/dsc07628.jpg", focal: "151mm", aperture: "f/3.5", shutter: "1/250s", iso: "800", tags: ["friends", "phone", "candid"] },
       { src: "images/wyoming-aug-2026/rearick/dsc07632.jpg", focal: "86mm", aperture: "f/3.5", shutter: "1/250s", iso: "800", tags: ["portrait", "candid", "friends"] },
       { src: "images/wyoming-aug-2026/rearick/dsc07750.jpg", focal: "142mm", aperture: "f/2.8", shutter: "1/250s", iso: "800", tags: ["forest", "friends", "candid"] },
