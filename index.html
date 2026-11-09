@@ -13,7 +13,7 @@
 <!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
 <!--
   index.html is the CODE of the site. Your content (events, photos, About,
   Contact) lives in events.js, so you can replace this file with a newer
@@ -34,7 +34,7 @@
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
        files, it is used automatically; otherwise Inter (free) is used. */
-    --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
     --logo-width: 150px;  /* set from SETTINGS.logoWidth in events.js */
     --m-h: clamp(190px, 54vh, 620px);   /* height of the photos in the Home marquee */
     --m-gap: 18px;                      /* space between marquee photos */
@@ -50,6 +50,7 @@
     -webkit-font-smoothing: antialiased;
   }
   a { color: inherit; }
+  input, textarea, select { font-family: inherit; }
   button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 
   /* ---------- sidebar ---------- */
@@ -1867,6 +1868,61 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSid
 window.addEventListener('hashchange', route);
 route();
 requestAnimationFrame(frame);
+
+/* ---------- paper texture ----------
+   A dotted graph-paper background drawn once on a canvas and used as a tiled
+   image. Every dot is nudged a little, varies in size and strength, and a few
+   are missing or doubled, with faint grain, smudges and specks, so it looks
+   hand-printed rather than perfect. */
+(function paperTexture() {
+  try {
+    const S = 960, step = 24, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = S * dpr;
+    const c = cv.getContext('2d');
+    c.scale(dpr, dpr);
+    let seed = 20261109;
+    const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    const ink = getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '102,71,52';
+    // soft uneven blotches, like paper that has aged unevenly
+    for (let i = 0; i < 26; i++) {
+      const x = rnd() * S, y = rnd() * S, r = 60 + rnd() * 170;
+      const dark = rnd() < 0.55;
+      const gr = c.createRadialGradient(x, y, 0, x, y, r);
+      gr.addColorStop(0, dark ? 'rgba(' + ink + ',0.022)' : 'rgba(255,248,235,0.07)');
+      gr.addColorStop(1, 'rgba(0,0,0,0)');
+      c.fillStyle = gr;
+      for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { c.save(); c.translate(ox, oy); c.fillRect(x - r, y - r, r * 2, r * 2); c.restore(); }
+    }
+    // the dot grid
+    for (let gy = 0; gy < S / step; gy++) for (let gx = 0; gx < S / step; gx++) {
+      if (rnd() < 0.035) continue;                          // an occasional dot that never printed
+      const x = gx * step + step / 2 + (rnd() - 0.5) * 2.6;
+      const y = gy * step + step / 2 + (rnd() - 0.5) * 2.6;
+      const major = (gx % 5 === 0 && gy % 5 === 0);         // every fifth dot is a little stronger
+      const r = (major ? 1.35 : 0.85) * (0.75 + rnd() * 0.6);
+      const a = (major ? 0.46 : 0.30) * (0.45 + rnd() * 0.85);
+      c.fillStyle = 'rgba(' + ink + ',' + a.toFixed(3) + ')';
+      c.beginPath(); c.ellipse(x, y, r * (0.9 + rnd() * 0.25), r * (0.9 + rnd() * 0.25), rnd() * 3, 0, 6.283); c.fill();
+      if (rnd() < 0.02) { c.beginPath(); c.arc(x + (rnd() - 0.5) * 3, y + (rnd() - 0.5) * 3, r * 0.7, 0, 6.283); c.fill(); }  // doubled print
+    }
+    // fine grain and stray specks
+    for (let i = 0; i < 2600; i++) {
+      const x = rnd() * S, y = rnd() * S;
+      c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(255,250,240,' + (0.05 + rnd() * 0.10).toFixed(3) + ')';
+      const r = 0.3 + rnd() * 0.6; c.fillRect(x, y, r, r);
+    }
+    for (let i = 0; i < 14; i++) {                          // a few little fibres
+      const x = rnd() * S, y = rnd() * S, l = 4 + rnd() * 9, t = rnd() * 6.283;
+      c.strokeStyle = 'rgba(' + ink + ',0.07)'; c.lineWidth = 0.5;
+      c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(t) * l / 2 + 2, y + Math.sin(t) * l / 2 - 2, x + Math.cos(t) * l, y + Math.sin(t) * l); c.stroke();
+    }
+    const st = document.createElement('style');
+    const img = 'url(' + cv.toDataURL('image/png') + ')';
+    st.textContent = 'body,.sidebar{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-repeat:repeat;background-attachment:fixed;}';
+    document.head.appendChild(st);
+  } catch (_) {}
+})();
 </script>
 </body>
 </html>
