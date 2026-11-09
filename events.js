@@ -44,6 +44,7 @@ const SETTINGS = {
   globeSpin: 4,        // how fast the globe turns by itself, degrees per second (0 = it stays still)
   logoWidth: 150,      // width of your logo in the top left, in pixels
   logoSway: 14,        // how far the logo rocks side to side, in degrees (0 = it stays still)
+  favorites: [],       // photos for the Favorites magazines (each project gets its own, from its own photos), e.g. ["images/duke-sep-2026/duke-001.jpg", "images/..."]. Empty = an automatic spread-out pick.
   music: ""            // leave empty for the built-in ambient music, or put your own file here, e.g. "audio/track.mp3"
 };
 
