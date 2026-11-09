@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Allwood Archives</title>
+<img>allwood.png</img>
 <meta name="description" content="Allwood Archives: a portfolio of selected work.">
 <style>
   :root {
@@ -12,6 +12,7 @@
     --muted: #8a8a8a;
     --tile: #ececec;
     --sidebar: 250px;
+    --logo-width: 150px;   /* change this number to make your logo bigger or smaller */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -42,6 +43,7 @@
     margin-bottom: 44px;
   }
   .logo:hover { color: var(--ink); }
+  .logo img { display: block; width: var(--logo-width); max-width: 100%; height: auto; }
   .nav { list-style: none; margin: 0; padding: 0; }
   .nav li { margin: 0 0 9px; }
   .nav a, .nav button {
@@ -152,6 +154,7 @@
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
     }
     .logo { margin: 0; }
+    .logo img { width: min(var(--logo-width), 120px); }
     .menu-toggle { display: block; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
     .nav { display: none; width: 100%; padding-top: 22px; }
     .nav.open { display: block; }
@@ -165,7 +168,12 @@
 <body>
 
 <aside class="sidebar">
-  <a class="logo" href="#" id="logo">Allwood<br>Archives</a>
+  <a class="logo" href="#" id="logo">
+    <!-- Your logo goes here: upload it to the images folder as logo.png, or change the src below -->
+    <img src="images/logo.png" alt="Allwood Archives"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <span class="logo-text" style="display:none">Allwood<br>Archives</span>
+  </a>
   <button class="menu-toggle" id="menuToggle" aria-expanded="false">Menu</button>
   <ul class="nav" id="nav"></ul>
 </aside>
