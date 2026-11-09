@@ -43,7 +43,8 @@ const SETTINGS = {
   peekDelay: 2500,     // how long the cursor rests on a photo before it goes fullscreen (1000 = 1 second)
   globeSpin: 4,        // how fast the globe turns by itself, degrees per second (0 = it stays still)
   logoWidth: 150,      // width of your logo in the top left, in pixels
-  logoSway: 14         // how far the logo rocks side to side, in degrees (0 = it stays still)
+  logoSway: 14,        // how far the logo rocks side to side, in degrees (0 = it stays still)
+  music: ""            // leave empty for the built-in ambient music, or put your own file here, e.g. "audio/track.mp3"
 };
 
 

@@ -173,7 +173,7 @@
   .view { display: none; flex: 1; padding-right: 36px; }
   .view.on { display: block; }
   #view-home { padding-right: 0; }
-  #view-home.on { display: flex; flex-direction: column; justify-content: center; gap: 26px; }
+  #view-home.on { display: flex; flex-direction: column; justify-content: center; gap: 22px; }
 
   /* Home only: the logo moves out of the sidebar and becomes a big centred header */
   .home-logo {
@@ -186,8 +186,7 @@
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
   body:not(.is-home) .home-logo { display: none; }
-  body.is-home .sidebar .logo { visibility: hidden; }
-  body.is-home { --m-h: clamp(170px, calc(100vh - 430px), 600px); }
+  body.is-home { --m-h: clamp(160px, calc(100vh - 500px), 600px); }
 
   /* ---------- home marquee (drag it, or let it drift) ---------- */
   .marquee {
@@ -682,8 +681,7 @@
       border-bottom: 1px solid var(--line);
     }
     .logo { margin: 0; }
-    body.is-home .sidebar .logo { display: none; }
-    body.is-home .menu-toggle { margin-left: auto; }
+    body.is-home main { padding: 12px 0 0; }
     body.is-home { --m-h: clamp(150px, 34vh, 300px); }
     .home-logo { --hl: min(78vw, 420px); }
     .logo img { width: min(var(--logo-width), 120px); }
@@ -700,6 +698,67 @@
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
   }
+
+  /* ---------- home page menu (the sidebar's links, laid out as a row between the logo and the photos) ---------- */
+  body.is-home .sidebar, body.is-home .scrim { display: none; }
+  body.is-home main { margin-left: 0; padding-left: 0; }
+  .home-nav { display: none; }
+  body.is-home .home-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 38px; position: relative; z-index: 35; }
+  .hn-sec { position: relative; }
+  .hn-head {
+    display: inline-block; padding: 8px 2px; cursor: pointer;
+    font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink); text-decoration: none; transition: transform 0.15s ease, opacity 0.15s;
+  }
+  .hn-head.has-subs::after { content: ""; display: inline-block; width: 5px; height: 5px; margin: 0 0 3px 9px;
+    border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform 0.25s ease; }
+  .hn-sec:hover .hn-head.has-subs::after, .hn-sec.open .hn-head.has-subs::after { transform: rotate(225deg) translate(-1px, -1px); }
+  @media (hover: hover) { .hn-head:hover { transform: translateY(-1px); } }
+  .hn-head.active { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
+  .hn-subs {
+    position: absolute; left: 50%; top: 100%; z-index: 5; min-width: 100%;
+    padding-top: 8px; opacity: 0; visibility: hidden; transform: translate(-50%, -6px);
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.25s;
+  }
+  .hn-subs ul { list-style: none; margin: 0; padding: 12px 18px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35); }
+  .hn-subs li { margin: 0 0 9px; white-space: nowrap; }
+  .hn-subs li:last-child { margin: 0; }
+  .hn-subs a { display: block; text-decoration: none; text-transform: uppercase; letter-spacing: 0.06em; font-size: 13px; color: var(--muted);
+    transition: color 0.15s, transform 0.15s ease; transform-origin: left center; }
+  .hn-subs a:hover, .hn-subs a.active { color: var(--ink); }
+  @media (hover: hover) { .hn-subs a:hover { transform: translateX(3px); } }
+  .hn-sec:hover .hn-subs, .hn-sec:focus-within .hn-subs, .hn-sec.open .hn-subs {
+    opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s;
+  }
+
+  /* ---------- background music control (top right, every page) ---------- */
+  .music { position: fixed; top: 14px; right: 18px; z-index: 60; display: flex; align-items: center; gap: 0;
+    padding: 4px 6px 4px 4px; border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(71, 74, 79, 0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    transition: border-color 0.2s, background 0.2s, right 0.25s ease; }
+  .music:hover, .music:focus-within { border-color: var(--muted); }
+  body:has(.lb.on) .music { right: 190px; }
+  .music button { display: inline-flex; align-items: center; gap: 9px; min-height: 28px; padding: 0 10px 0 8px; border-radius: 999px;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .music button:hover, .music button:focus-visible { color: var(--ink); outline: none; }
+  .music.on button { color: var(--ink); }
+  .eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; width: 14px; }
+  .eq i { display: block; width: 2px; height: 3px; background: currentColor; border-radius: 1px; transition: height 0.25s ease; }
+  .music.playing .eq i { animation: eq 1.1s ease-in-out infinite; }
+  .music.playing .eq i:nth-child(2) { animation-delay: -0.4s; animation-duration: 0.9s; }
+  .music.playing .eq i:nth-child(3) { animation-delay: -0.7s; animation-duration: 1.3s; }
+  .music.playing .eq i:nth-child(4) { animation-delay: -0.2s; animation-duration: 1s; }
+  @keyframes eq { 0%, 100% { height: 3px; } 50% { height: 12px; } }
+  .music input[type=range] { width: 0; margin: 0; opacity: 0; -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer;
+    transition: width 0.3s ease, opacity 0.2s ease, margin 0.3s ease; height: 18px; }
+  .music:hover input[type=range], .music:focus-within input[type=range] { width: 74px; opacity: 1; margin: 0 6px 0 2px; }
+  .music input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line); border-radius: 2px; }
+  .music input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; margin-top: -4.5px; border-radius: 50%; background: var(--ink); border: 0; }
+  .music input[type=range]::-moz-range-track { height: 2px; background: var(--line); border-radius: 2px; }
+  .music input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--ink); border: 0; }
+  @media (max-width: 720px) { .music { top: 12px; right: 74px; } body.is-home .music { right: 12px; } .music .m-label { display: none; } .music:hover input[type=range], .music:focus-within input[type=range] { width: 56px; } }
+
   #dotCanvas { position: fixed; left: 0; top: 0; z-index: -1; pointer-events: none; }
   @media (max-width: 720px) { .sidebar { background-color: var(--bg); } }
 
@@ -743,6 +802,12 @@
   <button class="menu-toggle" id="menuToggle" aria-expanded="false">Menu</button>
   <ul class="nav" id="nav"></ul>
 </aside>
+<div class="music" id="music">
+  <button type="button" id="musicBtn" aria-pressed="false" aria-label="Play background music" title="Background music">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="m-label" id="musicLabel">Music</span>
+  </button>
+  <input type="range" id="musicVol" min="0" max="100" value="40" aria-label="Music volume">
+</div>
 <div class="scrim" aria-hidden="true"></div>
 
 <main id="main">
@@ -753,6 +818,7 @@
       <img id="homeLogoImg" alt="" style="display:none">
       <span class="logo-text" id="homeLogoText" style="display:none"></span>
     </a>
+    <nav class="home-nav" id="homeNav" aria-label="Main"></nav>
     <div class="marquee" id="marquee">
       <div class="track" id="track"></div>
     </div>
@@ -833,6 +899,14 @@
     </div>
   </section>
 
+  <!-- favorites (page design to come) -->
+  <section class="view" id="view-favorites">
+    <div class="text-page">
+      <h1>Favorites</h1>
+      <p>A home for favorite photos. This page is coming soon.</p>
+    </div>
+  </section>
+
   <!-- contact -->
   <section class="view" id="view-contact">
     <div class="text-page">
@@ -886,7 +960,7 @@ if (typeof COLLECTIONS === 'undefined') {
 
 const site = (typeof SITE !== 'undefined' && SITE) || {};
 const CFG = Object.assign(
-  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150, logoSway: 14 },
+  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150, logoSway: 14, music: '' },
   (typeof SETTINGS !== 'undefined' && SETTINGS) || {}
 );
 
@@ -896,7 +970,7 @@ const pad = n => String(n).padStart(2, '0');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
-const views = ['home', 'globe', 'index', 'collection', 'about', 'contact'];
+const views = ['home', 'globe', 'index', 'collection', 'about', 'contact', 'favorites'];
 const homeOn = () => $('view-home').classList.contains('on');
 const globeOn = () => $('view-globe').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1006,21 +1080,28 @@ function buildNav() {
   const link = (href, route, label, title) =>
     `<li><a href="${href}" data-route="${route}"${title ? ` title="${esc(title)}"` : ''}>${label}</a></li>`;
 
-  let home = '';
-  if (latest) home += link('#' + esc(latest.id), 'latest', 'Latest', latest.title);
-  home += link('#globe', 'globe', 'Map');
-  home += link('#index', 'index', 'Index');
-
+  const explore = (latest ? link('#' + esc(latest.id), 'latest', 'Latest', latest.title) : '') +
+    link('#globe', 'globe', 'Map') + link('#index', 'index', 'Index') + link('#favorites', 'favorites', 'Favorites');
   const projects = BY_DATE.map(c => link('#' + esc(c.id), esc(c.id), esc(c.title))).join('');
   const info = link('#about', 'about', 'About') + link('#contact', 'contact', 'Contact');
 
+  /* the sidebar: Home on its own, then Explore, Projects and Info */
   nav.innerHTML =
-    `<li class="sec"><div class="head"><a href="#home" data-route="home">Home</a></div>` +
-      `<div class="subs"><ul>${home}</ul></div></li>` +
+    `<li class="sec"><div class="head"><a href="#home" data-route="home">Home</a></div></li>` +
+    `<li class="sec"><div class="head" tabindex="0">Explore</div>` +
+      `<div class="subs"><ul>${explore}</ul></div></li>` +
     `<li class="sec"><div class="head" tabindex="0">Projects</div>` +
       `<div class="subs"><ul>${projects}</ul></div></li>` +
     `<li class="sec"><div class="head" tabindex="0">Info</div>` +
       `<div class="subs"><ul>${info}</ul></div></li>`;
+
+  /* the same links as a row on the Home page (that page has no sidebar) */
+  const sec = (label, list) =>
+    `<div class="hn-sec"><div class="hn-head has-subs" tabindex="0" role="button" aria-haspopup="true">${label}</div>` +
+    `<div class="hn-subs"><ul>${list}</ul></div></div>`;
+  $('homeNav').innerHTML =
+    `<div class="hn-sec"><a class="hn-head" href="#home" data-route="home">Home</a></div>` +
+    sec('Explore', explore) + sec('Projects', projects) + sec('Info', info);
 }
 
 /* Every name in the sidebar stays on one line. When you hover the sidebar it
@@ -1044,6 +1125,19 @@ nav.addEventListener('click', e => {
   a.blur();                                  // so keyboard focus doesn't hold the sidebar open
 });
 sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'));
+/* Home page menu on touch screens: tap a heading to open its list */
+$('homeNav').addEventListener('click', e => {
+  const head = e.target.closest('.hn-head.has-subs');
+  if (head) {
+    const sec = head.parentElement, was = sec.classList.contains('open');
+    document.querySelectorAll('#homeNav .hn-sec.open').forEach(x => x.classList.remove('open'));
+    if (!was) sec.classList.add('open');
+  } else if (e.target.closest('a')) {
+    document.querySelectorAll('#homeNav .hn-sec.open').forEach(x => x.classList.remove('open'));
+    if (document.activeElement) document.activeElement.blur();
+  }
+});
+document.addEventListener('click', e => { if (!e.target.closest('#homeNav')) document.querySelectorAll('#homeNav .hn-sec.open').forEach(x => x.classList.remove('open')); });
 
 function showView(name) {
   views.forEach(v => $('view-' + v).classList.toggle('on', v === name));
@@ -1860,6 +1954,7 @@ function route() {
   hidePeek();
   closePop();
   if (target === 'about') showView('about');
+  else if (target === 'favorites') showView('favorites');
   else if (target === 'contact') showView('contact');
   else if (target === 'globe' || target === 'map') { showView('globe'); openGlobe(); }
   else if (target === 'index') { sxLoad(qi < 0 ? '' : raw.slice(qi + 1)); renderIndex(); showView('index'); }
@@ -1870,9 +1965,10 @@ function route() {
     buildMarquee();
   }
 
-  nav.querySelectorAll('[data-route]').forEach(a => {
+  document.querySelectorAll('#nav [data-route], #homeNav [data-route]').forEach(a => {
     a.classList.toggle('active', a.dataset.route === target);
   });
+  document.querySelectorAll('#homeNav .hn-sec.open').forEach(x => x.classList.remove('open'));
   nav.classList.remove('open');
   $('menuToggle').setAttribute('aria-expanded', 'false');
   window.scrollTo(0, 0);
@@ -2113,6 +2209,142 @@ requestAnimationFrame(frame);
     window.addEventListener('resize', () => { size(); wake(); });
     size(); wake();
   } catch (_) {}
+})();
+
+/* ---------- background music ----------
+   A small control sits top right on every page. By default it plays a soft,
+   generated ambient pad (no audio file needed). To use your own track instead,
+   upload an mp3 and set  music: "audio/yourtrack.mp3"  in SETTINGS in events.js.
+   Browsers only allow sound after a click, so it starts when you press the
+   button, and if you left it on last time it picks up again on your first click. */
+(function music() {
+  const box = $('music'), btn = $('musicBtn'), vol = $('musicVol'), label = $('musicLabel');
+  const store = {
+    get: k => { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} }
+  };
+  let want = store.get('aa-music') === '1';
+  let level = store.get('aa-vol'); level = level === null ? 0.4 : clamp(parseFloat(level) || 0, 0, 1);
+  vol.value = Math.round(level * 100);
+  let engine = null, playing = false;
+
+  /* --- a generated ambient pad: slow chords, a soft filter that breathes, and the odd bell --- */
+  function makeAmbient() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    const ctx = new AC();
+    const master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor();
+    master.connect(comp); comp.connect(ctx.destination);
+    // a made-up "room": decaying noise, used as reverb
+    const len = ctx.sampleRate * 4, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6); }
+    const verb = ctx.createConvolver(); verb.buffer = ir;
+    const wet = ctx.createGain(); wet.gain.value = 0.55;
+    verb.connect(wet); wet.connect(master);
+    const dry = ctx.createGain(); dry.gain.value = 0.7; dry.connect(master);
+    const bus = ctx.createGain(); bus.connect(dry); bus.connect(verb);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1100; lp.Q.value = 0.4;
+    lp.connect(bus);
+    const lfo = ctx.createOscillator(), lfoAmt = ctx.createGain();
+    lfo.frequency.value = 0.06; lfoAmt.gain.value = 450; lfo.connect(lfoAmt); lfoAmt.connect(lp.frequency); lfo.start();
+
+    const chords = [
+      [130.81, 164.81, 196.00, 246.94, 293.66],      // C maj 9
+      [110.00, 130.81, 164.81, 196.00, 246.94],      // A min 9
+      [87.31, 130.81, 174.61, 220.00, 261.63],       // F maj 7
+      [98.00, 146.83, 196.00, 220.00, 246.94]        // G 6/9
+    ];
+    const bells = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+    let step = 0, timers = [], live = [], stopped = false;
+
+    function chord() {
+      if (stopped) return;
+      const t = ctx.currentTime, hold = 16, g = ctx.createGain();
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.16, t + 5); g.gain.setValueAtTime(0.16, t + hold - 3); g.gain.linearRampToValueAtTime(0, t + hold + 4);
+      g.connect(lp);
+      chords[step % chords.length].forEach(f => {
+        [['triangle', -5], ['sine', 6]].forEach(([type, cents]) => {
+          const o = ctx.createOscillator(); o.type = type; o.frequency.value = f; o.detune.value = cents;
+          o.connect(g); o.start(t); o.stop(t + hold + 4.2); live.push(o);
+        });
+      });
+      step++;
+      timers.push(setTimeout(chord, hold * 1000));
+    }
+    function bell() {
+      if (stopped) return;
+      const t = ctx.currentTime, f = bells[Math.floor(Math.random() * bells.length)];
+      const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05 + Math.random() * 0.03, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 5);
+      g.connect(verb); g.connect(bus);
+      [[1, 1], [2.01, 0.25]].forEach(([m, a]) => {
+        const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f * m;
+        const og = ctx.createGain(); og.gain.value = a; o.connect(og); og.connect(g); o.start(t); o.stop(t + 5.2); live.push(o);
+      });
+      timers.push(setTimeout(bell, 4000 + Math.random() * 6000));
+    }
+    return {
+      start(v) {
+        if (ctx.state === 'suspended') ctx.resume();
+        stopped = false; chord(); timers.push(setTimeout(bell, 3500));
+        master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(v * 0.5, ctx.currentTime, 1.2);
+      },
+      volume(v) { master.gain.setTargetAtTime(v * 0.5, ctx.currentTime, 0.15); },
+      stop() {
+        stopped = true; timers.forEach(clearTimeout); timers = [];
+        master.gain.setTargetAtTime(0, ctx.currentTime, 0.5);
+        setTimeout(() => { live.forEach(o => { try { o.stop(); } catch (_) {} }); live = []; ctx.suspend(); }, 2200);
+      },
+      pause(on) { if (on) ctx.suspend(); else if (!stopped) ctx.resume(); }
+    };
+  }
+
+  /* --- or your own audio file --- */
+  function makeFile(src) {
+    const a = new Audio(Array.isArray(src) ? src[0] : src);
+    a.loop = true; a.preload = 'none'; a.volume = 0;
+    let fade = 0;
+    const ramp = to => { clearInterval(fade); fade = setInterval(() => {
+      const d = to - a.volume; if (Math.abs(d) < 0.02) { a.volume = clamp(to, 0, 1); clearInterval(fade); if (to === 0) a.pause(); } else a.volume = clamp(a.volume + d * 0.2, 0, 1);
+    }, 60); };
+    return {
+      start(v) { const p = a.play(); if (p && p.catch) p.catch(() => {}); ramp(v); },
+      volume(v) { a.volume = clamp(v, 0, 1); },
+      stop() { ramp(0); },
+      pause(on) { if (on) a.pause(); else if (playing) a.play().catch(() => {}); }
+    };
+  }
+
+  function paint() {
+    box.classList.toggle('on', want);
+    box.classList.toggle('playing', playing);
+    btn.setAttribute('aria-pressed', String(want));
+    btn.setAttribute('aria-label', want ? 'Pause background music' : 'Play background music');
+    label.textContent = want ? 'Music on' : 'Music off';
+  }
+  function begin() {
+    if (!engine) engine = CFG.music ? makeFile(CFG.music) : makeAmbient();
+    if (!engine) { want = false; paint(); return; }
+    engine.start(level); playing = true; paint();
+  }
+  function end() { if (engine) engine.stop(); playing = false; paint(); }
+
+  btn.addEventListener('click', () => {
+    if (want && !playing) { begin(); return; }       // it was left on last time: this click just gets it going
+    want = !want; store.set('aa-music', want ? '1' : '0');
+    if (want) begin(); else end();
+  });
+  vol.addEventListener('input', () => { level = vol.value / 100; store.set('aa-vol', String(level)); if (engine && playing) engine.volume(level); });
+  if (want) {                                         // remembered "on": start at the first click or key press
+    const kick = e => {
+      if (e.target && e.target.closest && e.target.closest('#music')) return;
+      document.removeEventListener('pointerdown', kick, true); document.removeEventListener('keydown', kick, true);
+      if (want && !playing) begin();
+    };
+    document.addEventListener('pointerdown', kick, true); document.addEventListener('keydown', kick, true);
+  }
+  document.addEventListener('visibilitychange', () => { if (engine && playing) engine.pause(document.hidden); });
+  paint();
 })();
 </script>
 </body>
