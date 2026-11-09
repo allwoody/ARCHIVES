@@ -3,16 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<img>allwood.png</img>
+<title>Allwood Archives</title>
 <meta name="description" content="Allwood Archives: a portfolio of selected work.">
 <style>
   :root {
-    --bg: #ffffff;
-    --ink: #111111;
-    --muted: #8a8a8a;
-    --tile: #ececec;
+    --bg: #dedad1;        /* background. Darker: #d8d4ca   Lighter: #e4e0d8 */
+    --ink: #2a2824;       /* main text: a soft dark, not pure black */
+    --muted: #5f5b53;     /* menu + small text */
+    --tile: #cdc9bf;      /* boxes behind photos / placeholders */
+    --ph: #7d776c;        /* text on placeholder boxes */
+    --line: #cbc7bc;
+    --panel: #e6e2da;     /* info window in the fullscreen viewer */
     --sidebar: 250px;
-    --logo-width: 150px;   /* change this number to make your logo bigger or smaller */
+    --logo-width: 150px;  /* change this number to make your logo bigger or smaller */
+    --m-h: clamp(190px, 54vh, 620px);   /* height of the photos in the Home marquee */
+    --m-gap: 18px;                      /* space between marquee photos */
+    --gap: 10px;                        /* space between photos in a collection */
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -44,20 +50,19 @@
   }
   .logo:hover { color: var(--ink); }
   .logo img { display: block; width: var(--logo-width); max-width: 100%; height: auto; }
+
   .nav { list-style: none; margin: 0; padding: 0; }
   .nav li { margin: 0 0 9px; }
-  .nav a, .nav button {
+  .nav a {
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-    text-align: left;
     transition: color 0.15s;
   }
-  .nav a:hover, .nav button:hover,
-  .nav a.active, .nav button.active { color: var(--ink); }
+  .nav a:hover, .nav a.active { color: var(--ink); }
   .nav .group {
-    margin-top: 28px; margin-bottom: 10px;
+    margin-top: 30px; margin-bottom: 10px;
     text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink);
   }
@@ -68,38 +73,117 @@
   main {
     margin-left: var(--sidebar);
     min-height: 100vh;
-    padding: 36px 36px 0 8px;
+    padding: 36px 0 0 8px;
     display: flex; flex-direction: column;
+    min-width: 0;
   }
-  .view { display: none; flex: 1; }
+  .view { display: none; flex: 1; padding-right: 36px; }
   .view.on { display: block; }
+  #view-home { padding-right: 0; }
+  #view-home.on { display: flex; align-items: center; }
 
+  /* ---------- home marquee (drag it, or let it drift) ---------- */
+  .marquee {
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: pan-y;          /* sideways = drag the row, up/down = scroll the page */
+    user-select: none; -webkit-user-select: none;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+  }
+  .marquee.dragging { cursor: grabbing; }
+  .marquee.dragging a { pointer-events: none; }
+  .track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+  .group { display: flex; flex-shrink: 0; }
+  .m-item {
+    display: block;
+    flex-shrink: 0;
+    margin-right: var(--m-gap);
+    width: calc(var(--m-h) * 16 / 9);
+    text-decoration: none;
+  }
+  .m-img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: var(--m-h);
+    background: var(--tile);
+    overflow: hidden;
+  }
+  .m-img img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; }
+  .m-img .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ph); letter-spacing: 0.12em; font-size: 12px; text-transform: uppercase;
+  }
+  .m-cap {
+    display: flex; gap: 10px;
+    margin-top: 12px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
+    color: var(--ink);
+  }
+  .m-cap span { color: var(--muted); }
+  .m-item:hover .m-cap span { color: var(--ink); }
+
+  /* ---------- collection page ---------- */
+  .collection-head { margin: 0 0 26px; }
+  .ch-title {
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
+  }
+  .ch-meta {
+    margin-top: 6px;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
+    color: var(--muted);
+  }
+  .ch-desc {
+    max-width: 560px;
+    margin: 16px 0 0;
+    font-size: 14px; line-height: 1.6;
+    color: var(--ink);
+  }
+
+  /* photo layouts. Pick one per collection with  layout: "grid" | "square" | "wide" | "masonry"  */
   .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: var(--gap);
+    grid-template-columns: repeat(var(--cols, 3), 1fr);
   }
+  .layout-grid   { --cols: 3; --ratio: 3 / 2; }   /* 3 across, every photo cropped to the same shape */
+  .layout-square { --cols: 4; --ratio: 1 / 1; }   /* 4 across, square tiles */
+  .layout-wide   { --cols: 2; --ratio: 16 / 9; }  /* 2 across, big cinematic tiles */
+  .layout-masonry {                               /* 3 columns, photos keep their own shape (no cropping) */
+    display: block;
+    column-count: 3;
+    column-gap: var(--gap);
+  }
+  .layout-masonry .tile { margin-bottom: var(--gap); break-inside: avoid; }
+  .layout-masonry .tile img { height: auto; }
+  .layout-masonry .tile.r0 { aspect-ratio: 3 / 2; }
+  .layout-masonry .tile.r1 { aspect-ratio: 2 / 3; }
+  .layout-masonry .tile.r2 { aspect-ratio: 1 / 1; }
+  .layout-masonry .tile.r3 { aspect-ratio: 4 / 5; }
+
   .tile {
     position: relative;
     display: block; width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: var(--ratio, auto);
     background: var(--tile);
     overflow: hidden;
+    cursor: zoom-in;
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tile .ph {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    color: #b5b5b5; letter-spacing: 0.12em; font-size: 12px;
+    color: var(--ph); letter-spacing: 0.12em; font-size: 12px;
   }
-  .tile .hint {
-    position: absolute; left: 10px; bottom: 8px;
-    color: #fff; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-    opacity: 0; transition: opacity 0.15s;
-    text-shadow: 0 0 6px rgba(0,0,0,0.5);
-  }
-  .tile:hover .hint { opacity: 1; }
 
+  /* ---------- text pages ---------- */
   .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
   .text-page h1 {
     font-size: 13px; font-weight: normal; text-transform: uppercase;
@@ -109,19 +193,42 @@
   .text-page a { text-decoration: underline; text-underline-offset: 3px; }
 
   footer {
-    padding: 56px 0 28px;
+    padding: 56px 36px 28px 0;
     font-size: 11px; color: var(--muted);
   }
 
-  /* ---------- lightbox ---------- */
+  /* ---------- hover preview (desktop): photo goes fullscreen while you hover it ---------- */
+  .peek {
+    position: fixed; inset: 0; z-index: 40;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.18s ease, visibility 0.18s;
+    pointer-events: none;            /* so the photo underneath keeps the hover */
+  }
+  .peek.on { opacity: 1; visibility: visible; }
+  .peek img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .peek .ph-big {
+    width: min(100%, 1100px); aspect-ratio: 16 / 9;
+    background: var(--tile);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ph); letter-spacing: 0.12em;
+  }
+
+  /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(255,255,255,0.97);
+    background: rgba(222, 218, 209, 0.98);
     display: none;
-    align-items: center; justify-content: center;
-    padding: 56px 72px;
   }
-  .lb.on { display: flex; }
+  .lb.on { display: flex; flex-direction: row; }
+  .lb-main {
+    position: relative;
+    flex: 1; min-width: 0;
+    padding: 56px 72px;
+    display: flex; align-items: center; justify-content: center;
+  }
   .lb-stage {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
@@ -131,45 +238,82 @@
     width: min(100%, 1100px); aspect-ratio: 16 / 9;
     background: var(--tile);
     display: flex; align-items: center; justify-content: center;
-    color: #b5b5b5; letter-spacing: 0.12em;
+    color: var(--ph); letter-spacing: 0.12em;
   }
-  .lb button.ctl {
-    position: absolute; font-size: 12px; letter-spacing: 0.06em;
+  .lb button.ctl2 {
+    position: absolute; z-index: 2;
+    font-size: 12px; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--muted);
   }
-  .lb button.ctl:hover { color: var(--ink); }
-  .lb .close { top: 22px; right: 28px; }
+  .lb button.ctl2:hover, .lb button.ctl2[aria-pressed="true"] { color: var(--ink); }
+  .lb .close   { top: 22px; right: 28px; }
+  .lb .infobtn { top: 22px; right: 92px; }
   .lb .prev { left: 22px; top: 50%; transform: translateY(-50%); }
   .lb .next { right: 22px; top: 50%; transform: translateY(-50%); }
   .lb .count { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--muted); }
 
+  .lb-info {
+    display: none;
+    width: 290px; flex-shrink: 0;
+    margin: 64px 28px 28px 0;
+    padding: 20px;
+    align-self: flex-start;
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    font-size: 12px; line-height: 1.5;
+  }
+  .lb.info-on .lb-info { display: block; }
+  .i-sec { margin-bottom: 20px; }
+  .i-sec:last-child { margin-bottom: 0; }
+  .i-title { text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .i-head { text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-size: 11px; margin-bottom: 8px; }
+  .i-row { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .i-row span:first-child { color: var(--muted); flex-shrink: 0; }
+  .i-row span:last-child { text-align: right; }
+  .i-desc { margin: 12px 0 0; }
+  .i-sec .i-desc:first-child { margin-top: 0; }
+
   /* ---------- tablet / mobile ---------- */
   @media (max-width: 1000px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
+    .layout-grid   { --cols: 2; }
+    .layout-square { --cols: 3; }
+    .layout-masonry { column-count: 2; }
+  }
+  @media (max-width: 900px) {
+    .lb.on { flex-direction: column; }
+    .lb-main { padding: 56px 12px 8px; }
+    .lb-info { width: auto; margin: 0 12px 12px; max-height: 38vh; align-self: stretch; }
+    .lb .prev { left: 6px; } .lb .next { right: 6px; }
   }
   @media (max-width: 720px) {
     .sidebar {
       position: sticky; top: 0; bottom: auto; width: 100%;
       padding: 16px 18px; overflow: visible;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--line);
     }
     .logo { margin: 0; }
     .logo img { width: min(var(--logo-width), 120px); }
     .menu-toggle { display: block; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
     .nav { display: none; width: 100%; padding-top: 22px; }
     .nav.open { display: block; }
-    main { margin-left: 0; padding: 8px 12px 0; }
-    .grid { grid-template-columns: 1fr; gap: 8px; }
-    .lb { padding: 56px 12px; }
-    .lb .prev { left: 6px; } .lb .next { right: 6px; }
+    main { margin-left: 0; padding: 12px 0 0 12px; }
+    .view { padding-right: 12px; }
+    footer { padding-right: 12px; }
+    .layout-grid, .layout-wide { --cols: 1; }
+    .layout-square { --cols: 2; }
+    .layout-masonry { column-count: 2; }
+    :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
   }
 </style>
 </head>
 <body>
 
 <aside class="sidebar">
-  <a class="logo" href="#" id="logo">
-    <!-- Your logo goes here: upload it to the images folder as logo.png, or change the src below -->
+  <a class="logo" href="#home" id="logo">
+    <!-- LOGO: upload your logo to the images folder as logo.png, or change the src below -->
     <img src="images/logo.png" alt="Allwood Archives"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
     <span class="logo-text" style="display:none">Allwood<br>Archives</span>
@@ -179,12 +323,24 @@
 </aside>
 
 <main>
-  <!-- gallery view -->
-  <section class="view on" id="view-gallery">
+  <!-- home: marquee of cover photos -->
+  <section class="view on" id="view-home">
+    <div class="marquee" id="marquee">
+      <div class="track" id="track"></div>
+    </div>
+  </section>
+
+  <!-- collection: photos for one event -->
+  <section class="view" id="view-collection">
+    <div class="collection-head">
+      <div class="ch-title" id="collTitle"></div>
+      <div class="ch-meta" id="collMeta"></div>
+      <p class="ch-desc" id="collDesc"></p>
+    </div>
     <div class="grid" id="grid"></div>
   </section>
 
-  <!-- about view -->
+  <!-- about -->
   <section class="view" id="view-about">
     <div class="text-page">
       <h1>About</h1>
@@ -193,7 +349,7 @@
     </div>
   </section>
 
-  <!-- contact view -->
+  <!-- contact -->
   <section class="view" id="view-contact">
     <div class="text-page">
       <h1>Contact</h1>
@@ -205,55 +361,157 @@
   <footer>&copy; <span id="yr">2026</span> Allwood Archives. All rights reserved.</footer>
 </main>
 
+<!-- hover preview -->
+<div class="peek" id="peek" aria-hidden="true"><div id="peekStage"></div></div>
+
 <!-- fullscreen viewer -->
 <div class="lb" id="lb" aria-hidden="true">
-  <button class="ctl close" id="lbClose">Close</button>
-  <button class="ctl prev" id="lbPrev" aria-label="Previous">Prev</button>
-  <div class="lb-stage" id="lbStage"></div>
-  <button class="ctl next" id="lbNext" aria-label="Next">Next</button>
-  <div class="count" id="lbCount"></div>
+  <button class="ctl2 infobtn" id="lbInfoBtn" aria-pressed="true">Info</button>
+  <button class="ctl2 close" id="lbClose">Close</button>
+  <div class="lb-main" id="lbMain">
+    <button class="ctl2 prev" id="lbPrev" aria-label="Previous photo">Prev</button>
+    <div class="lb-stage" id="lbStage"></div>
+    <button class="ctl2 next" id="lbNext" aria-label="Next photo">Next</button>
+    <div class="count" id="lbCount"></div>
+  </div>
+  <aside class="lb-info" id="lbInfo"></aside>
 </div>
 
 <script>
 /* ============================================================
    EDIT THIS SECTION
-   - CATEGORIES: the page links in the left menu.
-   - ITEMS: one entry per tile. Put your images in an "images"
-     folder in the repo, then set src to e.g. "images/piece-1.jpg".
-     Leave src empty to show a grey placeholder tile.
+
+   Each event below is one collection. It becomes:
+     - one cover photo in the Home marquee
+     - a link in the left menu under PROJECTS
+     - its own page of photos
+
+   EVENT FIELDS
+     id           short lowercase name, no spaces
+     title        name shown on the site
+     date         shown on the page and in the info window
+     location     shown on the page and in the info window
+     description  a sentence or two about the event
+     layout       how the photos are arranged:
+                    "grid"    3 across, all cropped to the same shape
+                    "square"  4 across, square tiles
+                    "wide"    2 across, large widescreen tiles
+                    "masonry" 3 columns, photos keep their own shape
+     gear         camera + lens used for the whole event (optional).
+                  It shows in the info window for every photo,
+                  unless a photo has its own camera or lens.
+     cover        the single photo shown on Home.
+                  Leave "" to use the first photo in the list.
+     photos       the photos, in the order you want them on the grid.
+
+   PHOTO FIELDS (all optional except src)
+     A photo can be just a path:      "images/event-one/01.jpg"
+     or a path plus info:
+       { src: "images/event-one/01.jpg",
+         caption: "Opening night",
+         focal: "35mm", aperture: "f/2.8", shutter: "1/250s", iso: "400",
+         camera: "...", lens: "..." }          <- only if different from gear
+     Anything you leave out is simply hidden in the info window.
+     Leave src as "" to show a grey placeholder.
+
+   Put your images in the "images" folder in your repo, one
+   sub-folder per event (images/event-one/, images/event-two/ ...).
    ============================================================ */
-const CATEGORIES = [
-  { id: "collection-one",   label: "Collection One" },
-  { id: "collection-two",   label: "Collection Two" },
-  { id: "collection-three", label: "Collection Three" }
+const COLLECTIONS = [
+  {
+    id: "event-one",
+    title: "Event One",
+    date: "January 2026",
+    location: "City, State",
+    description: "A short description of this event. What it was, who was there, what you shot.",
+    layout: "grid",
+    gear: { camera: "Camera model", lens: "Lens" },
+    cover: "",
+    photos: [
+      { src: "", caption: "Optional note about this photo", focal: "35mm", aperture: "f/2.8", shutter: "1/250s", iso: "400" },
+      { src: "", focal: "50mm", aperture: "f/1.8", shutter: "1/500s", iso: "200" },
+      { src: "", focal: "35mm", aperture: "f/4", shutter: "1/125s", iso: "800" },
+      "", "", "", "", "", ""
+    ]
+  },
+  {
+    id: "event-two",
+    title: "Event Two",
+    date: "February 2026",
+    location: "City, State",
+    description: "A short description of this event.",
+    layout: "masonry",
+    gear: { camera: "Camera model", lens: "Lens" },
+    cover: "",
+    photos: ["", "", "", "", "", "", "", ""]
+  },
+  {
+    id: "event-three",
+    title: "Event Three",
+    date: "March 2026",
+    location: "City, State",
+    description: "A short description of this event.",
+    layout: "square",
+    gear: { camera: "Camera model", lens: "Lens" },
+    cover: "",
+    photos: ["", "", "", "", "", "", "", ""]
+  },
+  {
+    id: "event-four",
+    title: "Event Four",
+    date: "April 2026",
+    location: "City, State",
+    description: "A short description of this event.",
+    layout: "wide",
+    gear: { camera: "Camera model", lens: "Lens" },
+    cover: "",
+    photos: ["", "", "", "", "", ""]
+  },
+  {
+    id: "event-five",
+    title: "Event Five",
+    date: "May 2026",
+    location: "City, State",
+    description: "A short description of this event.",
+    layout: "grid",
+    gear: { camera: "Camera model", lens: "Lens" },
+    cover: "",
+    photos: ["", "", "", "", "", ""]
+  }
 ];
 
-const ITEMS = [
-  { cat: "collection-one", title: "Untitled 01", src: "" },
-  { cat: "collection-one", title: "Untitled 02", src: "" },
-  { cat: "collection-one", title: "Untitled 03", src: "" },
-  { cat: "collection-one", title: "Untitled 04", src: "" },
-  { cat: "collection-one", title: "Untitled 05", src: "" },
-  { cat: "collection-one", title: "Untitled 06", src: "" },
-  { cat: "collection-two", title: "Untitled 07", src: "" },
-  { cat: "collection-two", title: "Untitled 08", src: "" },
-  { cat: "collection-two", title: "Untitled 09", src: "" },
-  { cat: "collection-two", title: "Untitled 10", src: "" },
-  { cat: "collection-three", title: "Untitled 11", src: "" },
-  { cat: "collection-three", title: "Untitled 12", src: "" }
-];
+const MARQUEE_SPEED = 50;   // how fast the Home row drifts, in pixels per second (lower = slower)
+const PEEK_DELAY    = 140;  // how long you hover a photo before it goes fullscreen (milliseconds)
 /* ============================================================ */
 
-const nav = document.getElementById('nav');
-const grid = document.getElementById('grid');
-const views = { gallery: 'view-gallery', about: 'view-about', contact: 'view-contact' };
-let current = [];   // items currently shown
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const pad = n => String(n).padStart(2, '0');
+
+const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
+const views = ['home', 'collection', 'about', 'contact'];
+const homeOn = () => $('view-home').classList.contains('on');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+/* a photo can be written as just a path or as an object; make them all objects */
+COLLECTIONS.forEach(c => {
+  c.photos = c.photos.map(p => (typeof p === 'string' ? { src: p } : p));
+});
+
+let currentColl = null;
 let lbIndex = 0;
 
+function coverOf(c) {
+  return c.cover || (c.photos.find(p => p.src) || {}).src || '';
+}
+
+/* ---------- nav ---------- */
 function buildNav() {
-  let html = '';
-  CATEGORIES.forEach(c => {
-    html += `<li><a href="#${c.id}" data-route="${c.id}">${c.label}</a></li>`;
+  let html = `<li><a href="#home" data-route="home">Home</a></li>`;
+  html += `<li class="group">Projects</li>`;
+  COLLECTIONS.forEach(c => {
+    html += `<li><a href="#${esc(c.id)}" data-route="${esc(c.id)}">${esc(c.title)}</a></li>`;
   });
   html += `<li class="group">Info</li>`;
   html += `<li><a href="#about" data-route="about">About</a></li>`;
@@ -262,88 +520,297 @@ function buildNav() {
 }
 
 function showView(name) {
-  Object.values(views).forEach(id => document.getElementById(id).classList.remove('on'));
-  document.getElementById(views[name]).classList.add('on');
+  views.forEach(v => $('view-' + v).classList.toggle('on', v === name));
 }
 
-function renderGrid(catId) {
-  current = ITEMS.filter(i => i.cat === catId);
+/* ---------- home marquee ----------
+   One row of cover photos that drifts left forever. Drag it with the
+   mouse or your finger (either direction) and it carries on from where
+   you let go. The row is built twice back to back and wraps around,
+   so there is never a visible seam. */
+let groupW = 0, offset = 0, vel = 0;
+let dragging = false, moved = false, hovering = false, suppressClick = false;
+let startX = 0, startOffset = 0, lastX = 0, lastT = 0, lastFrame = performance.now();
+
+function makeItem(c, isCopy) {
+  const a = document.createElement('a');
+  a.className = 'm-item';
+  a.href = '#' + c.id;
+  a.draggable = false;
+  a.setAttribute('aria-label', 'Open ' + c.title);
+  if (isCopy) { a.tabIndex = -1; a.setAttribute('aria-hidden', 'true'); }
+  const src = coverOf(c);
+  const n = c.photos.length;
+  a.innerHTML =
+    `<span class="m-img">` +
+      (src ? `<img src="${esc(src)}" alt="${esc(c.title)}" draggable="false">`
+           : `<span class="ph">${esc(c.title)}</span>`) +
+    `</span>` +
+    `<span class="m-cap">${esc(c.title)}<span>${n} photo${n === 1 ? '' : 's'}</span></span>`;
+  return a;
+}
+
+function wrapOffset() {
+  if (groupW) offset = ((offset % groupW) + groupW) % groupW;
+}
+
+function buildMarquee() {
+  track.innerHTML = '';
+  if (!COLLECTIONS.length) return;
+
+  const group = document.createElement('div');
+  group.className = 'group';
+  COLLECTIONS.forEach(c => group.appendChild(makeItem(c, false)));
+  track.appendChild(group);
+
+  const setW = group.offsetWidth;            // needs the Home page to be visible
+  if (!setW) return;
+
+  const reps = Math.max(1, Math.ceil(marquee.clientWidth / setW));
+  for (let r = 1; r < reps; r++) {
+    COLLECTIONS.forEach(c => group.appendChild(makeItem(c, true)));
+  }
+
+  const copy = group.cloneNode(true);
+  copy.setAttribute('aria-hidden', 'true');
+  copy.querySelectorAll('a').forEach(a => { a.tabIndex = -1; a.draggable = false; });
+  track.appendChild(copy);
+
+  groupW = group.offsetWidth;
+  wrapOffset();
+  track.style.transform = `translate3d(${-offset}px,0,0)`;
+}
+
+function frame(now) {
+  const dt = Math.min(0.05, (now - lastFrame) / 1000);
+  lastFrame = now;
+  if (homeOn() && groupW) {
+    if (!dragging) {
+      const base = (hovering || reduceMotion) ? 0 : MARQUEE_SPEED;   // pauses while the mouse is over it
+      offset += (base + vel) * dt;
+      vel *= Math.exp(-3.5 * dt);                                    // let-go momentum fades out
+      if (Math.abs(vel) < 2) vel = 0;
+    }
+    wrapOffset();
+    track.style.transform = `translate3d(${-offset}px,0,0)`;
+  }
+  requestAnimationFrame(frame);
+}
+
+marquee.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  dragging = true; moved = false;
+  startX = lastX = e.clientX;
+  startOffset = offset;
+  lastT = performance.now();
+  vel = 0;
+});
+marquee.addEventListener('pointermove', e => {
+  if (!dragging) return;
+  const dx = e.clientX - startX;
+  if (!moved && Math.abs(dx) > 5) {
+    moved = true;
+    marquee.classList.add('dragging');
+    try { marquee.setPointerCapture(e.pointerId); } catch (_) {}
+  }
+  if (!moved) return;
+  offset = startOffset - dx;
+  const now = performance.now(), dtm = (now - lastT) / 1000;
+  if (dtm > 0) vel = vel * 0.6 + (-(e.clientX - lastX) / dtm) * 0.4;
+  lastX = e.clientX; lastT = now;
+});
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  marquee.classList.remove('dragging');
+  if (performance.now() - lastT > 90) vel = 0;                       // held still before letting go
+  vel = Math.max(-2500, Math.min(2500, vel));
+  if (moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
+}
+marquee.addEventListener('pointerup', endDrag);
+marquee.addEventListener('pointercancel', endDrag);
+marquee.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hovering = true; });
+marquee.addEventListener('pointerleave', () => { hovering = false; });
+marquee.addEventListener('click', e => {                              // a drag should not count as a click
+  if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
+}, true);
+marquee.addEventListener('dragstart', e => e.preventDefault());
+marquee.addEventListener('wheel', e => {                              // trackpad side-swipe also moves it
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) { e.preventDefault(); offset += e.deltaX; }
+}, { passive: false });
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { if (homeOn()) buildMarquee(); }, 200);
+});
+
+/* ---------- hover preview (desktop only) ---------- */
+const peek = $('peek'), peekStage = $('peekStage');
+let peekTimer;
+function showPeek(p, idx) {
+  peekStage.innerHTML = p.src
+    ? `<img src="${esc(p.src)}" alt="">`
+    : `<div class="ph-big">${pad(idx + 1)}</div>`;
+  peek.classList.add('on');
+}
+function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
+
+/* ---------- collection page ---------- */
+function renderCollection(c) {
+  currentColl = c;
+  hidePeek();
+  $('collTitle').textContent = c.title;
+  $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
+    .filter(Boolean).join('  \u00b7  ');
+  $('collDesc').textContent = c.description || '';
+  $('collDesc').style.display = c.description ? '' : 'none';
+
+  const layout = ['grid', 'square', 'wide', 'masonry'].includes(c.layout) ? c.layout : 'grid';
+  grid.className = 'grid layout-' + layout;
   grid.innerHTML = '';
-  current.forEach((item, idx) => {
+
+  c.photos.forEach((p, idx) => {
     const b = document.createElement('button');
-    b.className = 'tile';
-    b.setAttribute('aria-label', 'View ' + item.title);
-    b.innerHTML = item.src
-      ? `<img src="${item.src}" alt="${item.title}" loading="lazy">`
-      : `<span class="ph">${String(idx + 1).padStart(2, '0')}</span>`;
-    b.innerHTML += `<span class="hint">View fullsize</span>`;
+    b.className = 'tile' + (layout === 'masonry' && !p.src ? ' r' + (idx % 4) : '');
+    b.setAttribute('aria-label', `View photo ${idx + 1} of ${c.title}`);
+    b.innerHTML = p.src
+      ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">`
+      : `<span class="ph">${pad(idx + 1)}</span>`;
     b.addEventListener('click', () => openLb(idx));
+    if (canHover) {
+      b.addEventListener('mouseenter', () => {
+        clearTimeout(peekTimer);
+        peekTimer = setTimeout(() => showPeek(p, idx), PEEK_DELAY);
+      });
+      b.addEventListener('mouseleave', hidePeek);
+    }
     grid.appendChild(b);
   });
 }
 
+/* ---------- routing ---------- */
 function route() {
   const hash = (location.hash || '').replace('#', '');
-  let target = hash || CATEGORIES[0].id;
+  let target = hash || 'home';
+  const coll = COLLECTIONS.find(c => c.id === target);
 
+  hidePeek();
   if (target === 'about') showView('about');
   else if (target === 'contact') showView('contact');
+  else if (coll) { renderCollection(coll); showView('collection'); }
   else {
-    if (!CATEGORIES.some(c => c.id === target)) target = CATEGORIES[0].id;
-    renderGrid(target);
-    showView('gallery');
+    target = 'home';
+    showView('home');
+    buildMarquee();
   }
 
   nav.querySelectorAll('[data-route]').forEach(a => {
     a.classList.toggle('active', a.dataset.route === target);
   });
   nav.classList.remove('open');
-  document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+  $('menuToggle').setAttribute('aria-expanded', 'false');
   window.scrollTo(0, 0);
 }
 
-/* ---- lightbox ---- */
-const lb = document.getElementById('lb');
-const stage = document.getElementById('lbStage');
-const count = document.getElementById('lbCount');
+/* ---------- fullscreen viewer + info window ---------- */
+const lb = $('lb'), lbStage = $('lbStage'), lbCount = $('lbCount'), lbInfo = $('lbInfo');
+let infoOpen = window.innerWidth > 900;     // starts open on computers, closed on phones
+
+function infoRow(label, value) {
+  return `<div class="i-row"><span>${esc(label)}</span><span>${esc(value)}</span></div>`;
+}
+function infoHTML(c, p) {
+  const gear = c.gear || {};
+  const pick = k => p[k] || gear[k] || '';
+  let h = `<div class="i-sec"><div class="i-title">${esc(c.title)}</div>`;
+  const date = p.date || c.date, loc = p.location || c.location;
+  if (date) h += infoRow('Date', date);
+  if (loc) h += infoRow('Location', loc);
+  if (c.description) h += `<p class="i-desc">${esc(c.description)}</p>`;
+  h += `</div>`;
+
+  const cam = [
+    ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
+    ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
+  ].map(([label, key]) => [label, pick(key)]).filter(r => r[1]);
+  if (cam.length) {
+    h += `<div class="i-sec"><div class="i-head">Camera</div>${cam.map(r => infoRow(r[0], r[1])).join('')}</div>`;
+  }
+  if (p.caption) {
+    h += `<div class="i-sec"><div class="i-head">Notes</div><p class="i-desc">${esc(p.caption)}</p></div>`;
+  }
+  return h;
+}
 
 function drawLb() {
-  const item = current[lbIndex];
-  stage.innerHTML = item.src
-    ? `<img src="${item.src}" alt="${item.title}">`
-    : `<div class="ph-big">${String(lbIndex + 1).padStart(2, '0')}</div>`;
-  count.textContent = `${lbIndex + 1} / ${current.length}`;
+  const photos = currentColl.photos;
+  const p = photos[lbIndex];
+  lbStage.innerHTML = p.src
+    ? `<img src="${esc(p.src)}" alt="${esc(p.caption || currentColl.title)}">`
+    : `<div class="ph-big">${pad(lbIndex + 1)}</div>`;
+  lbCount.textContent = `${lbIndex + 1} / ${photos.length}`;
+  lbInfo.innerHTML = infoHTML(currentColl, p);
 }
-function openLb(i) { lbIndex = i; drawLb(); lb.classList.add('on'); lb.setAttribute('aria-hidden', 'false'); }
-function closeLb() { lb.classList.remove('on'); lb.setAttribute('aria-hidden', 'true'); }
-function stepLb(d) { lbIndex = (lbIndex + d + current.length) % current.length; drawLb(); }
+function setInfo(open) {
+  infoOpen = open;
+  lb.classList.toggle('info-on', open);
+  $('lbInfoBtn').setAttribute('aria-pressed', open);
+}
+function openLb(i) {
+  hidePeek();
+  lbIndex = i;
+  setInfo(infoOpen);
+  drawLb();
+  lb.classList.add('on');
+  lb.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  lb.classList.remove('on');
+  lb.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+function stepLb(d) {
+  const n = currentColl.photos.length;
+  if (!n) return;
+  lbIndex = (lbIndex + d + n) % n;
+  drawLb();
+}
 
-document.getElementById('lbClose').addEventListener('click', closeLb);
-document.getElementById('lbPrev').addEventListener('click', () => stepLb(-1));
-document.getElementById('lbNext').addEventListener('click', () => stepLb(1));
-lb.addEventListener('click', e => { if (e.target === lb || e.target === stage) closeLb(); });
+$('lbClose').addEventListener('click', closeLb);
+$('lbPrev').addEventListener('click', () => stepLb(-1));
+$('lbNext').addEventListener('click', () => stepLb(1));
+$('lbInfoBtn').addEventListener('click', () => setInfo(!infoOpen));
+$('lbMain').addEventListener('click', e => { if (e.target === $('lbMain') || e.target === lbStage) closeLb(); });
 document.addEventListener('keydown', e => {
   if (!lb.classList.contains('on')) return;
   if (e.key === 'Escape') closeLb();
   if (e.key === 'ArrowLeft') stepLb(-1);
   if (e.key === 'ArrowRight') stepLb(1);
+  if (e.key === 'i' || e.key === 'I') setInfo(!infoOpen);
 });
+let swipeX = null;                                   // swipe left/right on a phone
+lbStage.addEventListener('touchstart', e => { swipeX = e.touches[0].clientX; }, { passive: true });
+lbStage.addEventListener('touchend', e => {
+  if (swipeX === null) return;
+  const dx = e.changedTouches[0].clientX - swipeX;
+  swipeX = null;
+  if (Math.abs(dx) > 50) stepLb(dx < 0 ? 1 : -1);
+}, { passive: true });
 
-/* ---- mobile menu ---- */
-document.getElementById('menuToggle').addEventListener('click', e => {
+/* ---------- mobile menu ---------- */
+$('menuToggle').addEventListener('click', e => {
   const open = nav.classList.toggle('open');
   e.currentTarget.setAttribute('aria-expanded', open);
 });
 
-document.getElementById('logo').addEventListener('click', e => {
-  e.preventDefault();
-  location.hash = CATEGORIES[0].id;
-});
-
-document.getElementById('yr').textContent = new Date().getFullYear();
+/* ---------- start ---------- */
+$('yr').textContent = new Date().getFullYear();
 buildNav();
 window.addEventListener('hashchange', route);
 route();
+requestAnimationFrame(frame);
 </script>
 </body>
 </html>
