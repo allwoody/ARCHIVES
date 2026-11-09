@@ -216,6 +216,23 @@
     color: var(--ph); letter-spacing: 0.12em;
   }
 
+  #peekStage {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* small camera-settings popup, bottom right of the enlarged photo */
+  .peek-info {
+    position: absolute; right: 28px; bottom: 28px;
+    max-width: 340px;
+    padding: 12px 14px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    font-size: 12px; line-height: 1.5;
+  }
+  .peek-info:empty { display: none; }
+  .peek-info .l1 { color: var(--ink); }
+  .peek-info .l2 { color: var(--muted); margin-top: 2px; letter-spacing: 0.02em; }
+
   /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
@@ -314,7 +331,7 @@
 <aside class="sidebar">
   <a class="logo" href="#home" id="logo">
     <!-- LOGO: upload your logo to the images folder as logo.png, or change the src below -->
-    <img src="images/allwood.png" alt="Allwood Archives"
+    <img src="images/logo.png" alt="Allwood Archives"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
     <span class="logo-text" style="display:none">Allwood<br>Archives</span>
   </a>
@@ -353,8 +370,8 @@
   <section class="view" id="view-contact">
     <div class="text-page">
       <h1>Contact</h1>
-      <p>For inquiries, email <a href="mailto:aidan.allwood@gmail.com">aidan.allwood@gmail.com</a>.</p>
-      <p><a href="#">Instagram</a><br><a href="#">Youtube</a></p>
+      <p>For inquiries, email <a href="mailto:you@example.com">you@example.com</a>.</p>
+      <p><a href="#">Instagram</a><br><a href="#">LinkedIn</a></p>
     </div>
   </section>
 
@@ -362,7 +379,10 @@
 </main>
 
 <!-- hover preview -->
-<div class="peek" id="peek" aria-hidden="true"><div id="peekStage"></div></div>
+<div class="peek" id="peek" aria-hidden="true">
+  <div id="peekStage"></div>
+  <div class="peek-info" id="peekInfo"></div>
+</div>
 
 <!-- fullscreen viewer -->
 <div class="lb" id="lb" aria-hidden="true">
@@ -481,7 +501,7 @@ const COLLECTIONS = [
 ];
 
 const MARQUEE_SPEED = 50;   // how fast the Home row drifts, in pixels per second (lower = slower)
-const PEEK_DELAY    = 140;  // how long you hover a photo before it goes fullscreen (milliseconds)
+const PEEK_DELAY    = 2500; // how long the cursor must rest on a photo before it goes fullscreen (1000 = 1 second)
 /* ============================================================ */
 
 const $ = id => document.getElementById(id);
@@ -646,12 +666,30 @@ window.addEventListener('resize', () => {
 });
 
 /* ---------- hover preview (desktop only) ---------- */
-const peek = $('peek'), peekStage = $('peekStage');
+const peek = $('peek'), peekStage = $('peekStage'), peekInfo = $('peekInfo');
 let peekTimer;
-function showPeek(p, idx) {
+
+/* condensed camera settings for the popup: two short lines, blanks skipped */
+function condensedGear(c, p) {
+  const gear = c.gear || {};
+  const pick = k => p[k] || gear[k] || '';
+  const iso = pick('iso');
+  const line1 = [pick('camera'), pick('lens')].filter(Boolean).join('  \u00b7  ');
+  const line2 = [
+    pick('focal'), pick('aperture'), pick('shutter'),
+    iso ? (/^\d+$/.test(String(iso).trim()) ? 'ISO ' + iso : iso) : ''
+  ].filter(Boolean).join('  \u00b7  ');
+  let h = '';
+  if (line1) h += `<div class="l1">${esc(line1)}</div>`;
+  if (line2) h += `<div class="l2">${esc(line2)}</div>`;
+  return h;
+}
+
+function showPeek(c, p, idx) {
   peekStage.innerHTML = p.src
     ? `<img src="${esc(p.src)}" alt="">`
     : `<div class="ph-big">${pad(idx + 1)}</div>`;
+  peekInfo.innerHTML = condensedGear(c, p);
   peek.classList.add('on');
 }
 function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
@@ -679,9 +717,17 @@ function renderCollection(c) {
       : `<span class="ph">${pad(idx + 1)}</span>`;
     b.addEventListener('click', () => openLb(idx));
     if (canHover) {
-      b.addEventListener('mouseenter', () => {
+      let ax = 0, ay = 0;                                   // where the cursor started resting
+      const arm = () => {
         clearTimeout(peekTimer);
-        peekTimer = setTimeout(() => showPeek(p, idx), PEEK_DELAY);
+        peekTimer = setTimeout(() => showPeek(c, p, idx), PEEK_DELAY);
+      };
+      b.addEventListener('mouseenter', e => { ax = e.clientX; ay = e.clientY; arm(); });
+      b.addEventListener('mousemove', e => {
+        if (peek.classList.contains('on')) return;          // already enlarged
+        if (Math.hypot(e.clientX - ax, e.clientY - ay) > 12) {   // cursor moved: start the wait over
+          ax = e.clientX; ay = e.clientY; arm();
+        }
       });
       b.addEventListener('mouseleave', hidePeek);
     }
