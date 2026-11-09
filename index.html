@@ -37,9 +37,35 @@
     position: fixed; top: 0; left: 0; bottom: 0;
     width: var(--sidebar);
     padding: 36px 32px;
-    overflow-y: auto;
+    overflow-x: hidden; overflow-y: auto;
     background: var(--bg);
     z-index: 20;
+    transition: width 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.28s ease;
+  }
+  /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
+  .scrim {
+    position: fixed; inset: 0; z-index: 19;
+    background: rgba(222, 218, 209, 0.35);
+    -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  /* hovering the sidebar widens it to fit the longest name and blurs the rest of the site */
+  @media (hover: hover) and (min-width: 721px) {
+    .sidebar:not(.closed):hover {
+      width: min(var(--sidebar-open, var(--sidebar)), 70vw);
+      box-shadow: 8px 0 28px rgba(0, 0, 0, 0.07);
+    }
+    .sidebar:not(.closed):hover ~ .scrim { opacity: 1; }
+  }
+  /* same thing for keyboard users tabbing through the menu */
+  @media (hover: hover) and (min-width: 721px) {
+    .sidebar:has(a:focus-visible) {
+      width: min(var(--sidebar-open, var(--sidebar)), 70vw);
+      box-shadow: 8px 0 28px rgba(0, 0, 0, 0.07);
+    }
+    .sidebar:has(a:focus-visible) ~ .scrim { opacity: 1; }
   }
   .logo {
     display: block;
@@ -52,20 +78,31 @@
   .logo img { display: block; width: var(--logo-width); max-width: 100%; height: auto; }
 
   .nav { list-style: none; margin: 0; padding: 0; }
-  .nav li { margin: 0 0 9px; }
+  .nav li { margin: 0 0 9px; white-space: nowrap; }
   .nav a {
+    display: inline-block; vertical-align: top;
+    max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;   /* one straight line, never wraps */
+    line-height: 1.4;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-    transition: color 0.15s;
+    transform-origin: left center;
+    transition: color 0.15s, transform 0.15s ease;
   }
   .nav a:hover, .nav a.active { color: var(--ink); }
-  .nav .group {
-    margin-top: 30px; margin-bottom: 10px;
+  @media (hover: hover) { .nav a:hover { transform: scale(1.08); } }   /* slight magnify on hover */
+
+  /* section headers: Home, Projects, Info */
+  .nav .head {
+    margin: 32px 0 12px;
+    font-size: 15px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink);
   }
+  .nav .head:first-child { margin-top: 0; }
+  .nav .head a { color: var(--ink); }
 
   .menu-toggle { display: none; }
 
@@ -182,6 +219,23 @@
     display: flex; align-items: center; justify-content: center;
     color: var(--ph); letter-spacing: 0.12em; font-size: 12px;
   }
+
+  /* ---------- index page (list of every event) ---------- */
+  .index { max-width: 900px; }
+  .ix-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 70px;
+    gap: 16px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
+  }
+  .ix-head { color: var(--muted); font-size: 11px; padding-top: 0; }
+  a.ix-row span:nth-child(n+2) { color: var(--muted); }
+  a.ix-row:hover span { color: var(--ink); }
+  .ix-row span:last-child { text-align: right; }
 
   /* ---------- text pages ---------- */
   .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
@@ -320,6 +374,8 @@
     .view { padding-right: 12px; }
     footer { padding-right: 12px; }
     .layout-grid, .layout-wide { --cols: 1; }
+    .ix-row { grid-template-columns: 1fr auto; }
+    .ix-row span:nth-child(3), .ix-row span:nth-child(4) { display: none; }
     .layout-square { --cols: 2; }
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
@@ -331,13 +387,14 @@
 <aside class="sidebar">
   <a class="logo" href="#home" id="logo">
     <!-- LOGO: upload your logo to the images folder as logo.png, or change the src below -->
-    <img src="images/allwood.png" alt="Allwood Archives"
+    <img src="images/logo.png" alt="Allwood Archives"
          onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
     <span class="logo-text" style="display:none">Allwood<br>Archives</span>
   </a>
   <button class="menu-toggle" id="menuToggle" aria-expanded="false">Menu</button>
   <ul class="nav" id="nav"></ul>
 </aside>
+<div class="scrim" aria-hidden="true"></div>
 
 <main>
   <!-- home: marquee of cover photos -->
@@ -357,6 +414,15 @@
     <div class="grid" id="grid"></div>
   </section>
 
+  <!-- index: a list of every event -->
+  <section class="view" id="view-index">
+    <div class="collection-head">
+      <div class="ch-title">Index</div>
+      <div class="ch-meta" id="indexMeta"></div>
+    </div>
+    <div class="index" id="indexList"></div>
+  </section>
+
   <!-- about -->
   <section class="view" id="view-about">
     <div class="text-page">
@@ -370,7 +436,7 @@
   <section class="view" id="view-contact">
     <div class="text-page">
       <h1>Contact</h1>
-      <p>For inquiries, email <a href="mailto:aidan.allwood@gmail.com">aidan.allwood@gmail.com</a>.</p>
+      <p>For inquiries, email <a href="mailto:you@example.com">you@example.com</a>.</p>
       <p><a href="#">Instagram</a><br><a href="#">LinkedIn</a></p>
     </div>
   </section>
@@ -412,6 +478,8 @@
      date         shown on the page and in the info window
      location     shown on the page and in the info window
      description  a sentence or two about the event
+     latest       put  latest: true,  on ONE event and the "Latest" link under
+                  Home opens it. (If none is marked, the last event is used.)
      layout       how the photos are arranged:
                     "grid"    3 across, all cropped to the same shape
                     "square"  4 across, square tiles
@@ -439,13 +507,13 @@
    ============================================================ */
 const COLLECTIONS = [
   {
-    id: "fayetteville-woodpeckers",
-    title: "Fayetteville Woodpeckers vs. Kannapolis Cannon Ballers",
-    date: "June 21, 2026",
-    location: "Segra Stadium",
-    description: "Exhibition Match between the Fayetteville Woodpeckers vs. Kannapolis Cannon Ballers.",
-    layout: "wide",
-    gear: { camera: "Sony A7III", lens: "Sony 70-200mm 2.8" },
+    id: "event-one",
+    title: "Event One",
+    date: "January 2026",
+    location: "City, State",
+    description: "A short description of this event. What it was, who was there, what you shot.",
+    layout: "grid",
+    gear: { camera: "Camera model", lens: "Lens" },
     cover: "",
     photos: [
       { src: "", caption: "Optional note about this photo", focal: "35mm", aperture: "f/2.8", shutter: "1/250s", iso: "400" },
@@ -491,6 +559,7 @@ const COLLECTIONS = [
     id: "event-five",
     title: "Event Five",
     date: "May 2026",
+    latest: true,
     location: "City, State",
     description: "A short description of this event.",
     layout: "grid",
@@ -509,7 +578,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&a
 const pad = n => String(n).padStart(2, '0');
 
 const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
-const views = ['home', 'collection', 'about', 'contact'];
+const views = ['home', 'index', 'collection', 'about', 'contact'];
 const homeOn = () => $('view-home').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -528,16 +597,35 @@ function coverOf(c) {
 
 /* ---------- nav ---------- */
 function buildNav() {
-  let html = `<li><a href="#home" data-route="home">Home</a></li>`;
-  html += `<li class="group">Projects</li>`;
+  const latest = COLLECTIONS.find(c => c.latest) || COLLECTIONS[COLLECTIONS.length - 1];
+  let html = `<li class="head"><a href="#home" data-route="home">Home</a></li>`;
+  if (latest) html += `<li><a href="#${esc(latest.id)}" data-route="latest" title="${esc(latest.title)}">Latest</a></li>`;
+  html += `<li><a href="#index" data-route="index">Index</a></li>`;
+  html += `<li class="head">Projects</li>`;
   COLLECTIONS.forEach(c => {
     html += `<li><a href="#${esc(c.id)}" data-route="${esc(c.id)}">${esc(c.title)}</a></li>`;
   });
-  html += `<li class="group">Info</li>`;
+  html += `<li class="head">Info</li>`;
   html += `<li><a href="#about" data-route="about">About</a></li>`;
   html += `<li><a href="#contact" data-route="contact">Contact</a></li>`;
   nav.innerHTML = html;
 }
+
+/* Every name in the sidebar stays on one line. When you hover the sidebar it
+   widens to fit the longest name (and the page behind it blurs), so nothing
+   is ever cut off. */
+const sidebar = document.querySelector('.sidebar');
+function measureSidebar() {
+  const base = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) || 250;
+  let widest = 0;
+  nav.querySelectorAll('a').forEach(a => { widest = Math.max(widest, a.scrollWidth); });
+  const needed = Math.ceil(widest * 1.1) + 64 + 8;      // +10% for the hover zoom, +64 for the sidebar's padding
+  document.documentElement.style.setProperty('--sidebar-open', Math.max(base, needed) + 'px');
+}
+/* after you pick a page the sidebar tucks away at once so you can see it;
+   move the mouse off and back on to open it again */
+nav.addEventListener('click', e => { if (e.target.closest('a')) sidebar.classList.add('closed'); });
+sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'));
 
 function showView(name) {
   views.forEach(v => $('view-' + v).classList.toggle('on', v === name));
@@ -695,6 +783,18 @@ function showPeek(c, p, idx) {
 function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
 
 /* ---------- collection page ---------- */
+function renderIndex() {
+  $('indexMeta').textContent = COLLECTIONS.length + (COLLECTIONS.length === 1 ? ' event' : ' events');
+  let h = `<div class="ix-row ix-head"><span>Event</span><span>Date</span><span>Location</span><span>Photos</span></div>`;
+  COLLECTIONS.forEach(c => {
+    h += `<a class="ix-row" href="#${esc(c.id)}">` +
+           `<span>${esc(c.title)}</span><span>${esc(c.date || '')}</span>` +
+           `<span>${esc(c.location || '')}</span><span>${c.photos.length}</span>` +
+         `</a>`;
+  });
+  $('indexList').innerHTML = h;
+}
+
 function renderCollection(c) {
   currentColl = c;
   hidePeek();
@@ -744,6 +844,7 @@ function route() {
   hidePeek();
   if (target === 'about') showView('about');
   else if (target === 'contact') showView('contact');
+  else if (target === 'index') { renderIndex(); showView('index'); }
   else if (coll) { renderCollection(coll); showView('collection'); }
   else {
     target = 'home';
@@ -854,6 +955,9 @@ $('menuToggle').addEventListener('click', e => {
 /* ---------- start ---------- */
 $('yr').textContent = new Date().getFullYear();
 buildNav();
+measureSidebar();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSidebar);
+window.addEventListener('resize', measureSidebar);
 window.addEventListener('hashchange', route);
 route();
 requestAnimationFrame(frame);
