@@ -176,7 +176,8 @@
   .home-logo {
     display: block; align-self: center; text-decoration: none; color: var(--ink);
     --hl: clamp(300px, 34vw, 540px);
-    width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;   /* trims the empty margin round the logo */
+    width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));   /* trims the empty margin round the logo */
   }
   .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite; }
@@ -839,6 +840,15 @@ const globeOn = () => $('view-globe').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+/* events in date order (oldest first) for the sidebar menu and the Index page.
+   The date text is read as written, e.g. "June 21, 2026" or "August 22-29, 2026" (first day counts). */
+const dateValue = c => {
+  const t = String(c.date || '').replace(/(\d{1,2})\s*[-\u2013]\s*\d{1,2}/, '$1').replace(/(\d{1,2})\s*[-\u2013]\s*[A-Za-z]+\s*\d{1,2}/, '$1');
+  const v = Date.parse(t);
+  return isNaN(v) ? Infinity : v;
+};
+const BY_DATE = COLLECTIONS.map((c, i) => ({ c, i, v: dateValue(c) })).sort((a, b) => a.v - b.v || a.i - b.i).map(x => x.c);
+
 /* ---------- site name, logo, About, Contact (all from events.js) ---------- */
 const SITE_NAME = site.name || 'Allwood Archives';
 document.title = SITE_NAME;
@@ -939,7 +949,7 @@ function buildNav() {
   home += link('#globe', 'globe', 'Map');
   home += link('#index', 'index', 'Index');
 
-  const projects = COLLECTIONS.map(c => link('#' + esc(c.id), esc(c.id), esc(c.title))).join('');
+  const projects = BY_DATE.map(c => link('#' + esc(c.id), esc(c.id), esc(c.title))).join('');
   const info = link('#about', 'about', 'About') + link('#contact', 'contact', 'Contact');
 
   nav.innerHTML =
@@ -1663,7 +1673,7 @@ function renderIndex() {
   const n = COLLECTIONS.length;
   $('indexMeta').textContent = n + (n === 1 ? ' event' : ' events');
   let h = `<div class="ix-row ix-head"><span>Event</span><span>Date</span><span>Location</span><span>Photos</span></div>`;
-  COLLECTIONS.forEach(c => {
+  BY_DATE.forEach(c => {
     h += `<a class="ix-row" href="#${esc(c.id)}">` +
            `<span>${esc(c.title)}</span><span>${esc(c.date || '')}</span>` +
            `<span>${esc(c.location || '')}</span><span>${c.photos.length}</span>` +
