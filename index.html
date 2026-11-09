@@ -2045,7 +2045,7 @@ requestAnimationFrame(frame);
     cvs.id = 'dotCanvas'; cvs.setAttribute('aria-hidden', 'true');
     document.body.insertBefore(cvs, document.body.firstChild);
     const ctx = cvs.getContext('2d');
-    const STEP = 24, R = 78, REST = 0.9;                 // grid spacing, dim radius (px), how fast dimmed dots come back (per second)
+    const STEP = 24, SLIDE = 6, R = 78, REST = 0.9;                 // grid spacing, dim radius (px), how fast dimmed dots come back (per second)
     let W = 0, H = 0, dpr = 1, mx = -9999, my = -9999;
     const dim = new Map();                               // dots that are currently dimmed: key -> 0..1 (1 = normal)
     const hash = (a, b, n) => {                          // a stable "random" number for each dot, so nothing repeats
@@ -2065,22 +2065,23 @@ requestAnimationFrame(frame);
       const dt = Math.min(0.1, (now - last) / 1000); last = now;
       ctx.clearRect(0, 0, W, H);
       const t = now / 1000;
-      const gx0 = 0, gx1 = Math.ceil(W / STEP), gy1 = Math.ceil(H / STEP);
+      const slide = reduceMotion ? 0 : (t * SLIDE) % 1e7;               // the whole grid drifts slowly to the right, the opposite way to the Home photos
+      const gx0 = Math.floor(-slide / STEP) - 1, gx1 = Math.ceil((W - slide) / STEP) + 1, gy1 = Math.ceil(H / STEP);
       const near = mx > -9000;
       // dots under the cursor dim at once
       const k = Math.exp(-REST * dt * 2.2);
       dim.forEach((v, key) => { const nv = 1 - (1 - v) * k; if (nv > 0.985) dim.delete(key); else dim.set(key, nv); });
       for (let gy = 0; gy <= gy1; gy++) for (let gx = gx0; gx <= gx1; gx++) {
         if (hash(gx, gy, 1) < 0.035) continue;                          // a dot that never printed
-        const x = gx * STEP + STEP / 2 + (hash(gx, gy, 2) - 0.5) * 2.6;
+        const x = gx * STEP + slide + STEP / 2 + (hash(gx, gy, 2) - 0.5) * 2.6;
         const y = gy * STEP + STEP / 2 + (hash(gx, gy, 3) - 0.5) * 2.6;
         const major = (gx % 5 === 0 && gy % 5 === 0);
         const r = (major ? 1.35 : 0.85) * (0.75 + hash(gx, gy, 4) * 0.6);
         let a = (major ? 0.44 : 0.27) * (0.45 + hash(gx, gy, 5) * 0.85);
-        if (hash(gx, gy, 6) < 0.16) {                                    // about one dot in six is a slow twinkler
-          const sp = 0.25 + hash(gx, gy, 7) * 0.5, ph = hash(gx, gy, 8) * 6.283;
+        if (hash(gx, gy, 6) < 0.24) {                                    // about one dot in four twinkles
+          const sp = 0.5 + hash(gx, gy, 7) * 0.8, ph = hash(gx, gy, 8) * 6.283;
           const w = Math.pow(0.5 + 0.5 * Math.sin(t * sp + ph), 2.2);     // mostly resting, now and then it glows
-          a *= 0.25 + w * 2.1;
+          a *= 0.2 + w * 3.2;
           if (!reduceMotion) { /* twinkle already applied */ }
         }
         const key = gx + ',' + gy;
@@ -2095,7 +2096,7 @@ requestAnimationFrame(frame);
         const dv = dim.get(key);
         if (dv !== undefined) a *= dv;
         if (a < 0.01) continue;
-        ctx.fillStyle = 'rgba(' + ink + ',' + Math.min(0.7, a).toFixed(3) + ')';
+        ctx.fillStyle = 'rgba(' + ink + ',' + Math.min(0.85, a).toFixed(3) + ')';
         ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
       }
     }
