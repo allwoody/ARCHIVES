@@ -88,6 +88,12 @@
     .sidebar:not(.closed):hover ~ .scrim,
     .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
   }
+  @media (hover: hover) and (min-width: 721px) {
+    .sidebar .nav { transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s; }
+    body.nav-hidden .sidebar:not(.peek) { pointer-events: none; }
+    body.nav-hidden .sidebar .logo { pointer-events: auto; }
+    body.nav-hidden .sidebar:not(.peek):not(:hover) .nav { opacity: 0; transform: translateX(-14px); visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; }
+  }
   .logo {
     display: block;
     font-size: 20px; line-height: 1.1; letter-spacing: 0.02em;
@@ -733,26 +739,31 @@
   .mag-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 18px; }
   .mag-head h1 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
   .mag-head span { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
-  .mg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 40px 32px; padding: 6px 36px 40px 0; max-width: 1100px; }
-  .mg-card { display: block; text-align: left; color: var(--ink); perspective: 900px; }
-  .mg-cover { position: relative; display: block; aspect-ratio: 0.74; border-radius: 3px 7px 7px 3px; overflow: hidden; background: #1b1c1f;
-    box-shadow: 0 16px 26px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.4); transform-origin: 0 50%;
-    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease; }
+  .mg-wrap { --ch: clamp(260px, calc(100vh - 330px), 440px); --cw: calc(var(--ch) * 0.74); position: relative; max-width: 1200px; padding-right: 36px; }
+  .mg-wrap[hidden] { display: none; }
+  .mg-stage { position: relative; height: calc(var(--ch) + 70px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
+  .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
+    transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.45s ease; will-change: transform; transform-style: preserve-3d; cursor: pointer; }
+  .mg-cover { position: absolute; inset: 0; display: block; border-radius: 3px 7px 7px 3px; overflow: hidden; background: #1b1c1f;
+    box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
   .mg-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
   .mg-cover::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
     background: linear-gradient(to right, rgba(0,0,0,0.45), rgba(0,0,0,0.1) 5%, rgba(255,255,255,0.10) 6.5%, transparent 12%); }
   .mg-cover::after { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.30) 42%, transparent 62%), linear-gradient(160deg, rgba(255,255,255,0.14), transparent 40%, rgba(0,0,0,0.12));
-    mix-blend-mode: soft-light; background-size: 220% 100%, 100% 100%; background-position: 100% 0, 0 0; transition: background-position 0.8s ease; }
+    background: linear-gradient(160deg, rgba(255,255,255,0.16), transparent 42%, rgba(0,0,0,0.10)); }
   .mg-cover .veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent 36%, transparent 55%, rgba(0,0,0,0.75)); }
   .mg-cover .mast { position: absolute; left: 16px; top: 14px; z-index: 2; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.85; }
-  .mg-cover .ttl { position: absolute; left: 16px; right: 12px; bottom: 16px; z-index: 2; font-size: 15px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .mg-cover .ttl { position: absolute; left: 16px; right: 12px; bottom: 16px; z-index: 2; font-size: clamp(13px, calc(var(--cw) * 0.055), 19px); line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
   .mg-cover .ttl small { display: block; margin-top: 6px; font-size: 10px; font-weight: 400; letter-spacing: 0.14em; opacity: 0.85; }
-  .mg-cap { display: block; margin-top: 12px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
-  @media (hover: hover) { .mg-card:hover .mg-cover { transform: rotateY(-14deg) translateY(-6px); box-shadow: 22px 24px 34px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4); }
-    .mg-card:hover .mg-cover::after { background-position: 0% 0, 0 0; } }
-  .mg-card:active .mg-cover { transform: scale(0.98); }
-  .mag-viewer[hidden], .mg-grid[hidden] { display: none; }
+  .mg-card .dim { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; border-radius: 3px 7px 7px 3px; transition: opacity 0.5s ease; pointer-events: none; }
+  .mg-card.side .dim { opacity: 0.38; }
+  @media (hover: hover) { .mg-card.side:hover .dim { opacity: 0.16; } }
+  .mg-nav { position: absolute; top: calc(var(--ch) / 2 + 24px); z-index: 300; margin-top: -23px; }
+  .mg-prev { left: 0; } .mg-next { right: 36px; }
+  .mg-info { text-align: center; margin-top: 2px; min-height: 48px; }
+  .mg-info b { display: block; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mg-info span { display: block; margin-top: 6px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .mag-viewer[hidden] { display: none; }
   .mv-bar { display: flex; align-items: center; gap: 16px; margin: -6px 0 8px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
   .mv-bar button { color: var(--muted); display: inline-flex; align-items: center; gap: 8px; padding: 4px 0; transition: color 0.15s, transform 0.15s; }
   .mv-bar button:hover { color: var(--ink); transform: translateX(-2px); }
@@ -781,9 +792,7 @@
   .pg.back::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
     background: linear-gradient(to left, rgba(0,0,0,0.30), rgba(0,0,0,0.08) 5%, transparent 14%); }
   .pg::after { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background:
-      linear-gradient(115deg, transparent calc(var(--gx, 50%) - 26%), rgba(255,255,255,0.34) var(--gx, 50%), transparent calc(var(--gx, 50%) + 22%)),
-      linear-gradient(160deg, rgba(255,255,255,0.14), transparent 38%, rgba(0,0,0,0.10)); mix-blend-mode: soft-light; }
+    background: linear-gradient(160deg, rgba(255,255,255,0.13), transparent 40%, rgba(0,0,0,0.07)); }
   /* the turning page is cut into strips so it can bend */
   .sleaf { position: absolute; left: 50%; top: 0; width: var(--pw); height: 100%; transform-style: preserve-3d; transform-origin: 0 50%; z-index: 100; pointer-events: none; }
   .seg { position: absolute; top: 0; height: 100%; transform-style: preserve-3d; transform-origin: 0 50%; }
@@ -791,7 +800,6 @@
   .piece.bk { transform: rotateY(180deg); }
   .piece .pgc { position: absolute; top: 0; }
   .piece .shd { position: absolute; inset: 0; z-index: 9; background: #000; opacity: 0; pointer-events: none; }
-  .piece .spec { position: absolute; inset: 0; z-index: 8; background: #fff; opacity: 0; mix-blend-mode: soft-light; pointer-events: none; }
   .pg-photo { flex: 1; min-height: 0; margin: 20px 20px 0; display: flex; align-items: center; justify-content: center; }
   .pg-photo img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; box-shadow: 0 6px 16px rgba(0,0,0,0.3); user-select: none; -webkit-user-drag: none; }
   .pg.full .pg-photo { margin: 0; position: absolute; inset: 0; }
@@ -817,7 +825,7 @@
   .mag-arrow:active:not(:disabled) { transform: scale(0.94); }
   .mag-arrow:disabled { opacity: 0.25; cursor: default; }
   .mag-foot { margin: 16px 0 0; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-  @media (max-width: 720px) { .mag-arrow { width: 38px; height: 38px; } .mag-stage { gap: 6px; } .mag { --ph: clamp(240px, min(calc(100vh - 260px), calc((100vw - 120px) / 1.5)), 500px); } .pg-photo { margin: 12px 12px 0; } .mg-grid { grid-template-columns: repeat(2, 1fr); gap: 28px 18px; padding-right: 16px; } }
+  @media (max-width: 720px) { .mag-arrow { width: 38px; height: 38px; } .mag-stage { gap: 6px; } .mag { --ph: clamp(240px, min(calc(100vh - 260px), calc((100vw - 120px) / 1.5)), 500px); } .pg-photo { margin: 12px 12px 0; }  }
 
   /* ---------- home page menu (the sidebar's links, laid out as a row between the logo and the photos) ---------- */
   body.is-home .sidebar, body.is-home .scrim { display: none; }
@@ -879,7 +887,6 @@
   .music input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: var(--ink); border: 0; }
   @media (max-width: 720px) { .music { top: 12px; right: 74px; } body.is-home .music { right: 12px; } .music .m-label { display: none; } .music:hover input[type=range], .music:focus-within input[type=range] { width: 56px; } }
 
-  #dotCanvas { position: fixed; left: 0; top: 0; z-index: -1; pointer-events: none; }
   @media (max-width: 720px) { .sidebar { background-color: var(--bg); } }
 
   /* ---------- a little life in the buttons ---------- */
@@ -1021,7 +1028,12 @@
   <!-- favorites (page design to come) -->
   <section class="view" id="view-favorites">
     <div class="mag-head" id="magHead"><h1>Favorites</h1><span id="magMeta"></span></div>
-    <div class="mg-grid" id="magGrid"></div>
+    <div class="mg-wrap" id="magGrid">
+      <div class="mg-stage" id="mgStage"></div>
+      <button type="button" class="mag-arrow mg-nav mg-prev" id="mgPrev" aria-label="Previous magazine">&#8592;</button>
+      <button type="button" class="mag-arrow mg-nav mg-next" id="mgNext" aria-label="Next magazine">&#8594;</button>
+      <div class="mg-info" id="mgInfo"></div>
+    </div>
     <div class="mag-viewer" id="magViewer" hidden>
       <div class="mv-bar"><button type="button" id="magBack">&#8592; All magazines</button><span id="mvTitle"></span></div>
       <div class="mag-stage">
@@ -1251,7 +1263,23 @@ nav.addEventListener('click', e => {
   a.blur();                                  // so keyboard focus doesn't hold the sidebar open
 });
 sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'));
-['mouseenter', 'mouseleave', 'focusin', 'focusout'].forEach(ev => sidebar.addEventListener(ev, () => { window.__sideBusy = performance.now() + 330; }));   // the dot background rests while the sidebar slides
+/* On a computer the menu tucks away 3 seconds after a page opens; point at the logo (top left) to bring it back. */
+let navTimer = 0, peekTimer2 = 0;
+const navCanHide = () => window.matchMedia('(hover: hover) and (min-width: 721px)').matches && !document.body.classList.contains('is-home');
+function armNavHide(delay) {
+  clearTimeout(navTimer);
+  document.body.classList.remove('nav-hidden');
+  if (!navCanHide()) return;
+  navTimer = setTimeout(() => {
+    if (sidebar.matches(':hover') || sidebar.matches(':focus-within')) armNavHide(1500);
+    else document.body.classList.add('nav-hidden');
+  }, delay || 3000);
+}
+$('logo').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('peek'); });
+sidebar.addEventListener('mouseenter', () => clearTimeout(peekTimer2));
+sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); peekTimer2 = setTimeout(() => { sidebar.classList.remove('peek'); armNavHide(1200); }, 350); });
+window.addEventListener('hashchange', () => armNavHide(3000));
+armNavHide(3000);
 /* Home page menu on touch screens: tap a heading to open its list */
 $('homeNav').addEventListener('click', e => {
   const head = e.target.closest('.hn-head.has-subs');
@@ -1438,9 +1466,9 @@ const g = {
   w: 0, h: 0, dpr: 1, z0: 1, zc: 1, ready: false, failed: false,
   conts: [], countries: [], states: [], hasStates: false, proj: null,
   level: 'world', cont: null, country: null, state: null,
-  cam: { cx: WW / 2, cy: WH / 2, z: 1 }, tw: null,
+  cam: { cx: WW / 2, cy: WH / 2, z: 1 }, tw: null, wcx: WW / 2, wx0: 0, wx1: WW,
   hover: null, hoverKind: '', mx: -1, my: -1, inside: false, moved: true,
-  sharp: null, needSharp: false, shake: null, pins: [], badges: [], down: null, wheelAt: 0, colors: null, lockTimer: 0, crumbs: []
+  usMode: false, us: 0, usC: null, sharp: null, needSharp: false, shake: null, pins: [], badges: [], down: null, wheelAt: 0, colors: null, lockTimer: 0, crumbs: []
 };
 let globeInit = false;
 const hitCtx = document.createElement('canvas').getContext('2d');
@@ -1481,31 +1509,59 @@ function buildWorld(cT, sT) {
   const kk = WW / (2 * Math.PI);
   g.proj = d3.geoEquirectangular().scale(kk).translate([WW / 2, kk * MAP_TOP * Math.PI / 180]).precision(0.25);
   const byId = {};
-  g.conts = CONT_DEFS.map(([id, name], i) => (byId[id] = { id, name, polys: [], countries: [], grps: [], events: 0, places: 0, hv: 0, ph: [i * 1.7 + 0.4, i * 2.3 + 1.1, i * 0.9 + 2], fq: [0.21 + (i % 3) * 0.05, 0.17 + (i % 4) * 0.04] }));
-  g.countries = featuresOf(cT, 'countries').map(f => {
+  g.conts = CONT_DEFS.map(([id, name], i) => (byId[id] = { id, name, polys: [], extras: [], countries: [], grps: [], events: 0, places: 0, hv: 0, ph: [i * 1.7 + 0.4, i * 2.3 + 1.1, i * 0.9 + 2], fq: [0.21 + (i % 3) * 0.05, 0.17 + (i % 4) * 0.04] }));
+  const clipProj = (x0, x1) => d3.geoEquirectangular().scale(kk).translate([WW / 2, kk * MAP_TOP * Math.PI / 180]).precision(0.25).clipExtent([[x0, -9000], [x1, 9000]]);
+  const mkWith = (proj, obj) => { const p = new Path2D(); d3.geoPath(proj, p)(obj); return p; };
+  const boundsWith = (proj, obj) => { const b = d3.geoPath(proj).bounds(obj); return { x0: b[0][0], y0: b[0][1], x1: b[1][0], y1: b[1][1] }; };
+  const RU_X = wxOf(60);                                       // the Urals: Russia west of here belongs to Europe
+  g.countries = [];
+  featuresOf(cT, 'countries').forEach(f => {
     const id = contOfName(f), polys = polysOf(f);
+    if (f.properties.name === 'Russia') {
+      const tipP = polys.filter(pc => pc[0] && pc[0].every(pt => pt[0] < -100));           // the tip that crosses the date line stays on the Russian side
+      const mainP = polys.filter(pc => !tipP.includes(pc));
+      const mf = { type: 'Feature', properties: f.properties, geometry: { type: 'MultiPolygon', coordinates: mainP } };
+      const parts = [['EU', clipProj(-9000, RU_X)], ['AS', clipProj(RU_X, 9000)]];
+      parts.forEach(([cid, cp]) => {
+        const bb = boundsWith(cp, mf);
+        if (!isFinite(bb.x0) || bb.x1 - bb.x0 < 1) return;
+        const co = { f, name: 'Russia', cont: cid, path: mkWith(cp, mf), bb, all: bb, events: 0, places: 0, grps: [], hasStates: false };
+        byId[cid].countries.push(co); g.countries.push(co);
+        byId[cid].extras.push({ path: co.path, bb });
+      });
+      if (tipP.length) {
+        const tg = { type: 'MultiPolygon', coordinates: tipP }, tp = new Path2D();
+        tp.addPath(mkPath(tg), new DOMMatrix([1, 0, 0, 1, WW, 0]));
+        const b0 = boundsWith(g.proj, tg), bb = { x0: b0.x0 + WW, x1: b0.x1 + WW, y0: b0.y0, y1: b0.y1 };
+        byId.AS.extras.push({ path: tp, bb }); byId.AS.tip = tp;
+      }
+      return;
+    }
     const co = { f, name: f.properties.name || '', cont: id, path: mkPath(f), bb: mainBounds(polys), all: fullBounds(f), events: 0, places: 0, grps: [], hasStates: false };
-    byId[id].countries.push(co);
+    byId[id].countries.push(co); g.countries.push(co);
     polys.forEach(pc => {
       let cid = id;
       if (co.name === 'France' && pc[0] && pc[0][0] && pc[0][0][0] < -20) cid = 'SA';
       byId[cid].polys.push(pc);
     });
-    return co;
   });
   g.states = featuresOf(sT, 'states').map(f => ({ f, name: f.properties.name || '', path: mkPath(f), bb: mainBounds(polysOf(f)), all: fullBounds(f), events: 0, places: 0, grps: [] }));
   g.hasStates = g.states.length > 0;
-  g.conts = g.conts.filter(ct => ct.polys.length);
+  g.byId = byId;
+  g.conts = g.conts.filter(ct => ct.polys.length || ct.extras.length);
   g.conts.forEach(ct => {
     const geom = { type: 'MultiPolygon', coordinates: ct.polys };
-    ct.path = mkPath(geom);
-    ct.bb = mainBounds(ct.polys, 'tot');
+    ct.path = new Path2D(); ct.path.addPath(mkPath(geom));
+    ct.bb = ct.polys.length ? mainBounds(ct.polys, 'tot') : { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
+    ct.extras.forEach(x => { ct.path.addPath(x.path); ct.bb.x0 = Math.min(ct.bb.x0, x.bb.x0); ct.bb.y0 = Math.min(ct.bb.y0, x.bb.y0); ct.bb.x1 = Math.max(ct.bb.x1, x.bb.x1); ct.bb.y1 = Math.max(ct.bb.y1, x.bb.y1); });
     ct.cxw = (ct.bb.x0 + ct.bb.x1) / 2; ct.cyw = (ct.bb.y0 + ct.bb.y1) / 2;
     ct.spath = new Path2D();                                  // the iceberg is a touch smaller than the land, so neighbours don't touch
-    const s = 0.94;
+    const s = 0.91;
     ct.spath.addPath(ct.path, new DOMMatrix([s, 0, 0, s, ct.cxw * (1 - s), ct.cyw * (1 - s)]));
     ct.sb = { x0: ct.cxw + (ct.bb.x0 - ct.cxw) * s, x1: ct.cxw + (ct.bb.x1 - ct.cxw) * s, y0: ct.cyw + (ct.bb.y0 - ct.cyw) * s, y1: ct.cyw + (ct.bb.y1 - ct.cyw) * s };
   });
+  g.wx0 = Math.min(0, ...g.conts.map(c => c.bb.x0)); g.wx1 = Math.max(WW, ...g.conts.map(c => c.bb.x1)); g.wcx = (g.wx0 + g.wx1) / 2;
+  setupInsets();
   /* which country / state / continent each event place is in */
   groups.forEach(grp => {
     grp.wx = wxOf(grp.lon); grp.wy = wyOf(grp.lat);
@@ -1528,7 +1584,7 @@ function buildWorld(cT, sT) {
 /* ---- the 3D iceberg pictures (made once per size) ---- */
 const mixc = (a, b, t) => 'rgb(' + a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',') + ')';
 function buildSprites() {
-  const d = Math.min(1.5, g.dpr), S = g.z0 * d, D = Math.max(6, Math.round(15 * d)), pad = Math.round(42 * d);
+  const d = Math.min(1.5, g.dpr), S = g.z0 * d, D = Math.max(6, Math.round(15 * d)), pad = Math.round(64 * d);
   g.conts.forEach(ct => {
     const b = ct.sb, bw = (b.x1 - b.x0) * S, bh = (b.y1 - b.y0) * S;
     const sw = Math.ceil(bw + pad * 2), sh = Math.ceil(bh + pad * 2 + D * 2.4);
@@ -1581,6 +1637,7 @@ function paintDetail(c, ct, S, ox, oy, d) {
   if (ct.id === 'NA' && g.hasStates) { c.strokeStyle = col.state; c.lineWidth = lw(0.7); g.states.forEach(s => c.stroke(s.path)); }
   c.strokeStyle = col.country; c.lineWidth = lw(0.9);
   ct.countries.forEach(co => { if (!co.hasStates || !g.hasStates) c.stroke(co.path); });
+  if (ct.tip) c.stroke(ct.tip);
   if (g.hasStates) { c.lineWidth = lw(1.1); ct.countries.forEach(co => { if (co.hasStates) c.stroke(co.path); }); }
 }
 function contRect(ct) { return ct.bb; }
@@ -1599,11 +1656,80 @@ function renderSharp() {
   const ct = g.cont;
   g.needSharp = false; g.sharp = null;
   if (!ct) return;
-  const d = Math.min(2, g.dpr), z = g.cam.z, co = ensureCoarse(ct);
+  const d = Math.min(2, g.dpr), z = g.cam.z, us = g.usMode && g.us > 0.99, co = us ? ensureUS() : ensureCoarse(ct);
   if (co.S >= z * d * 0.92) return;                              // the stored picture is already sharp enough
   const cv = document.createElement('canvas'); cv.width = Math.round(g.w * d); cv.height = Math.round(g.h * d);
-  paintDetail(cv.getContext('2d'), ct, z * d, (g.w / 2 - g.cam.cx * z) * d, (g.h / 2 - g.cam.cy * z) * d, d);
-  g.sharp = { cv, cx: g.cam.cx, cy: g.cam.cy, z };
+  if (us) paintUS(cv.getContext('2d'), z * d, (g.w / 2 - g.cam.cx * z) * d, (g.h / 2 - g.cam.cy * z) * d, d, cv.width, cv.height);
+  else paintDetail(cv.getContext('2d'), ct, z * d, (g.w / 2 - g.cam.cx * z) * d, (g.h / 2 - g.cam.cy * z) * d, d);
+  g.sharp = { cv, cx: g.cam.cx, cy: g.cam.cy, z, us };
+}
+
+/* ---- the United States view: Alaska and Hawaii tucked in below the mainland, everything else softened ---- */
+const TERR = NAMES('Puerto Rico|Guam|American Samoa|Northern Mariana Islands|Commonwealth of the Northern Mariana Islands|U.S. Virgin Islands|United States Virgin Islands');
+const INSET = { Alaska: { s: 0.3, lon: -116.5, lat: 27.3, keep: 0.3 }, Hawaii: { s: 1.0, lon: -104.6, lat: 26.2, keep: 0 } };
+function setupInsets() {
+  const pg = d3.geoPath(g.proj);
+  g.usAll = new Path2D();
+  const rect = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
+  const grow = (r, b) => { r.x0 = Math.min(r.x0, b.x0); r.y0 = Math.min(r.y0, b.y0); r.x1 = Math.max(r.x1, b.x1); r.y1 = Math.max(r.y1, b.y1); };
+  g.states.forEach(st => {
+    st.terr = TERR.has(st.name);
+    if (st.terr) return;
+    const ins = INSET[st.name];
+    if (!ins) { g.usAll.addPath(st.path); grow(rect, st.bb); return; }
+    const info = polysOf(st.f).map(pc => { const o = { type: 'Polygon', coordinates: pc }; const b = pg.bounds(o); return { pc, a: Math.abs(pg.area(o)), b: { x0: b[0][0], y0: b[0][1], x1: b[1][0], y1: b[1][1] } }; });
+    const max = Math.max(0, ...info.map(i => i.a));
+    const keep = info.filter(i => i.a >= max * ins.keep);
+    if (!keep.length) return;
+    const bb = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
+    keep.forEach(i => grow(bb, i.b));
+    const ip = mkPath({ type: 'MultiPolygon', coordinates: keep.map(i => i.pc) });
+    const icx = (bb.x0 + bb.x1) / 2, icy = (bb.y0 + bb.y1) / 2, tx = wxOf(ins.lon), ty = wyOf(ins.lat), k = ins.s;
+    const tp = new Path2D(); tp.addPath(ip, new DOMMatrix([k, 0, 0, k, tx - k * icx, ty - k * icy]));
+    st.ins = { tpath: tp, s: k, icx, icy, tx, ty, tbb: { x0: tx + k * (bb.x0 - icx), x1: tx + k * (bb.x1 - icx), y0: ty + k * (bb.y0 - icy), y1: ty + k * (bb.y1 - icy) } };
+    g.usAll.addPath(tp);
+  });
+  g.usRect = rect.x1 > rect.x0 ? rect : null;
+}
+function usPos(grp) {
+  const st = grp.state;
+  if (st && st.ins) return [st.ins.tx + st.ins.s * (grp.wx - st.ins.icx), st.ins.ty + st.ins.s * (grp.wy - st.ins.icy)];
+  return [grp.wx, grp.wy];
+}
+function paintUS(c, S, ox, oy, d, w, h) {
+  const col = g.colors, lw = px => px * d / S, D = Math.round(7 * d);
+  const na = g.byId.NA;
+  /* the surroundings (Canada, Mexico...) are painted on their own and blurred */
+  const tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h;
+  const t = tmp.getContext('2d');
+  na.countries.forEach(co => { if (co.hasStates) return; });
+  const others = na.countries.filter(co => !co.hasStates);
+  for (let i = D; i >= 1; i--) { t.setTransform(S, 0, 0, S, ox, oy + i); t.fillStyle = mixc([104, 110, 120], [40, 45, 52], i / D); others.forEach(co => t.fill(co.path)); }
+  t.setTransform(S, 0, 0, S, ox, oy); t.fillStyle = col.land; others.forEach(co => t.fill(co.path));
+  t.strokeStyle = col.country; t.lineWidth = lw(0.9); t.lineJoin = 'round'; others.forEach(co => t.stroke(co.path));
+  c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
+  if ('filter' in c) { c.filter = 'blur(' + (5 * d).toFixed(1) + 'px)'; c.globalAlpha = 0.85; } else c.globalAlpha = 0.4;
+  c.drawImage(tmp, 0, 0);
+  c.restore();
+  /* the country itself, sharp */
+  for (let i = D; i >= 1; i--) { c.setTransform(S, 0, 0, S, ox, oy + i); c.fillStyle = mixc([112, 118, 128], [44, 50, 58], i / D); c.fill(g.usAll); }
+  c.setTransform(S, 0, 0, S, ox, oy);
+  c.fillStyle = col.land; c.fill(g.usAll);
+  c.fillStyle = col.explored;
+  g.states.forEach(st => { if (st.events && !st.terr) c.fill(st.ins ? st.ins.tpath : st.path); });
+  c.lineJoin = 'round'; c.strokeStyle = 'rgba(241,239,234,0.38)'; c.lineWidth = lw(0.9);
+  g.states.forEach(st => { if (!st.terr) c.stroke(st.ins ? st.ins.tpath : st.path); });
+}
+function ensureUS() {
+  if (g.usC) return g.usC;
+  const m = g.usRect, bw = m.x1 - m.x0, bh = m.y1 - m.y0, px = bw * 0.3, py = bh * 0.3;
+  const r = { x0: m.x0 - px, y0: m.y0 - py, ww: bw + 2 * px, wh: bh + 2 * py };
+  const d = Math.min(2, g.dpr);
+  let S = Math.min(fitRect(m, 0.8).z * d, 2600 / r.ww, 2600 / r.wh);
+  S = Math.max(S, g.z0 * d);
+  const cv = document.createElement('canvas'); cv.width = Math.ceil(r.ww * S); cv.height = Math.ceil(r.wh * S);
+  paintUS(cv.getContext('2d'), S, -r.x0 * S, -r.y0 * S, d, cv.width, cv.height);
+  return (g.usC = { cv, r, S });
 }
 
 /* ---- the camera ---- */
@@ -1612,11 +1738,13 @@ function fitRect(r, fill) {
   return { cx: (r.x0 + r.x1) / 2, cy: (r.y0 + r.y1) / 2, z: Math.min(g.w * fill / rw, g.h * fill / rh) };
 }
 function targetFor() {
-  if (g.level === 'world') return { cx: WW / 2, cy: WH / 2, z: g.z0 };
+  if (g.level === 'world') return { cx: g.wcx, cy: WH / 2, z: g.z0 };
   if (g.level === 'cont') { const t = fitRect(g.cont.bb, 0.84); t.z = Math.max(t.z, g.z0 * 1.35); return t; }
+  if (g.usMode && g.level === 'country' && g.usRect) { const t = fitRect(g.usRect, 0.82); t.z = Math.min(t.z, g.z0 * 60); return t; }
   const e = g.level === 'state' ? g.state : g.country;
-  const r = { x0: e.bb.x0, y0: e.bb.y0, x1: e.bb.x1, y1: e.bb.y1 };
-  e.grps.forEach(p => { r.x0 = Math.min(r.x0, p.wx - 6); r.x1 = Math.max(r.x1, p.wx + 6); r.y0 = Math.min(r.y0, p.wy - 6); r.y1 = Math.max(r.y1, p.wy + 6); });
+  const eb = (g.usMode && e.ins) ? e.ins.tbb : e.bb;
+  const r = { x0: eb.x0, y0: eb.y0, x1: eb.x1, y1: eb.y1 };
+  e.grps.forEach(p => { const [px, py] = g.usMode ? usPos(p) : [p.wx, p.wy]; r.x0 = Math.min(r.x0, px - 6); r.x1 = Math.max(r.x1, px + 6); r.y0 = Math.min(r.y0, py - 6); r.y1 = Math.max(r.y1, py + 6); });
   const t = fitRect(r, g.level === 'state' ? 0.74 : 0.8);
   t.z = Math.min(t.z, g.z0 * 60);
   return t;
@@ -1633,6 +1761,7 @@ function setLevel(level, o, instant) {
   if (level === 'cont') { g.cont = o; g.country = g.state = null; }
   if (level === 'country') { g.country = o; g.state = null; }
   if (level === 'state') { g.state = o; }
+  g.usMode = !!(g.country && g.country.hasStates && (level === 'country' || level === 'state') && g.usRect);
   if (g.cont) { ensureCoarse(g.cont); g.zc = Math.max(fitRect(g.cont.bb, 0.84).z, g.z0 * 1.35); }
   camTo(targetFor(), instant);
   g.hover = null; mtip.hidden = true;
@@ -1694,7 +1823,7 @@ function showLock(title, msg) {
 const scrToWorld = (x, y) => [(x - g.w / 2) / g.cam.z + g.cam.cx, (y - g.h / 2) / g.cam.z + g.cam.cy];
 function driftOf(ct, t, k) {
   if (reduceMotion || k <= 0) return [0, 0];
-  const A = 5.5 / g.z0 * (0.75 + (ct.bb.x1 - ct.bb.x0) / WW * 0.9);      // bigger icebergs move a little more
+  const A = 3.2 / g.z0 * (0.8 + (ct.bb.x1 - ct.bb.x0) / WW * 0.8);        // bigger icebergs move a little more, but never enough to touch a neighbour
   const dx = A * (Math.sin(t * ct.fq[0] + ct.ph[0]) + 0.45 * Math.sin(t * ct.fq[0] * 2.3 + ct.ph[1])) / 1.45;
   const dy = A * 0.8 * (Math.sin(t * ct.fq[1] + ct.ph[2]) + 0.4 * Math.sin(t * ct.fq[1] * 2.1 + ct.ph[0])) / 1.4;
   return [dx * k, dy * k];
@@ -1721,7 +1850,7 @@ function pickHover(now) {
     const co = g.cont.countries.find(c => isIn(c, x, y));
     if (co) { g.hover = co; g.hoverKind = 'country'; }
   } else if (g.level === 'country' && g.country.hasStates) {
-    const st = g.states.find(s => isIn(s, x, y));
+    const st = g.states.find(s => !s.terr && (g.usMode && s.ins ? (inBB(s.ins.tbb, x, y) && hitCtx.isPointInPath(s.ins.tpath, x, y)) : isIn(s, x, y)));
     if (st) { g.hover = st; g.hoverKind = 'state'; }
   }
 }
@@ -1749,12 +1878,13 @@ function sizeGlobe() {
   const w = area.clientWidth;
   if (w === g.w && h === g.h && g.ready && g.conts[0] && g.conts[0].spr) return;
   g.w = w; g.h = h; g.dpr = Math.min(2, window.devicePixelRatio || 1);
-  g.z0 = Math.min(w / WW, h / WH) * 0.97;
+  const PAD = 46;
+  g.z0 = Math.max(0.05, Math.min((w - 2 * PAD) / (g.wx1 - g.wx0), (h - 2 * PAD) / WH));
   gwrap.style.height = h + 'px';
   gcanvas.width = Math.round(w * g.dpr); gcanvas.height = Math.round(h * g.dpr);
   gcanvas.style.width = w + 'px'; gcanvas.style.height = h + 'px';
   if (!g.ready) return;
-  g.conts.forEach(ct => { ct.coarse = null; });
+  g.conts.forEach(ct => { ct.coarse = null; }); g.usC = null;
   buildSprites();
   if (g.cont) { ensureCoarse(g.cont); g.zc = Math.max(fitRect(g.cont.bb, 0.84).z, g.z0 * 1.35); }
   g.cam = Object.assign({}, targetFor()); g.tw = null; g.sharp = null; g.needSharp = true;
@@ -1781,7 +1911,7 @@ function globeStep() {
   const fz = sel ? clamp(Math.log(z / g.z0) / Math.log(g.zc / g.z0), 0, 1.2) : 0;
   c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h);
   const t = now / 1000;
-  g.conts.forEach(ct => {
+  g.conts.slice().sort((p, q) => p.hv - q.hv).forEach(ct => {
     const a = sel ? (ct === sel ? 1 - ss(0.5, 0.92, fz) : 1 - ss(0, 0.4, fz)) : 1;
     if (a <= 0.01 || !ct.spr) return;
     const k = sel ? (ct === sel ? 1 - ss(0, 0.5, fz) : 1) : 1;
@@ -1797,13 +1927,19 @@ function globeStep() {
     const da = ss(0.35, 0.85, fz);
     if (da > 0.01) {
       if (g.needSharp && !g.tw && da > 0.98) renderSharp();
-      c.globalAlpha = da;
-      if (!g.tw && g.sharp && g.sharp.z === z) c.drawImage(g.sharp.cv, 0, 0, w, h);
-      else { const co = ensureCoarse(sel), r = co.r; c.drawImage(co.cv, (r.x0 - g.cam.cx) * z + w / 2, (r.y0 - g.cam.cy) * z + h / 2, r.ww * z, r.wh * z); }
-      if (g.hover && (g.hoverKind === 'country' || g.hoverKind === 'state') && true) {
-        c.save(); c.setTransform(d * z, 0, 0, d * z, d * (w / 2 - g.cam.cx * z), d * (h / 2 - g.cam.cy * z));
-        c.fillStyle = 'rgba(214,232,255,0.20)'; c.fill(g.hover.path);
-        c.strokeStyle = 'rgba(235,244,255,0.85)'; c.lineWidth = 1.6 / z; c.lineJoin = 'round'; c.stroke(g.hover.path);
+      const wantUS = g.usMode ? 1 : 0;
+      g.us += (wantUS - g.us) * 0.12; if (Math.abs(wantUS - g.us) < 0.01) g.us = wantUS;
+      const putBitmap = (co, a) => { const r = co.r; c.globalAlpha = a; c.drawImage(co.cv, (r.x0 - g.cam.cx) * z + w / 2, (r.y0 - g.cam.cy) * z + h / 2, r.ww * z, r.wh * z); };
+      if (!g.tw && g.sharp && g.sharp.z === z && g.sharp.us === (g.us > 0.99)) { c.globalAlpha = da; c.drawImage(g.sharp.cv, 0, 0, w, h); }
+      else {
+        if (g.us < 0.99) putBitmap(ensureCoarse(sel), da * (1 - g.us));
+        if (g.us > 0.01 && g.usRect) putBitmap(ensureUS(), da * g.us);
+      }
+      if (g.hover && (g.hoverKind === 'country' || g.hoverKind === 'state')) {
+        const hp = (g.usMode && g.hover.ins) ? g.hover.ins.tpath : g.hover.path;
+        c.save(); c.globalAlpha = da; c.setTransform(d * z, 0, 0, d * z, d * (w / 2 - g.cam.cx * z), d * (h / 2 - g.cam.cy * z));
+        c.fillStyle = 'rgba(214,232,255,0.20)'; c.fill(hp);
+        c.strokeStyle = 'rgba(235,244,255,0.85)'; c.lineWidth = 1.6 / z; c.lineJoin = 'round'; c.stroke(hp);
         c.restore();
       }
       c.globalAlpha = 1;
@@ -1825,7 +1961,8 @@ function placePins(fz) {
     let on = vis > 0.05 && grp.cont === g.cont;
     if (on && g.level === 'country') on = grp.country === g.country && !g.country.hasStates;
     if (on && g.level === 'state') on = grp.state === g.state;
-    const sx = (grp.wx - g.cam.cx) * z + w / 2, sy = (grp.wy - g.cam.cy) * z + h / 2;
+    const [gx, gy] = g.usMode ? usPos(grp) : [grp.wx, grp.wy];
+    const sx = (gx - g.cam.cx) * z + w / 2, sy = (gy - g.cam.cy) * z + h / 2;
     const live = on && sx > -16 && sx < w + 16 && sy > -16 && sy < h + 16;
     p.el.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
     p.el.style.opacity = live ? vis : 0;
@@ -1955,7 +2092,7 @@ function buildPins() {
     el.textContent = String(s.events);
     el.setAttribute('aria-label', `${s.name}: ${s.events} event${s.events === 1 ? '' : 's'}. Open`);
     el.addEventListener('click', () => setLevel('state', s));
-    const bx = (s.bb.x0 + s.bb.x1) / 2, by = (s.bb.y0 + s.bb.y1) / 2;
+    const bb = s.ins ? s.ins.tbb : s.bb, bx = (bb.x0 + bb.x1) / 2, by = (bb.y0 + bb.y1) / 2;
     gpins.appendChild(el);
     g.badges.push({ el, s, x: bx, y: by });
   });
@@ -2025,7 +2162,8 @@ let gctx = null;
 function resetGlobe() {
   if (!g.ready) return;
   g.level = 'world'; g.cont = null; g.country = g.state = null;
-  g.cam = { cx: WW / 2, cy: WH / 2, z: g.z0 }; g.tw = null; g.sharp = null;
+  g.usMode = false; g.us = 0;
+  g.cam = { cx: g.wcx, cy: WH / 2, z: g.z0 }; g.tw = null; g.sharp = null;
   updateHud(); closePop(); hideLock();
 }
 
@@ -2516,90 +2654,47 @@ requestAnimationFrame(frame);
     document.head.appendChild(st);
   } catch (_) {}
 
-  /* 2. the dots */
+  /* 2. the dots: drawn once into a tile. The tile slides with a CSS animation (no JavaScript each frame),
+        and the dots near the cursor are masked out. Nothing blinks. */
   try {
-    const cvs = document.createElement('canvas');
-    cvs.id = 'dotCanvas'; cvs.setAttribute('aria-hidden', 'true');
-    document.body.insertBefore(cvs, document.body.firstChild);
-    const ctx = cvs.getContext('2d');
-    const STEP = 24, SLIDE = 6, R = 78, REST = 0.9;                 // grid spacing, dim radius (px), how fast dimmed dots come back (per second)
-    let W = 0, H = 0, dpr = 1, mx = -9999, my = -9999;
-    const dim = new Map();                               // dots that are currently dimmed: key -> 0..1 (1 = normal)
-    const hash = (a, b, n) => {                          // a stable "random" number for each dot, so nothing repeats
+    const STEP = 24, N = 40, T = STEP * N, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const hash = (a, b, n) => {
       let h = (a * 374761393 + b * 668265263 + n * 2246822519) >>> 0;
       h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
       return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
     };
-    /* every dot's look is worked out once and reused (the grid wraps after NC columns, far wider than any screen) */
-    const NC = 211, NR = 96, N = NC * NR;
-    const P = { skip: new Uint8Array(N), ox: new Float32Array(N), oy: new Float32Array(N), r: new Float32Array(N), a: new Float32Array(N), tw: new Uint8Array(N), sp: new Float32Array(N), ph: new Float32Array(N) };
-    for (let cx = 0; cx < NC; cx++) for (let gy = 0; gy < NR; gy++) {
-      const i = cx * NR + gy, major = (cx % 5 === 0 && gy % 5 === 0);
-      P.skip[i] = hash(cx, gy, 1) < 0.035 ? 1 : 0;
-      P.ox[i] = (hash(cx, gy, 2) - 0.5) * 2.6; P.oy[i] = (hash(cx, gy, 3) - 0.5) * 2.6;
-      P.r[i] = (major ? 1.35 : 0.85) * (0.75 + hash(cx, gy, 4) * 0.6);
-      P.a[i] = (major ? 0.44 : 0.27) * (0.45 + hash(cx, gy, 5) * 0.85);
-      P.tw[i] = hash(cx, gy, 6) < 0.24 ? 1 : 0;
-      P.sp[i] = 0.5 + hash(cx, gy, 7) * 0.8; P.ph[i] = hash(cx, gy, 8) * 6.283;
+    const cv = document.createElement('canvas'); cv.width = cv.height = T * dpr;
+    const c = cv.getContext('2d'); c.scale(dpr, dpr);
+    for (let gy = 0; gy < N; gy++) for (let gx = 0; gx < N; gx++) {
+      if (hash(gx, gy, 1) < 0.035) continue;                              // a dot that never printed
+      const major = (gx % 5 === 0 && gy % 5 === 0);
+      const x = gx * STEP + STEP / 2 + (hash(gx, gy, 2) - 0.5) * 2.6, y = gy * STEP + STEP / 2 + (hash(gx, gy, 3) - 0.5) * 2.6;
+      const r = (major ? 1.35 : 0.85) * (0.75 + hash(gx, gy, 4) * 0.6);
+      const a = Math.min(0.85, (major ? 0.44 : 0.27) * (0.45 + hash(gx, gy, 5) * 0.85) * (hash(gx, gy, 6) < 0.2 ? 1.9 : 1));
+      c.fillStyle = 'rgba(' + ink + ',' + a.toFixed(3) + ')';
+      c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
     }
-    const NB = 14, fills = [];
-    for (let b = 0; b <= NB; b++) fills.push('rgba(' + ink + ',' + (b / NB * 0.85).toFixed(3) + ')');
-    function size() {
-      dpr = Math.min(2, window.devicePixelRatio || 1);
-      W = window.innerWidth; H = window.innerHeight;
-      cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
-      cvs.style.width = W + 'px'; cvs.style.height = H + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    let last = performance.now(), acc = 0;
-    function draw(now) {
-      const dt = Math.min(0.1, (now - last) / 1000); last = now;
-      ctx.clearRect(0, 0, W, H);
-      const t = now / 1000;
-      const slide = reduceMotion ? 0 : (t * SLIDE) % 1e7;               // the whole grid drifts slowly to the right, the opposite way to the Home photos
-      const gx0 = Math.floor(-slide / STEP) - 1, gx1 = Math.ceil((W - slide) / STEP) + 1, gy1 = Math.min(NR - 1, Math.ceil(H / STEP));
-      const near = mx > -9000;
-      const k = Math.exp(-REST * dt * 2.2);
-      if (dim.size) dim.forEach((v, key) => { const nv = 1 - (1 - v) * k; if (nv > 0.985) dim.delete(key); else dim.set(key, nv); });
-      const paths = new Array(NB + 1);
-      const R2 = R * R;
-      for (let gy = 0; gy <= gy1; gy++) for (let gx = gx0; gx <= gx1; gx++) {
-        const i = (((gx % NC) + NC) % NC) * NR + gy;
-        if (P.skip[i]) continue;
-        const x = gx * STEP + slide + STEP / 2 + P.ox[i], y = gy * STEP + STEP / 2 + P.oy[i];
-        let a = P.a[i];
-        if (P.tw[i]) { const w = Math.pow(0.5 + 0.5 * Math.sin(t * P.sp[i] + P.ph[i]), 2.2); a *= 0.2 + w * 3.2; }
-        if (near || dim.size) {
-          const key = gx * 256 + gy;
-          if (near) {
-            const dx = x - mx, dy = y - my, d2 = dx * dx + dy * dy;
-            if (d2 < R2) { const f = Math.pow(Math.sqrt(d2) / R, 2) * 0.9; const old = dim.get(key); if (old === undefined || f < old) dim.set(key, f); }
-          }
-          const dv = dim.get(key);
-          if (dv !== undefined) a *= dv;
-        }
-        if (a < 0.01) continue;
-        const bk = Math.min(NB, Math.round(a / 0.85 * NB));
-        const p = paths[bk] || (paths[bk] = new Path2D());
-        const r = P.r[i]; p.moveTo(x + r, y); p.arc(x, y, r, 0, 6.283);
-      }
-      for (let b = 1; b <= NB; b++) if (paths[b]) { ctx.fillStyle = fills[b]; ctx.fill(paths[b]); }
-    }
-    let raf = 0, moving = false;
-    let lastDraw = 0;
-    function frame(now) {
-      raf = 0;
-      if (!reduceMotion || dim.size) raf = requestAnimationFrame(frame);
-      if (now - lastDraw < 30 || now < (window.__sideBusy || 0)) return;     // about 30 pictures a second, and a pause while the sidebar is moving
-      lastDraw = now;
-      draw(now);
-    }
-    function wake() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
-    window.addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; wake(); }, { passive: true });
-    document.addEventListener('pointerleave', () => { mx = my = -9999; wake(); });
-    window.addEventListener('blur', () => { mx = my = -9999; });
-    window.addEventListener('resize', () => { size(); wake(); });
-    size(); wake();
+    const url = cv.toDataURL('image/png');
+    const st = document.createElement('style');
+    st.textContent = '#dotWrap{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}' +
+      '#dotWrap.dim{-webkit-mask-image:radial-gradient(circle 84px at var(--mx) var(--my),rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 22%,#000 100%);mask-image:radial-gradient(circle 84px at var(--mx) var(--my),rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 22%,#000 100%);}' +
+      '#dotLayer{position:absolute;left:-' + T + 'px;top:0;width:calc(100% + ' + T + 'px);height:100%;background-image:url(' + url + ');background-size:' + T + 'px ' + T + 'px;background-repeat:repeat;will-change:transform;animation:dotslide 160s linear infinite;}' +
+      '@keyframes dotslide{from{transform:translate3d(0,0,0)}to{transform:translate3d(' + T + 'px,0,0)}}' +
+      '@media (prefers-reduced-motion:reduce){#dotLayer{animation:none;}}';
+    document.head.appendChild(st);
+    const wrap = document.createElement('div'); wrap.id = 'dotWrap'; wrap.setAttribute('aria-hidden', 'true');
+    const layer = document.createElement('div'); layer.id = 'dotLayer'; wrap.appendChild(layer);
+    document.body.insertBefore(wrap, document.body.firstChild);
+    let px = 0, py = 0, queued = false;
+    const paint = () => { queued = false; wrap.style.setProperty('--mx', px + 'px'); wrap.style.setProperty('--my', py + 'px'); };
+    window.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return;
+      px = e.clientX; py = e.clientY;
+      if (!wrap.classList.contains('dim')) { wrap.classList.add('dim'); paint(); }
+      else if (!queued) { queued = true; requestAnimationFrame(paint); }
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => wrap.classList.remove('dim'));
+    window.addEventListener('blur', () => wrap.classList.remove('dim'));
   } catch (_) {}
 })();
 
@@ -2610,7 +2705,7 @@ requestAnimationFrame(frame);
    Until you list some, an event's magazine uses a spread-out first pick. */
 (function magazines() {
   const grid = $('magGrid'), viewer = $('magViewer'), mag = $('mag'), book = $('magBook'), prev = $('magPrev'), next = $('magNext');
-  const SEGS = 12, BEND = 34, FLIP_MS = 1150;
+  const SEGS = 26, BEND = 34, FLIP_MS = 1150;
   const eventsWithPhotos = BY_DATE.filter(c => c.photos.some(p => p.src));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
   const picksFor = c => {
@@ -2624,18 +2719,35 @@ requestAnimationFrame(frame);
   };
   const dateLine = c => [c.date, c.location].filter(Boolean).join(' · ');
 
-  /* ---- the grid of covers ---- */
+  /* ---- the row of magazines: one centred, the rest rested against each other on either side ---- */
+  const stage = $('mgStage'), info = $('mgInfo');
+  let act = 0;
   function drawGrid() {
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
-    grid.innerHTML = eventsWithPhotos.map(c => {
-      const n = picksFor(c).length;
-      return `<button type="button" class="mg-card" data-id="${esc(c.id)}" aria-label="Open the ${esc(c.title)} magazine">` +
+    stage.innerHTML = eventsWithPhotos.map((c, i) =>
+      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} magazine">` +
         `<span class="mg-cover"><img src="${esc(coverOf(c))}" alt="" loading="lazy" draggable="false"><span class="veil"></span>` +
         `<span class="mast">${esc(SITE.name || 'Allwood Archives')}</span>` +
-        `<span class="ttl">${esc(c.title)}<small>${esc(c.date || '')}</small></span></span>` +
-        `<span class="mg-cap">${Math.ceil((n + 2) / 2) * 2} pages</span></button>`;
-    }).join('');
+        `<span class="ttl">${esc(c.title)}<small>${esc(c.date || '')}</small></span></span><span class="dim"></span></div>`).join('');
+    layoutFlow();
   }
+  function layoutFlow() {
+    const cards = stage.children, n = cards.length;
+    for (let i = 0; i < n; i++) {
+      const o = i - act, a = Math.abs(o), sg = Math.sign(o), el = cards[i];
+      const x = o === 0 ? 0 : sg * (0.74 + (a - 1) * 0.15) * 100, z = o === 0 ? 40 : -30 - a * 12, ry = o === 0 ? 0 : -sg * 62;
+      el.style.transform = `translate3d(calc(var(--cw) * ${(x / 100).toFixed(3)}), 0, ${z}px) rotateY(${ry}deg) scale(${o === 0 ? 1 : 0.94})`;
+      el.style.zIndex = String(100 - a);
+      el.style.opacity = a > 7 ? '0' : '1';
+      el.style.pointerEvents = a > 7 ? 'none' : 'auto';
+      el.classList.toggle('side', o !== 0);
+      el.tabIndex = a > 7 ? -1 : 0;
+    }
+    const c = eventsWithPhotos[act];
+    if (c) info.innerHTML = `<b>${esc(c.title)}</b><span>${esc(dateLine(c))} &middot; ${Math.ceil((picksFor(c).length + 2) / 2) * 2} pages &middot; click to open</span>`;
+    $('mgPrev').disabled = act === 0; $('mgNext').disabled = act >= eventsWithPhotos.length - 1;
+  }
+  const goFlow = d => { const t = clamp(act + d, 0, eventsWithPhotos.length - 1); if (t !== act) { act = t; layoutFlow(); } };
   function plural0(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
 
   /* ---- page content ---- */
@@ -2686,15 +2798,15 @@ requestAnimationFrame(frame);
     const segs = []; let parent = root;
     for (let k = 0; k < SEGS; k++) {
       const seg = document.createElement('div'); seg.className = 'seg';
-      seg.style.width = (sw + 0.6) + 'px'; seg.style.left = (k ? sw : 0) + 'px';
+      seg.style.width = (sw + 1) + 'px'; seg.style.left = (k ? sw : 0) + 'px';
       const fr = document.createElement('div'); fr.className = 'piece';
-      fr.innerHTML = `<div class="pgc" style="left:${-k * sw}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i], 'front', 'pgx')}</div><div class="spec"></div><div class="shd"></div>`;
+      fr.innerHTML = `<div class="pgc" style="left:${-k * sw}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i], 'front', 'pgx')}</div><div class="shd"></div>`;
       const bk = document.createElement('div'); bk.className = 'piece bk';
-      bk.innerHTML = `<div class="pgc" style="left:${-(pw - (k + 1) * sw)}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i + 1], 'back', 'pgx')}</div><div class="spec"></div><div class="shd"></div>`;
+      bk.innerHTML = `<div class="pgc" style="left:${-(pw - (k + 1) * sw)}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i + 1], 'back', 'pgx')}</div><div class="shd"></div>`;
       seg.appendChild(fr); seg.appendChild(bk);
       fr.firstChild.firstChild.style.position = 'absolute'; bk.firstChild.firstChild.style.position = 'absolute';
       parent.appendChild(seg); parent = seg;
-      segs.push({ seg, fs: fr.querySelector('.shd'), bs: bk.querySelector('.shd'), fp: fr.querySelector('.spec'), bp: bk.querySelector('.spec') });
+      segs.push({ seg, fs: fr.querySelector('.shd'), bs: bk.querySelector('.shd') });
     }
     return { root, segs };
   }
@@ -2720,13 +2832,11 @@ requestAnimationFrame(frame);
       let orient = th;
       sl.segs.forEach((o, k) => {
         const r = k === 0 ? th : bend;
-        o.seg.style.transform = `rotateY(${r.toFixed(3)}deg)`;
+        o.seg.style.transform = k ? `rotateY(${r.toFixed(3)}deg) translateZ(0.03px)` : `rotateY(${r.toFixed(3)}deg)`;
         if (k) orient += bend;
         const c = Math.cos(orient * Math.PI / 180);                              // facing us = 1, edge-on = 0
         const dark = (0.5 * (1 - Math.abs(c))).toFixed(3);
-        const front = c > 0, spec = Math.max(0, 1 - Math.abs(Math.abs(c) - 0.55) * 4) * 0.5;
         o.fs.style.opacity = dark; o.bs.style.opacity = dark;
-        o.fp.style.opacity = spec.toFixed(3); o.bp.style.opacity = spec.toFixed(3);
       });
       if (p < 1) requestAnimationFrame(step);
       else {
@@ -2739,24 +2849,36 @@ requestAnimationFrame(frame);
   }
 
   /* ---- controls ---- */
-  grid.addEventListener('click', e => {
-    const b = e.target.closest('.mg-card'); if (!b) return;
-    const c = BY_DATE.find(x => x.id === b.dataset.id); if (c) openMagazine(c);
+  stage.addEventListener('click', e => {
+    const el = e.target.closest('.mg-card'); if (!el || flowDrag) return;
+    const i = +el.dataset.i;
+    if (i === act) openMagazine(eventsWithPhotos[i]); else { act = i; layoutFlow(); }
   });
+  stage.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('mg-card')) { e.preventDefault(); e.target.click(); } });
+  $('mgPrev').addEventListener('click', () => goFlow(-1));
+  $('mgNext').addEventListener('click', () => goFlow(1));
+  let flowDrag = false, fdx = null, wheelAt = 0;
+  stage.addEventListener('pointerdown', e => { fdx = e.clientX; flowDrag = false; });
+  stage.addEventListener('pointermove', e => { if (fdx !== null && Math.abs(e.clientX - fdx) > 48) { flowDrag = true; goFlow(e.clientX < fdx ? 1 : -1); fdx = e.clientX; } });
+  window.addEventListener('pointerup', () => { fdx = null; setTimeout(() => { flowDrag = false; }, 0); });
+  stage.addEventListener('wheel', e => {
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (Math.abs(d) < 8) return;
+    e.preventDefault();
+    const now = performance.now(); if (now - wheelAt < 280) return; wheelAt = now;
+    goFlow(d > 0 ? 1 : -1);
+  }, { passive: false });
   $('magBack').addEventListener('click', closeMagazine);
   prev.addEventListener('click', () => flip(-1));
   next.addEventListener('click', () => flip(1));
   document.addEventListener('keydown', e => {
-    if (!$('view-favorites').classList.contains('on') || lb.classList.contains('on') || !evt) return;
+    if (!$('view-favorites').classList.contains('on') || lb.classList.contains('on')) return;
+    if (!evt) { if (e.key === 'ArrowRight') goFlow(1); else if (e.key === 'ArrowLeft') goFlow(-1); return; }
     if (e.key === 'ArrowRight') flip(1); else if (e.key === 'ArrowLeft') flip(-1); else if (e.key === 'Escape') closeMagazine();
   });
   mag.addEventListener('click', e => {
     const r = mag.getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
     if (x > 0.5 && cur < L) flip(1); else if (x <= 0.5 && cur > 0) flip(-1);
-  });
-  mag.addEventListener('pointermove', e => {
-    const r = mag.getBoundingClientRect();
-    mag.style.setProperty('--gx', clamp((e.clientX - r.left) / r.width * 100, 0, 100).toFixed(1) + '%');
   });
   let sx = null;
   mag.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
