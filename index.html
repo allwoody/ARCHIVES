@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
 <meta name="description" content="A portfolio of selected work.">
-<meta name="theme-color" content="#f4eadf">
+<meta name="theme-color" content="#eadac4">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Allwood Archives">
 <meta property="og:description" content="A portfolio of selected work.">
@@ -22,15 +22,15 @@
 <style>
   :root {
     /* Light mocha palette. Nothing in the site is darker than --ink (mocha). */
-    --bg: #f4eadf;        /* background: warm cream-latte */
-    --ink: #7a5c47;       /* main text: mocha, the darkest colour on the site */
-    --muted: #836650;     /* menu + small text */
-    --tile: #e8d8c5;      /* boxes behind photos / placeholders / map water */
-    --ph: #836650;        /* text on placeholder boxes */
-    --line: #dccab4;
-    --panel: #faf4ec;     /* info window, popups, map land */
-    --rgb-ink: 122, 92, 71;
-    --rgb-bg: 244, 234, 223;
+    --bg: #eadac4;        /* background: toasted latte */
+    --ink: #664734;       /* main text: deep mocha */
+    --muted: #735542;     /* menu + small text */
+    --tile: #dcc5a8;      /* boxes behind photos / placeholders / map water */
+    --ph: #735542;        /* text on placeholder boxes */
+    --line: #c9ae8e;
+    --panel: #f6eee2;     /* info window, popups, map land: the lightest surface */
+    --rgb-ink: 102, 71, 52;
+    --rgb-bg: 234, 218, 196;
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
        files, it is used automatically; otherwise Inter (free) is used. */
@@ -65,7 +65,7 @@
   /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
   .scrim {
     position: fixed; inset: 0; z-index: 19;
-    background: rgba(244, 234, 223, 0.35);
+    background: rgba(234, 218, 196, 0.35);
     -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
     opacity: 0; pointer-events: none;
@@ -79,7 +79,7 @@
     .sidebar:not(.closed):hover,
     .sidebar:not(.closed):focus-within {
       width: min(var(--sidebar-open, 250px), 70vw);
-      box-shadow: 8px 0 28px rgba(122, 92, 71, 0.07);
+      box-shadow: 8px 0 28px rgba(102, 71, 52, 0.07);
     }
     .sidebar:not(.closed):hover ~ .scrim,
     .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
@@ -223,6 +223,9 @@
   .collection-head { margin: 0 0 26px; }
   #view-collection { padding-bottom: 48px; }
   #collTitle { font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; margin-bottom: 4px; }
+  .ch-score { margin: 2px 0 8px; font-size: clamp(14px, 1.5vw, 20px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ch-score:empty { display: none; }
+  .ch-score + .ch-meta { font-size: 12px; }
   #collTitle + .ch-meta { font-size: 12px; }
   .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--bg); padding: 10px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
   .skip:focus { top: 8px; }
@@ -291,6 +294,11 @@
     user-select: none; -webkit-user-select: none;
   }
   .globe-wrap.dragging { cursor: grabbing; }
+  .zoomctl { position: absolute; right: 36px; bottom: 18px; z-index: 3; display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 6px 18px rgba(102, 71, 52, 0.18); }
+  .zoomctl button { width: 40px; height: 40px; font-size: 22px; line-height: 1; color: var(--ink); cursor: pointer; }
+  .zoomctl button + button { border-top: 1px solid var(--line); }
+  .zoomctl button:hover:not(:disabled) { background: var(--tile); }
+  .zoomctl button:disabled { opacity: 0.35; cursor: default; }
   .globe-wrap canvas { display: block; }
   .pins { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
   .pin {
@@ -299,7 +307,7 @@
     border-radius: 50%;
     background: var(--ink);
     border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px rgba(122, 92, 71, 0.3);
+    box-shadow: 0 0 0 1px rgba(102, 71, 52, 0.3);
     display: flex; align-items: center; justify-content: center;
     color: var(--bg); font-size: 9px; font-weight: 700; line-height: 1;
     opacity: 0; pointer-events: none;
@@ -317,7 +325,7 @@
     from { transform: scale(0.55); opacity: 0.55; }
     to   { transform: scale(1.5);  opacity: 0; }
   }
-  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(122, 92, 71, 0.2); outline: none; }
+  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(102, 71, 52, 0.2); outline: none; }
   .globe-hint {
     margin: 16px 0 0; padding-right: 36px;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
@@ -336,7 +344,7 @@
     width: min(320px, calc(100vw - 24px));
     background: var(--panel);
     border: 1px solid var(--line);
-    box-shadow: 0 14px 36px rgba(122, 92, 71, 0.16);
+    box-shadow: 0 14px 36px rgba(102, 71, 52, 0.16);
     font-size: 12px; line-height: 1.4;
   }
   .gpop[hidden] { display: none; }
@@ -355,7 +363,7 @@
     color: var(--muted);
   }
   .gp-item .d { font-size: 11px; white-space: nowrap; }
-  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(122, 92, 71, 0.045); }
+  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(102, 71, 52, 0.045); }
   .gp-mq { overflow: hidden; }
   .gp-track {
     display: flex; width: max-content;
@@ -541,7 +549,7 @@
   /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(244, 234, 223, 0.98);
+    background: rgba(234, 218, 196, 0.98);
     display: none;
   }
   .lb.on { display: flex; flex-direction: row; }
@@ -680,8 +688,12 @@
       <div class="globe-wrap" id="globeWrap">
         <canvas id="globeCanvas"></canvas>
         <div class="pins" id="pins"></div>
+        <div class="zoomctl" id="zoomCtl">
+          <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+          <button type="button" id="zoomOut" aria-label="Zoom out">&minus;</button>
+        </div>
       </div>
-      <p class="globe-hint" id="globeHint">Drag to pan the map &middot; hover it to zoom in &middot; hover a pin to see its events</p>
+      <p class="globe-hint" id="globeHint">Scroll or use + / &minus; to zoom &middot; drag to pan &middot; darker areas have events &middot; hover a pin to see them</p>
       <div class="globe-fallback" id="globeFallback" hidden></div>
     </div>
   </section>
@@ -720,6 +732,7 @@
   <section class="view" id="view-collection">
     <div class="collection-head">
       <h1 class="ch-title" id="collTitle"></h1>
+      <div class="ch-score" id="collScore"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
       <div class="ch-tags" id="collTags"></div>
@@ -1048,13 +1061,21 @@ marquee.addEventListener('wheel', e => {                              // trackpa
 
 /* ---------- map ----------
    A flat world map drawn on a canvas with d3-geo. It repeats sideways, so you
-   can drag it round the world forever. Rest the cursor on it and it eases in
-   a little toward the cursor. Each event with coords gets a pin; events at
-   the same spot share one pin. */
-const LAND_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json';
+   can drag it round the world forever. Scroll (or use + / -) to zoom. Rest
+   the cursor on it and it eases in a little toward the cursor. Country and US
+   state borders are drawn, and any country / state that has an event in it is
+   shaded darker. Each event with coords also gets a pin; events at the same
+   spot share one pin. */
+const CDN = 'https://cdn.jsdelivr.net/npm/';
+const MAP_DATA = {
+  land:      CDN + 'world-atlas@2/land-110m.json',
+  countries: CDN + 'world-atlas@2/countries-110m.json',
+  states:    CDN + 'us-atlas@3/states-10m.json'
+};
 const hasD3 = typeof d3 !== 'undefined' && !!d3.geoEquirectangular;
 const gwrap = $('globeWrap'), gcanvas = $('globeCanvas'), gpins = $('pins'), gpop = $('gpop');
-const MAP_TOP = 84, MAP_BOTTOM = -58, MAP_ZOOM = 1.22;      // latitudes shown, and how far it eases in on hover
+const MAP_TOP = 84, MAP_BOTTOM = -58;                        // latitudes shown
+const MAP_HOVER = 1.22, MAP_ZMAX = 14;                       // hover ease-in, and the most you can zoom
 
 /* group events that share a location */
 const groups = [];
@@ -1069,17 +1090,27 @@ COLLECTIONS.forEach(c => {
 });
 
 const g = {
-  w: 0, h: 0, W: 0, ox: 0, vx: 0,                 // canvas size, width of one whole world, sideways offset, drift speed
-  z: 1, ax: 0, ay: 0, mx: 0, my: 0,               // zoom, zoom anchor (eased), cursor
-  down: false, moved: false, dragging: false, hover: false,
-  sx: 0, sy: 0, lx: 0, lt: 0,
-  land: null, world: null, dirty: true, ks: [], pins: [], colors: null
+  w: 0, h: 0, W: 0, H: 0, k0: 0, ty0: 0,          // canvas size, size of one whole world, projection constants
+  cx: 0, cy: 0,                                    // the world point at the centre of the screen
+  zu: 1, zt: 1, za: null,                          // your zoom, where it is heading, and the point it zooms around
+  zh: 1, ax: 0, ay: 0, mx: 0, my: 0,              // hover ease-in, its anchor (eased), cursor
+  vx: 0, vy: 0, down: false, moved: false, dragging: false, hover: false,
+  sx: 0, sy: 0, lx: 0, ly: 0, lt: 0,
+  land: null, borders: { c: null, s: null }, countriesF: null, statesF: null, explored: [],
+  world: null, r: 1, dirty: true, pins: [], npin: 3, colors: null
 };
-let proj = null, gctx = null, globeInit = false;
+let proj = null, projV = null, gctx = null, globeInit = false;
 
 function refreshGlobeColors() {
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-  g.colors = { land: css('--panel'), coast: 'rgba(' + css('--rgb-ink') + ', 0.22)' };
+  const ink = css('--rgb-ink');
+  g.colors = {
+    land: css('--panel'),
+    explored: '#d4ab7e',                           // a deeper tan: "this place has been explored"
+    coast: 'rgba(' + ink + ', 0.38)',
+    country: 'rgba(' + ink + ', 0.5)',
+    state: 'rgba(' + ink + ', 0.30)'
+  };
   g.dirty = true;
 }
 
@@ -1089,60 +1120,95 @@ function sizeGlobe() {
   const top = gwrap.getBoundingClientRect().top;
   const h = Math.round(clamp(window.innerHeight - top - 64, 300, 920));
   const w = area.clientWidth;
-  g.w = w; g.h = h;
+  const frac = g.W ? g.cx / g.W : 0.5;
+  g.w = w; g.h = h; g.H = h;
   g.W = h * 360 / (MAP_TOP - MAP_BOTTOM);          // one whole world, as wide as it needs to be to fill the height
+  g.cx = frac * g.W;
+  g.cy = h / 2;
+  g.zu = g.zt = 1; g.za = null;
   gwrap.style.height = h + 'px';
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   gcanvas.width = Math.round(w * dpr); gcanvas.height = Math.round(h * dpr);
   gcanvas.style.width = w + 'px'; gcanvas.style.height = h + 'px';
   gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const k = g.W / (2 * Math.PI);
-  proj = d3.geoEquirectangular().scale(k).translate([g.W / 2, k * MAP_TOP * Math.PI / 180]).precision(0.3);
+  g.k0 = g.W / (2 * Math.PI);
+  g.ty0 = g.k0 * MAP_TOP * Math.PI / 180;
+  proj = d3.geoEquirectangular().scale(g.k0).translate([g.W / 2, g.ty0]).precision(0.3);
+  projV = d3.geoEquirectangular().precision(0.6).clipExtent([[0, 0], [w, h]]);   // used when zoomed in close
   g.dirty = true;
-  const ks = [];
-  for (let i = -1; i <= Math.ceil(w / g.W) + 1; i++) ks.push(i);
-  g.ks = ks;
   g.ax = g.mx = w / 2; g.ay = g.my = h / 2;
+  g.npin = Math.ceil(w / g.W) + 2;
   buildPins();
 }
 
-/* the whole world is drawn once into a hidden canvas, then copied across the screen each frame */
+/* where the map is right now: your zoom, the hover ease-in, and the (shifted) centre */
+function view() {
+  const zz = g.zu * g.zh;
+  const f = 1 / g.zu - 1 / zz;                      // keeps the point under the cursor still while it eases in
+  const hy = g.h / (2 * zz);
+  const cx = g.cx + (g.ax - g.w / 2) * f;
+  const cy = clamp(g.cy + (g.ay - g.h / 2) * f, hy, g.H - hy);
+  return { zz, cx, cy };
+}
+
+/* the map layers, drawn into any canvas context with any d3 path.  lw = line width multiplier */
+function drawLayers(ctx, path, lw) {
+  const c = g.colors;
+  ctx.beginPath(); path(g.land);
+  ctx.fillStyle = c.land; ctx.fill();
+  if (g.explored.length) {
+    ctx.fillStyle = c.explored;
+    g.explored.forEach(f => { ctx.beginPath(); path(f); ctx.fill(); });
+  }
+  ctx.beginPath(); path(g.land);
+  ctx.strokeStyle = c.coast; ctx.lineWidth = 0.7 * lw; ctx.stroke();
+  if (g.borders.s) { ctx.beginPath(); path(g.borders.s); ctx.strokeStyle = c.state; ctx.lineWidth = 0.6 * lw; ctx.stroke(); }
+  if (g.borders.c) { ctx.beginPath(); path(g.borders.c); ctx.strokeStyle = c.country; ctx.lineWidth = 0.8 * lw; ctx.stroke(); }
+}
+
+/* the whole world is drawn once into a hidden canvas; zoomed out, that picture is copied across the screen */
 function renderWorld() {
   g.dirty = false;
   if (!g.land || !proj) return;
-  let r = Math.min(2, window.devicePixelRatio || 1) * MAP_ZOOM;
-  while (g.W * r * g.h * r > 14e6) r *= 0.9;
+  let r = Math.min(2, window.devicePixelRatio || 1) * 1.6;
+  while (g.W * r * g.h * r > 16e6) r *= 0.9;
+  g.r = r;
   const cv = g.world || (g.world = document.createElement('canvas'));
   cv.width = Math.round(g.W * r); cv.height = Math.round(g.h * r);
   const c = cv.getContext('2d');
   c.setTransform(r, 0, 0, r, 0, 0);
   c.clearRect(0, 0, g.W, g.h);
-  const path = d3.geoPath(proj, c);
-  c.beginPath(); path(g.land);
-  c.fillStyle = g.colors.land; c.fill();
-  c.strokeStyle = g.colors.coast; c.lineWidth = 0.6; c.stroke();
+  drawLayers(c, d3.geoPath(proj, c), 1);
 }
 
 function drawMap() {
   gctx.clearRect(0, 0, g.w, g.h);
+  if (!g.land) return;
   if (g.dirty) renderWorld();
-  if (!g.world || !g.land) return;
-  const z = g.z, ax = g.ax, ay = g.ay;
-  const base = ((g.ox % g.W) + g.W) % g.W;
-  for (const k of g.ks) {
-    const x = ax + (base + k * g.W - ax) * z, dw = g.W * z;
-    if (x > g.w || x + dw < 0) continue;
-    gctx.drawImage(g.world, x, ay - ay * z, dw, g.h * z);
+  const { zz, cx, cy } = view();
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const k1 = Math.floor((cx - g.w / (2 * zz)) / g.W), k2 = Math.floor((cx + g.w / (2 * zz)) / g.W);
+  if (g.world && zz <= (g.r / dpr) * 0.95) {       // zoomed out: copy the picture
+    for (let k = k1; k <= k2; k++)
+      gctx.drawImage(g.world, g.w / 2 + (k * g.W - cx) * zz, g.h / 2 - cy * zz, g.W * zz, g.H * zz);
+  } else {                                         // zoomed in: draw the vectors fresh so edges stay sharp
+    projV.scale(g.k0 * zz);
+    const path = d3.geoPath(projV, gctx);
+    for (let k = k1; k <= k2; k++) {
+      projV.translate([g.w / 2 + (g.W / 2 + k * g.W - cx) * zz, g.h / 2 + (g.ty0 - cy) * zz]);
+      drawLayers(gctx, path, 1.15);
+    }
   }
 }
 
 function placePins() {
-  const z = g.z, ax = g.ax, ay = g.ay;
-  const base = ((g.ox % g.W) + g.W) % g.W;
+  const { zz, cx, cy } = view();
+  const n = g.npin, half = Math.floor(n / 2);
   g.pins.forEach(p => {
-    const sx = ax + (base + p.k * g.W + p.px - ax) * z;
-    const sy = ay + (p.py - ay) * z;
-    const live = sx > -16 && sx < g.w + 16;
+    const k = Math.round((cx - p.px) / g.W) + p.j - half;
+    const sx = g.w / 2 + (p.px + k * g.W - cx) * zz;
+    const sy = g.h / 2 + (p.py - cy) * zz;
+    const live = sx > -16 && sx < g.w + 16 && sy > -16 && sy < g.h + 16;
     p.el.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px)`;
     p.el.style.opacity = live ? 1 : 0;
     p.el.style.pointerEvents = live ? 'auto' : 'none';
@@ -1150,22 +1216,46 @@ function placePins() {
   });
 }
 
+function zoomAt(factor, x, y) {                   // zoom in (factor > 1) or out around a point on the screen
+  const zt = clamp(g.zt * factor, 1, MAP_ZMAX);
+  if (zt === g.zt) return;
+  g.za = { x, y, px: g.cx + (x - g.w / 2) / g.zu, py: g.cy + (y - g.h / 2) / g.zu };
+  g.zt = zt;
+}
+function syncZoomButtons() {
+  $('zoomIn').disabled = g.zt >= MAP_ZMAX - 1e-6;
+  $('zoomOut').disabled = g.zt <= 1 + 1e-6;
+}
+
 function globeStep(dt) {
   if (!globeInit || !g.w || !proj) return;
   const holding = g.hover || !gpop.hidden;
-  if (!g.dragging) {
-    const drift = (CFG.globeSpin > 0 && !reduceMotion && !holding) ? CFG.globeSpin / 360 * g.W : 0;
-    g.ox += (drift + g.vx) * dt;
-    g.vx *= Math.exp(-3 * dt);
-    if (Math.abs(g.vx) < 0.5) g.vx = 0;
+  if (Math.abs(g.zt - g.zu) > 1e-4) {              // ease toward the zoom you asked for, holding the point under the cursor
+    g.zu += (g.zt - g.zu) * (1 - Math.exp(-10 * dt));
+    if (Math.abs(g.zt - g.zu) < 1e-3) g.zu = g.zt;
+    if (g.za) { g.cx = g.za.px - (g.za.x - g.w / 2) / g.zu; g.cy = g.za.py - (g.za.y - g.h / 2) / g.zu; }
   }
-  const want = (!reduceMotion && canHover && holding) ? MAP_ZOOM : 1;
-  g.z += (want - g.z) * (1 - Math.exp(-7 * dt));
-  if (Math.abs(g.z - want) < 0.0005) g.z = want;
-  if (g.hover) {                                    // the zoom leans toward the cursor
+  const hy = g.h / (2 * g.zu);
+  if (!g.dragging) {
+    const drift = (CFG.globeSpin > 0 && !reduceMotion && !holding && g.zt < 1.05) ? CFG.globeSpin / 360 * g.W : 0;
+    g.cx -= (drift + g.vx) * dt;
+    g.cy -= g.vy * dt;
+    const k = Math.exp(-3 * dt);
+    g.vx *= k; g.vy *= k;
+    if (Math.abs(g.vx) < 0.5) g.vx = 0;
+    if (Math.abs(g.vy) < 0.5) g.vy = 0;
+  }
+  g.cy = clamp(g.cy, hy, g.H - hy);
+  g.cx = ((g.cx % g.W) + g.W) % g.W;
+  const fade = clamp(1 - (g.zu - 1) / 0.8, 0, 1);  // the hover ease-in only matters when you are zoomed right out
+  const want = (!reduceMotion && canHover && holding) ? 1 + (MAP_HOVER - 1) * fade : 1;
+  g.zh += (want - g.zh) * (1 - Math.exp(-7 * dt));
+  if (Math.abs(g.zh - want) < 0.0005) g.zh = want;
+  if (g.hover) {                                    // the ease-in leans toward the cursor
     const a = 1 - Math.exp(-10 * dt);
     g.ax += (g.mx - g.ax) * a; g.ay += (g.my - g.ay) * a;
   }
+  syncZoomButtons();
   drawMap();
   placePins();
 }
@@ -1270,7 +1360,7 @@ function buildPins() {
   groups.forEach(grp => {
     const xy = proj([grp.lon, grp.lat]);
     if (!xy) return;
-    g.ks.forEach(k => {
+    for (let j = 0; j < g.npin; j++) {
       const el = document.createElement('button');
       el.type = 'button';
       el.className = 'pin' + (grp.events.length > 1 ? ' multi' : '');
@@ -1282,19 +1372,20 @@ function buildPins() {
       el.addEventListener('blur', schedulePopClose);
       el.addEventListener('click', () => openPop(grp, el));
       gpins.appendChild(el);
-      g.pins.push({ grp, el, k, px: xy[0], py: xy[1] });
-    });
+      g.pins.push({ grp, el, j, px: xy[0], py: xy[1] });
+    }
   });
 }
 
 /* drag to pan the map (round and round, with a little momentum) */
 const mapPoint = e => { const r = gwrap.getBoundingClientRect(); g.mx = e.clientX - r.left; g.my = e.clientY - r.top; };
 gwrap.addEventListener('pointerdown', e => {
+  if (e.target.closest('.zoomctl')) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   g.down = true; g.moved = false;
-  g.sx = g.lx = e.clientX; g.sy = e.clientY;
+  g.sx = g.lx = e.clientX; g.sy = g.ly = e.clientY;
   g.lt = performance.now();
-  g.vx = 0;
+  g.vx = g.vy = 0;
 });
 gwrap.addEventListener('pointermove', e => {
   if (e.pointerType === 'mouse') { mapPoint(e); g.hover = true; }
@@ -1306,34 +1397,64 @@ gwrap.addEventListener('pointermove', e => {
     try { gwrap.setPointerCapture(e.pointerId); } catch (_) {}
   }
   if (!g.moved || !g.w) return;
-  const ddx = (e.clientX - g.lx) / g.z;               // screen pixels -> map pixels (the map may be zoomed in)
-  g.ox += ddx;
+  const zz = g.zu * g.zh;                            // screen pixels -> map pixels
+  const ddx = (e.clientX - g.lx) / zz, ddy = (e.clientY - g.ly) / zz;
+  g.cx -= ddx; g.cy -= ddy;
+  g.zt = g.zu; g.za = null;                          // dragging cancels a zoom still easing in
   const now = performance.now(), dtm = (now - g.lt) / 1000;
-  if (dtm > 0) g.vx = g.vx * 0.6 + (ddx / dtm) * 0.4;
-  g.lx = e.clientX; g.lt = now;
+  if (dtm > 0) { g.vx = g.vx * 0.6 + (ddx / dtm) * 0.4; g.vy = g.vy * 0.6 + (ddy / dtm) * 0.4; }
+  g.lx = e.clientX; g.ly = e.clientY; g.lt = now;
 });
 function endGlobeDrag() {
   if (!g.down) return;
   g.down = false; g.dragging = false;
   gwrap.classList.remove('dragging');
-  if (performance.now() - g.lt > 90) g.vx = 0;
-  g.vx = clamp(g.vx, -3000, 3000);
+  if (performance.now() - g.lt > 90) g.vx = g.vy = 0;
+  g.vx = clamp(g.vx, -3000, 3000); g.vy = clamp(g.vy, -3000, 3000);
 }
 gwrap.addEventListener('pointerup', endGlobeDrag);
 gwrap.addEventListener('pointercancel', endGlobeDrag);
 gwrap.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { mapPoint(e); g.hover = true; } });
 gwrap.addEventListener('pointerleave', () => { g.hover = false; });
 
+/* zoom: mouse wheel / trackpad pinch, and the + / - buttons */
+gwrap.addEventListener('wheel', e => {
+  if (!globeInit || !g.w) return;
+  e.preventDefault();
+  mapPoint(e);
+  const px = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+  zoomAt(Math.exp(-clamp(px, -240, 240) * 0.0035), g.mx, g.my);
+}, { passive: false });
+$('zoomIn').addEventListener('click', () => zoomAt(1.7, g.w / 2, g.h / 2));
+$('zoomOut').addEventListener('click', () => zoomAt(1 / 1.7, g.w / 2, g.h / 2));
+
+/* map shapes come from a public CDN. Borders and the shaded "explored" places arrive after the land. */
+function mapFeature(t, name) { return t && t.type === 'Topology' ? (typeof topojson !== 'undefined' ? topojson.feature(t, t.objects[name]) : null) : t; }
+function mapBorders(t, name) {
+  if (!t) return null;
+  if (t.type === 'Topology') return typeof topojson !== 'undefined' ? topojson.mesh(t, t.objects[name], (a, b) => a !== b) : null;
+  return { type: 'GeometryCollection', geometries: (t.features || []).map(f => f.geometry) };
+}
+const featList = f => (f && (f.features || [f])) || [];
+function findExplored() {                          // the state (or, outside the US, the country) each pin sits in
+  const out = [];
+  groups.forEach(grp => {
+    const pt = [grp.lon, grp.lat];
+    const hit = featList(g.statesF).find(f => d3.geoContains(f, pt)) || featList(g.countriesF).find(f => d3.geoContains(f, pt));
+    if (hit && !out.includes(hit)) out.push(hit);
+  });
+  g.explored = out;
+  g.dirty = true;
+}
+
 function initGlobe() {
   globeInit = true;
   gctx = gcanvas.getContext('2d');
-  fetch(LAND_URL)
-    .then(r => r.json())
-    .then(t => {
-      g.land = t.type === 'Topology' ? (typeof topojson !== 'undefined' ? topojson.feature(t, t.objects.land) : null) : t;
-      g.dirty = true;
-    })
-    .catch(() => {});                                // no map data: the pins still work, just without continents
+  const get = url => fetch(url).then(r => r.json());
+  const land = get(MAP_DATA.land).then(t => { g.land = mapFeature(t, 'land'); g.dirty = true; });
+  const countries = get(MAP_DATA.countries).then(t => { g.countriesF = mapFeature(t, 'countries'); g.borders.c = mapBorders(t, 'countries'); });
+  const states = get(MAP_DATA.states).then(t => { g.statesF = mapFeature(t, 'states'); g.borders.s = mapBorders(t, 'states'); });
+  Promise.allSettled([land, countries, states]).then(() => { try { findExplored(); } catch (_) {} g.dirty = true; });
 }
 
 /* plain list shown if the map tools could not load, or no event has coords yet */
@@ -1367,7 +1488,7 @@ function openGlobe() {
   sizeGlobe();
   if (first && proj) {                               // open with the first event's pin in the middle
     const xy = proj([groups[0].lon, groups[0].lat]);
-    if (xy) g.ox = g.w / 2 - xy[0];
+    if (xy) g.cx = xy[0];
   }
 }
 
@@ -1386,7 +1507,7 @@ window.addEventListener('resize', () => {
   resizeTimer = setTimeout(() => {
     measureSidebar();
     if (homeOn()) buildMarquee();
-    if (globeOn() && globeInit) { closePop(); const keep = g.ox; sizeGlobe(); g.ox = keep; }
+    if (globeOn() && globeInit) { closePop(); sizeGlobe(); }
   }, 200);
 });
 
@@ -1579,6 +1700,7 @@ function renderCollection(c) {
   $('collTitle').textContent = c.title;
   $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
     .filter(Boolean).join('  ·  ');
+  $('collScore').textContent = c.score || '';
   $('collDesc').textContent = c.description || '';
   $('collDesc').style.display = c.description ? '' : 'none';
   $('collTags').innerHTML = (c._tagKeys || []).map(k =>

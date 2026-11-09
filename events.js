@@ -39,7 +39,7 @@ const SITE = {
 
 /* ---------- SETTINGS ---------- */
 const SETTINGS = {
-  marqueeSpeed: 40,    // how fast the Home row drifts, pixels per second (lower = slower)
+  marqueeSpeed: 28,    // how fast the Home row drifts, pixels per second (lower = slower)
   peekDelay: 2500,     // how long the cursor rests on a photo before it goes fullscreen (1000 = 1 second)
   globeSpin: 4,        // how fast the globe turns by itself, degrees per second (0 = it stays still)
   logoWidth: 150,      // width of your logo in the top left, in pixels
@@ -69,7 +69,9 @@ const SETTINGS = {
                   Events with the SAME coords share one pin, and the
                   pin's popup becomes a little menu of those events.
                   An event with no coords is just left off the globe.
-     description  a sentence or two about the event
+     description  a sentence or two about the event (for a game, say who was played)
+     score        optional final score, shown under the big title on the event page only,
+                  e.g.  score: "Final \u00b7 Duke 62, William & Mary 7",
      latest       put  latest: true,  on ONE event and the "Latest" link
                   under Home opens it. (If none is marked, the last
                   event in the list is used.)
@@ -126,15 +128,16 @@ const SETTINGS = {
 const COLLECTIONS = [
   {
     id: "woodpeckers",
-    title: "Woodpeckers",
+    title: "Woodpeckers vs. Cannon Ballers",
     date: "June 21, 2026",
     location: "Segra Stadium, Fayetteville, NC",
     coords: [35.0527, -78.8784],
-    description: "The Fayetteville Woodpeckers at home in Segra Stadium on June 21. Pitching, at-bats and baserunning, plus the pregame and the people around the park.",
+    score: "Final \u00b7 Woodpeckers 6, Cannon Ballers 14",
+    description: "The Fayetteville Woodpeckers hosted the Kannapolis Cannon Ballers at Segra Stadium on June 21, the finale of the series. Pitching, at-bats and baserunning, plus the pregame and the people around the park.",
     layout: "masonry",
     gear: { camera: "ILCE-7M3", lens: "FE 70-200mm F2.8 GM OSS" },
-    tags: ["sports", "baseball", "minor league", "fayetteville woodpeckers", "segra stadium", "fayetteville", "north carolina", "june", "summer"],
-    cover: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-1488.jpg",
+    tags: ["sports", "baseball", "minor league", "fayetteville woodpeckers", "cannon ballers", "kannapolis", "segra stadium", "fayetteville", "north carolina", "june", "summer"],
+    cover: "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-2127.jpg",
     photos: [
       { src: "images/woodpeckers-jun-2026/3rd-base/180420-a-vu646-0375.jpg", focal: "200mm", aperture: "f/9", shutter: "1/400s", iso: "800", tags: ["infield", "defense"] },
       { src: "images/woodpeckers-jun-2026/3rd-base/180420-a-vu646-0393.jpg", focal: "108mm", aperture: "f/13", shutter: "1/200s", iso: "800", tags: ["infield", "defense"] },
@@ -344,7 +347,8 @@ const COLLECTIONS = [
     date: "September 26, 2026",
     location: "Wallace Wade Stadium, Durham, NC",
     coords: [36.0014, -78.942],
-    description: "Duke football against William & Mary at Wallace Wade Stadium on September 26. Game action, the marching band, the spirit squad, Blue Devil, and the fireworks after the win.",
+    score: "Final \u00b7 Duke 62, William & Mary 7",
+    description: "Duke football played William & Mary at Wallace Wade Stadium on September 26. Game action, the marching band, the spirit squad, Blue Devil, and the fireworks after the win.",
     layout: "masonry",
     gear: { camera: "ILCE-7M3", lens: "FE 70-200mm F2.8 GM OSS" },
     tags: ["sports", "football", "college football", "duke", "blue devils", "william & mary", "wallace wade stadium", "durham", "north carolina", "september", "game day", "daytime"],
@@ -453,11 +457,12 @@ const COLLECTIONS = [
   {
     id: "unc-oct-2026",
     title: "UNC vs. Notre Dame",
-    date: "October 2026",
+    date: "October 2, 2026",
     location: "Dorrance Field, Chapel Hill, NC",
     coords: [35.9049, -79.0469],
     latest: true,
-    description: "UNC women's soccer against Notre Dame at Dorrance Field in Chapel Hill. Warmups at golden hour, then the match into the night under the lights.",
+    score: "Final \u00b7 UNC 4, Notre Dame 1",
+    description: "No. 1 UNC women's soccer hosted No. 12 Notre Dame at Dorrance Field in Chapel Hill. Warmups at golden hour, then the match into the night under the lights.",
     layout: "masonry",
     gear: { camera: "ILCE-7M3", lens: "FE 70-200mm F2.8 GM OSS" },
     tags: ["sports", "soccer", "womens soccer", "college soccer", "unc", "tar heels", "notre dame", "chapel hill", "north carolina", "october", "night game"],
@@ -676,7 +681,7 @@ const COLLECTIONS = [
     layout: "masonry",
     gear: { camera: "ILCE-7M3", lens: "FE 70-200mm F2.8 GM OSS" },
     tags: ["travel", "grand teton national park", "wyoming", "tetons", "mountains", "lake", "national park", "outdoors", "landscape", "august", "summer"],
-    cover: "images/wyoming-aug-2026/dsc07418.jpg",
+    cover: "images/wyoming-aug-2026/dsc07492.jpg",
     photos: [
       { src: "images/wyoming-aug-2026/acain/dsc07470.jpg", focal: "70mm", aperture: "f/5", shutter: "1/250s", iso: "1250", tags: ["lake", "portrait"] },
       { src: "images/wyoming-aug-2026/acain/dsc07473.jpg", focal: "70mm", aperture: "f/5", shutter: "1/250s", iso: "1250", tags: ["lake", "portrait", "wading"] },
