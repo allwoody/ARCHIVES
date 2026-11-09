@@ -466,7 +466,7 @@ const COLLECTIONS = [
     layout: "masonry",
     gear: { camera: "ILCE-7M3", lens: "FE 70-200mm F2.8 GM OSS" },
     tags: ["sports", "soccer", "womens soccer", "college soccer", "unc", "tar heels", "notre dame", "chapel hill", "north carolina", "october", "night game"],
-    cover: "images/unc-oct-2026/261002-a-vu646-0209.jpg",
+    cover: "images/unc-oct-2026/261002-a-vu646-0580.jpg",
     photos: [
       { src: "images/unc-oct-2026/261002-a-vu646-0015.jpg", focal: "197mm", aperture: "f/2.8", shutter: "1/400s", iso: "1000", tags: ["warmup", "pregame"] },
       { src: "images/unc-oct-2026/261002-a-vu646-0061.jpg", focal: "200mm", aperture: "f/3.2", shutter: "1/500s", iso: "1250", tags: ["warmup", "pregame"] },
