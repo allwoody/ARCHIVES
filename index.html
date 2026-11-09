@@ -1892,7 +1892,9 @@ function infoHTML(c, p) {
   const date = p.date || c.date, loc = p.location || c.location;
   if (date) h += infoRow('Date', date);
   if (loc) h += infoRow('Location', loc);
-  if (c.description) h += `<p class="i-desc">${esc(c.description)}</p>`;
+  /* this photo's own description comes first; the event description is only used when a photo has none */
+  const about = p.caption || c.description;
+  if (about) h += `<p class="i-desc">${esc(about)}</p>`;
   h += `</div>`;
 
   const cam = [
@@ -1907,9 +1909,6 @@ function infoHTML(c, p) {
     h += `<div class="i-sec"><div class="i-head">Tags</div><div class="i-tags">` +
          tags.map(k => `<a class="i-tag" href="#index?tags=${encodeURIComponent(k)}" data-tag="${esc(k)}">${esc(TAG_LABEL.get(k))}</a>`).join('') +
          `</div></div>`;
-  }
-  if (p.caption) {
-    h += `<div class="i-sec"><div class="i-head">Notes</div><p class="i-desc">${esc(p.caption)}</p></div>`;
   }
   return h;
 }
