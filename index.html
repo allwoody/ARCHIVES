@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
 <meta name="description" content="A portfolio of selected work.">
+<meta name="theme-color" content="#d9d9d7">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Allwood Archives">
+<meta property="og:description" content="A portfolio of selected work.">
+<meta name="twitter:card" content="summary">
 <!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,13 +25,13 @@
     --ink: #262626;       /* main text: a soft dark, not pure black */
     --muted: #5c5c5a;     /* menu + small text */
     --tile: #c8c8c6;      /* boxes behind photos / placeholders */
-    --ph: #7a7a78;        /* text on placeholder boxes */
+    --ph: #4d4d4b;        /* text on placeholder boxes */
     --line: #c6c6c4;
     --panel: #e3e3e1;     /* info window, popups, globe land */
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
        files, it is used automatically; otherwise Inter (free) is used. */
-    --font: "NB International", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --logo-width: 150px;  /* set from SETTINGS.logoWidth in events.js */
     --m-h: clamp(190px, 54vh, 620px);   /* height of the photos in the Home marquee */
     --m-gap: 18px;                      /* space between marquee photos */
@@ -213,7 +218,14 @@
 
   /* ---------- page headings (collection + globe) ---------- */
   .collection-head { margin: 0 0 26px; }
+  #view-collection { padding-bottom: 48px; }
+  #collTitle { font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; margin-bottom: 4px; }
+  #collTitle + .ch-meta { font-size: 12px; }
+  .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--bg); padding: 10px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .skip:focus { top: 8px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .ch-title {
+    margin: 0; font-weight: 400;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
   }
   .ch-meta {
@@ -265,6 +277,21 @@
   }
 
   /* ---------- globe ---------- */
+  /* ---------- globe backdrop: dots, grain, drifting squiggles ---------- */
+  #view-globe { position: relative; }
+  #view-globe > *:not(.globe-bg) { position: relative; z-index: 1; }
+  .globe-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(38,38,38,0.22) 1px, transparent 1.4px); background-size: 22px 22px; }
+  .globe-bg::after { content: ""; position: absolute; inset: 0; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .15 0 0 0 0 .15 0 0 0 0 .15 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .squig { position: absolute; left: 0; width: 200%; height: 60px; color: rgba(38,38,38,0.16); animation: squigSlide 40s linear infinite; }
+  .squig svg { display: block; width: 100%; height: 100%; }
+  .squig.s1 { top: 12%; }
+  .squig.s2 { top: 34%; animation-duration: 55s; animation-direction: reverse; color: rgba(38,38,38,0.12); }
+  .squig.s3 { top: 58%; animation-duration: 48s; }
+  .squig.s4 { top: 80%; animation-duration: 65s; animation-direction: reverse; color: rgba(38,38,38,0.12); }
+  @keyframes squigSlide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .squig { animation: none; } }
   .globe-area { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
   .globe-wrap {
     position: relative;
@@ -446,6 +473,7 @@
   .ch-tags { margin-top: 16px; }
   .ch-tags:empty { display: none; }
   .i-tags { gap: 6px; }
+  @media (pointer: coarse) { .sx-chip, .ch-tag, .i-tag { min-height: 44px; align-items: center; display: inline-flex; } .nav a { padding-top: 10px; padding-bottom: 10px; } }
   .ch-tag, .i-tag {
     padding: 4px 10px;
     border: 1px solid var(--line); border-radius: 999px;
@@ -584,7 +612,7 @@
     }
     .logo { margin: 0; }
     .logo img { width: min(var(--logo-width), 120px); }
-    .menu-toggle { display: block; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
+    .menu-toggle { display: block; min-height: 44px; min-width: 44px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
     .nav { display: none; width: 100%; padding-top: 22px; }
     .nav.open { display: block; }
     main { margin-left: 0; padding: 12px 0 0 12px; }
@@ -607,6 +635,7 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
 <aside class="sidebar">
   <a class="logo" href="#home" id="logo">
@@ -618,9 +647,10 @@
 </aside>
 <div class="scrim" aria-hidden="true"></div>
 
-<main>
+<main id="main">
   <!-- home: marquee of cover photos -->
   <section class="view on" id="view-home">
+    <h1 class="sr-only">Allwood Archives</h1>
     <div class="marquee" id="marquee">
       <div class="track" id="track"></div>
     </div>
@@ -628,8 +658,9 @@
 
   <!-- globe: every event on a map of the world -->
   <section class="view" id="view-globe">
-    <div class="collection-head">
-      <div class="ch-title">Globe</div>
+    <div class="globe-bg" aria-hidden="true"><div class="squig s1" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M0 30 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0 q15 -26 30 0 t30 0"/></svg></div><div class="squig s2" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M0 30 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0 q15 -18 30 0 t30 0"/></svg></div><div class="squig s3" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M0 30 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0 q15 -30 30 0 t30 0"/></svg></div><div class="squig s4" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M0 30 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0 q15 -22 30 0 t30 0"/></svg></div></div>
+        <div class="collection-head">
+      <h1 class="ch-title">Globe</h1>
       <div class="ch-meta" id="globeMeta"></div>
     </div>
     <div class="globe-area" id="globeArea">
@@ -645,7 +676,7 @@
   <!-- index: a list of every event -->
   <section class="view" id="view-index">
     <div class="collection-head">
-      <div class="ch-title">Index</div>
+      <h1 class="ch-title">Index</h1>
       <div class="ch-meta" id="indexMeta"></div>
     </div>
 
@@ -671,7 +702,7 @@
   <!-- collection: photos for one event -->
   <section class="view" id="view-collection">
     <div class="collection-head">
-      <div class="ch-title" id="collTitle"></div>
+      <h1 class="ch-title" id="collTitle"></h1>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
       <div class="ch-tags" id="collTags"></div>
