@@ -501,6 +501,37 @@
   .ch-tags, .i-tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .ch-tags { margin-top: 16px; }
   .ch-tags:empty { display: none; }
+
+  /* event page tags: one drifting line, with an arrow on the left that opens the full list */
+  .tg-bar { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; }
+  .tg-bar.none { display: none; }
+  .tg-arrow {
+    flex: none; width: 28px; height: 28px; margin-top: 1px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line); border-radius: 50%; color: var(--muted); cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s ease;
+  }
+  .tg-arrow svg { display: block; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .tg-arrow:hover, .tg-arrow:focus-visible { color: var(--ink); border-color: var(--ink); outline: none; }
+  .tg-arrow:hover svg { transform: translateY(2px); }
+  .tg-arrow:active { transform: scale(0.88); }
+  .tg-bar.open .tg-arrow { color: var(--ink); border-color: var(--ink); }
+  .tg-bar.open .tg-arrow svg { transform: rotate(180deg); }
+  .tg-bar.open .tg-arrow:hover svg { transform: rotate(180deg) translateY(2px); }
+  .tg-view { flex: 1; min-width: 0; overflow: hidden; }
+  .tg-bar:not(.open) .tg-view {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+            mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  }
+  .tg-track { display: flex; width: max-content; }
+  .tg-set { display: flex; gap: 8px; padding-right: 8px; flex: none; }
+  .tg-bar:not(.open):not(.still) .tg-track { animation: tg-scroll var(--tg-dur, 60s) linear infinite; }
+  .tg-bar:not(.open) .tg-track:hover { animation-play-state: paused; }       /* resting on the tags just holds them still */
+  @keyframes tg-scroll { to { transform: translateX(-50%); } }
+  .tg-bar.still .tg-set + .tg-set, .tg-bar.open .tg-set + .tg-set { display: none; }
+  .tg-bar.open .tg-track { width: auto; }
+  .tg-bar.open .tg-set { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; padding-right: 0; animation: tg-open 0.35s ease both; }
+  @keyframes tg-open { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   .i-tags { gap: 6px; }
   @media (pointer: coarse) { .sx-chip, .ch-tag, .i-tag { min-height: 44px; align-items: center; display: inline-flex; } .nav a { padding-top: 10px; padding-bottom: 10px; } }
   .ch-tag, .i-tag {
@@ -666,6 +697,26 @@
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
   }
+  /* ---------- a little life in the buttons ---------- */
+  .ch-tag, .i-tag, .sx-chip, .sx-mode button, .menu-toggle, .zoomctl button, .lb button, .tg-arrow {
+    transition-property: color, border-color, background-color, transform, box-shadow, opacity;
+    transition-duration: 0.18s; transition-timing-function: cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  @media (hover: hover) {
+    .ch-tag:hover, .i-tag:hover, .sx-chip:not(.zero):hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28); }
+    .sx-mode button:hover { transform: translateY(-1px); }
+    a.ix-row { transition: padding-left 0.2s ease, background-color 0.2s ease; }
+    a.ix-row:hover { padding-left: 8px; background: rgba(241, 239, 234, 0.05); }
+    .tile { transition: filter 0.25s ease; }
+    .tile:hover { filter: brightness(1.07); }
+  }
+  .ch-tag:active, .i-tag:active, .sx-chip:not(.zero):active, .sx-mode button:active, .menu-toggle:active, .zoomctl button:active:not(:disabled) { transform: scale(0.94); box-shadow: none; }
+  .sx-chip[aria-pressed="true"] { box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); }
+  .zoomctl button:hover:not(:disabled) { color: var(--ink); }
+  @media (prefers-reduced-motion: reduce) {
+    .tg-bar .tg-track { animation: none !important; }
+    .ch-tag:hover, .i-tag:hover, .sx-chip:hover, a.ix-row:hover { transform: none; padding-left: 0; }
+  }
   @media (prefers-reduced-motion: reduce) {
     .pin::after { animation: none; opacity: 0; }
     .logo img, .logo .logo-text { animation: none; }
@@ -758,7 +809,12 @@
       <div class="ch-score" id="collScore"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
-      <div class="ch-tags" id="collTags"></div>
+      <div class="tg-bar" id="tagBar">
+        <button type="button" class="tg-arrow" id="tagArrow" aria-expanded="false" aria-controls="collTags" aria-label="Show all tags">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="tg-view"><div class="tg-track" id="collTags"></div></div>
+      </div>
     </div>
     <div class="grid" id="grid"></div>
   </section>
@@ -1734,6 +1790,30 @@ function attachPeek(b, c, p, idx) {
 }
 
 /* ---------- collection page ---------- */
+/* the tags under an event title: a slow drifting line; the arrow opens the whole list */
+const tagBar = $('tagBar'), tagArrow = $('tagArrow'), tagTrack = $('collTags');
+function setTagsOpen(open) {
+  tagBar.classList.toggle('open', open);
+  tagArrow.setAttribute('aria-expanded', String(open));
+  tagArrow.setAttribute('aria-label', open ? 'Show fewer tags' : 'Show all tags');
+}
+function setupTagBar(c) {
+  const keys = c._tagKeys || [];
+  tagBar.classList.toggle('none', !keys.length);
+  tagBar.classList.remove('still');
+  setTagsOpen(false);
+  const set = hidden => `<div class="tg-set"${hidden ? ' aria-hidden="true"' : ''}>` + keys.map(k =>
+    `<a class="ch-tag" href="#index?tags=${encodeURIComponent(k)}"${hidden ? ' tabindex="-1"' : ''}>${esc(TAG_LABEL.get(k))}</a>`).join('') + '</div>';
+  tagTrack.innerHTML = set(false) + set(true);
+  tagTrack.style.setProperty('--tg-dur', Math.max(25, keys.length * 2.6) + 's');
+  requestAnimationFrame(() => {                       // few tags that already fit: no need to drift or to open
+    const fits = tagTrack.firstElementChild.scrollWidth <= tagTrack.parentElement.clientWidth;
+    tagBar.classList.toggle('still', fits || reduceMotion);
+    tagArrow.style.display = fits ? 'none' : '';
+  });
+}
+tagArrow.addEventListener('click', () => setTagsOpen(!tagBar.classList.contains('open')));
+
 function renderCollection(c) {
   currentColl = c;
   lbList = c.photos.map((p, idx) => ({ c, p, idx }));
@@ -1744,8 +1824,7 @@ function renderCollection(c) {
   $('collScore').textContent = c.score || '';
   $('collDesc').textContent = c.description || '';
   $('collDesc').style.display = c.description ? '' : 'none';
-  $('collTags').innerHTML = (c._tagKeys || []).map(k =>
-    `<a class="ch-tag" href="#index?tags=${encodeURIComponent(k)}">${esc(TAG_LABEL.get(k))}</a>`).join('');
+  setupTagBar(c);
 
   const layout = ['grid', 'square', 'wide', 'masonry'].includes(c.layout) ? c.layout : 'grid';
   grid.className = 'grid layout-' + layout;
