@@ -332,6 +332,23 @@
   .gp-foot a { color: var(--ink); text-decoration: none; }
   .gp-foot a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+  /* ---------- index page (list of every event) ---------- */
+  .index { max-width: 900px; }
+  .ix-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 70px;
+    gap: 16px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
+  }
+  .ix-head { color: var(--muted); font-size: 11px; padding-top: 0; }
+  a.ix-row span:nth-child(n+2) { color: var(--muted); }
+  a.ix-row:hover span { color: var(--ink); }
+  .ix-row span:last-child { text-align: right; }
+
   /* ---------- text pages ---------- */
   .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
   .text-page h1 {
@@ -468,6 +485,8 @@
     .view { padding-right: 12px; }
     footer { padding-right: 12px; }
     .layout-grid, .layout-wide { --cols: 1; }
+    .ix-row { grid-template-columns: 1fr auto; }
+    .ix-row span:nth-child(3), .ix-row span:nth-child(4) { display: none; }
     .layout-square { --cols: 2; }
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
@@ -514,6 +533,15 @@
       <p class="globe-hint" id="globeHint">Drag to turn the globe &middot; hover a pin to see its events</p>
       <div class="globe-fallback" id="globeFallback" hidden></div>
     </div>
+  </section>
+
+  <!-- index: a list of every event -->
+  <section class="view" id="view-index">
+    <div class="collection-head">
+      <div class="ch-title">Index</div>
+      <div class="ch-meta" id="indexMeta"></div>
+    </div>
+    <div class="index" id="indexList"></div>
   </section>
 
   <!-- collection: photos for one event -->
@@ -597,7 +625,7 @@ const pad = n => String(n).padStart(2, '0');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
-const views = ['home', 'globe', 'collection', 'about', 'contact'];
+const views = ['home', 'globe', 'index', 'collection', 'about', 'contact'];
 const homeOn = () => $('view-home').classList.contains('on');
 const globeOn = () => $('view-globe').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -653,6 +681,7 @@ function buildNav() {
   let html = `<li class="head"><a href="#home" data-route="home">Home</a></li>`;
   if (latest) html += `<li><a href="#${esc(latest.id)}" data-route="latest" title="${esc(latest.title)}">Latest</a></li>`;
   html += `<li><a href="#globe" data-route="globe">Globe</a></li>`;
+  html += `<li><a href="#index" data-route="index">Index</a></li>`;
   html += `<li class="head">Projects</li>`;
   COLLECTIONS.forEach(c => {
     html += `<li><a href="#${esc(c.id)}" data-route="${esc(c.id)}">${esc(c.title)}</a></li>`;
@@ -1155,6 +1184,19 @@ function showPeek(c, p, idx) {
 }
 function hidePeek() { clearTimeout(peekTimer); peek.classList.remove('on'); }
 
+/* ---------- index page ---------- */
+function renderIndex() {
+  $('indexMeta').textContent = COLLECTIONS.length + (COLLECTIONS.length === 1 ? ' event' : ' events');
+  let h = `<div class="ix-row ix-head"><span>Event</span><span>Date</span><span>Location</span><span>Photos</span></div>`;
+  COLLECTIONS.forEach(c => {
+    h += `<a class="ix-row" href="#${esc(c.id)}">` +
+           `<span>${esc(c.title)}</span><span>${esc(c.date || '')}</span>` +
+           `<span>${esc(c.location || '')}</span><span>${c.photos.length}</span>` +
+         `</a>`;
+  });
+  $('indexList').innerHTML = h;
+}
+
 /* ---------- collection page ---------- */
 function renderCollection(c) {
   currentColl = c;
@@ -1207,6 +1249,7 @@ function route() {
   if (target === 'about') showView('about');
   else if (target === 'contact') showView('contact');
   else if (target === 'globe') { showView('globe'); openGlobe(); }
+  else if (target === 'index') { renderIndex(); showView('index'); }
   else if (coll) { renderCollection(coll); showView('collection'); }
   else {
     target = 'home';
