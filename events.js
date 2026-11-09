@@ -29,7 +29,7 @@ const SITE = {
     email: "aidan.allwood@gmail.com",
     links: [
       { label: "Instagram", url: "https://www.instagram.com/4llwood/" },
-      { label: "Letterboxd",  url: "https://letterboxd.com/allwoody/" }
+      { label: "Letterboxd",  url: "https://letterboxd.com/allwoody/" },
       { label: "Youtube",  url: "https://www.youtube.com/@allwoody" }
       // add more like:  { label: "YouTube", url: "https://youtube.com/..." },
     ]
