@@ -42,7 +42,8 @@ const SETTINGS = {
   marqueeSpeed: 40,    // how fast the Home row drifts, pixels per second (lower = slower)
   peekDelay: 2500,     // how long the cursor rests on a photo before it goes fullscreen (1000 = 1 second)
   globeSpin: 4,        // how fast the globe turns by itself, degrees per second (0 = it stays still)
-  logoWidth: 150       // width of your logo in the top left, in pixels
+  logoWidth: 150,       // width of your logo in the top left, in pixels
+  logoSway: 20         // how far the logo rocks side to side, in degrees (0 = it stays still)
 };
 
 
@@ -110,6 +111,7 @@ const COLLECTIONS = [
     location: "New York, NY",
     coords: [40.7128, -74.0060],
     description: "A short description of this event. What it was, who was there, what you shot.",
+     tags: ["sports", "fayetteville", "baseball"],
     layout: "grid",
     gear: { camera: "Camera model", lens: "Lens" },
     cover: "",
