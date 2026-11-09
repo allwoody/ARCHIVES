@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
 <meta name="description" content="A portfolio of selected work.">
+<!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
 <!--
   index.html is the CODE of the site. Your content (events, photos, About,
   Contact) lives in events.js, so you can replace this file with a newer
@@ -12,14 +16,17 @@
 -->
 <style>
   :root {
-    --bg: #dedad1;        /* background. Darker: #d8d4ca   Lighter: #e4e0d8 */
-    --ink: #2a2824;       /* main text: a soft dark, not pure black */
-    --muted: #5f5b53;     /* menu + small text */
-    --tile: #cdc9bf;      /* boxes behind photos / placeholders */
-    --ph: #7d776c;        /* text on placeholder boxes */
-    --line: #cbc7bc;
-    --panel: #e6e2da;     /* info window, popups, globe land */
+    --bg: #d9d9d7;        /* background. Darker: #d3d3d1   Lighter: #dfdfdd */
+    --ink: #262626;       /* main text: a soft dark, not pure black */
+    --muted: #5c5c5a;     /* menu + small text */
+    --tile: #c8c8c6;      /* boxes behind photos / placeholders */
+    --ph: #7a7a78;        /* text on placeholder boxes */
+    --line: #c6c6c4;
+    --panel: #e3e3e1;     /* info window, popups, globe land */
     --sidebar: 250px;
+    /* typeface. NB International is A24's font (paid). If you own it and upload the font
+       files, it is used automatically; otherwise Inter (free) is used. */
+    --font: "NB International", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --logo-width: 150px;  /* set from SETTINGS.logoWidth in events.js */
     --m-h: clamp(190px, 54vh, 620px);   /* height of the photos in the Home marquee */
     --m-gap: 18px;                      /* space between marquee photos */
@@ -30,7 +37,7 @@
   body {
     background: var(--bg);
     color: var(--ink);
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: var(--font);
     font-size: 13px;
     -webkit-font-smoothing: antialiased;
   }
@@ -41,7 +48,7 @@
   .sidebar {
     position: fixed; top: 0; left: 0; bottom: 0;
     width: var(--sidebar);
-    padding: 36px 32px;
+    padding: 36px 28px;
     overflow-x: hidden; overflow-y: auto;
     background: var(--bg);
     z-index: 20;
@@ -50,27 +57,24 @@
   /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
   .scrim {
     position: fixed; inset: 0; z-index: 19;
-    background: rgba(222, 218, 209, 0.35);
-    -webkit-backdrop-filter: blur(7px);
-            backdrop-filter: blur(7px);
+    background: rgba(217, 217, 215, 0.3);
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
     opacity: 0; pointer-events: none;
     transition: opacity 0.28s ease;
   }
-  /* hovering the sidebar widens it to fit the longest name and blurs the rest of the site */
+  /* On a computer the sidebar rests narrow and shows only the section headings.
+     Hover it (or tab into it) and it widens, the sub-links drop down, and the page
+     behind it blurs slightly. */
   @media (hover: hover) and (min-width: 721px) {
-    .sidebar:not(.closed):hover {
-      width: min(var(--sidebar-open, var(--sidebar)), 70vw);
+    :root { --sidebar: 160px; }
+    .sidebar:not(.closed):hover,
+    .sidebar:not(.closed):focus-within {
+      width: min(var(--sidebar-open, 250px), 70vw);
       box-shadow: 8px 0 28px rgba(0, 0, 0, 0.07);
     }
-    .sidebar:not(.closed):hover ~ .scrim { opacity: 1; }
-  }
-  /* same thing for keyboard users tabbing through the menu */
-  @media (hover: hover) and (min-width: 721px) {
-    .sidebar:has(a:focus-visible) {
-      width: min(var(--sidebar-open, var(--sidebar)), 70vw);
-      box-shadow: 8px 0 28px rgba(0, 0, 0, 0.07);
-    }
-    .sidebar:has(a:focus-visible) ~ .scrim { opacity: 1; }
+    .sidebar:not(.closed):hover ~ .scrim,
+    .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
   }
   .logo {
     display: block;
@@ -81,6 +85,18 @@
   }
   .logo:hover { color: var(--ink); }
   .logo img { display: block; width: var(--logo-width); max-width: 100%; height: auto; }
+  /* a gentle side-to-side turn so the logo has a little life (SETTINGS.logoSway in events.js; 0 = off) */
+  .logo { perspective: 600px; }
+  .logo img, .logo .logo-text {
+    transform-origin: 50% 50%;
+    animation: logo-sway 7s ease-in-out infinite;
+    will-change: transform;
+  }
+  .logo .logo-text { transform-origin: 0 50%; }
+  @keyframes logo-sway {
+    0%, 100% { transform: rotateY(calc(var(--sway, 14deg) * -1)); }
+    50%      { transform: rotateY(var(--sway, 14deg)); }
+  }
 
   .nav { list-style: none; margin: 0; padding: 0; }
   .nav li { margin: 0 0 9px; white-space: nowrap; }
@@ -100,14 +116,37 @@
   @media (hover: hover) { .nav a:hover { transform: scale(1.08); } }   /* slight magnify on hover */
 
   /* section headers: Home, Projects, Info */
+  .nav .sec { margin: 0 0 22px; }
   .nav .head {
-    margin: 32px 0 12px;
+    display: block;
     font-size: 15px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    outline: none;
   }
-  .nav .head:first-child { margin-top: 0; }
   .nav .head a { color: var(--ink); }
+  .nav .head:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* the sub-links under each header */
+  .nav .subs { display: grid; grid-template-rows: 1fr; }
+  .nav .subs > ul { list-style: none; margin: 0; padding: 12px 0 0; min-height: 0; overflow: hidden; }
+  .nav .subs li:last-child { margin-bottom: 0; }
+  @media (hover: hover) and (min-width: 721px) {
+    /* closed: only the headers show */
+    .nav .subs {
+      grid-template-rows: 0fr; opacity: 0; visibility: hidden;
+      transition: grid-template-rows 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+                  opacity 0.2s ease, visibility 0s linear 0.3s;
+    }
+    /* open: they drop down */
+    .sidebar:not(.closed):hover .subs,
+    .sidebar:not(.closed):focus-within .subs {
+      grid-template-rows: 1fr; opacity: 1; visibility: visible;
+      transition: grid-template-rows 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.06s,
+                  opacity 0.25s ease 0.1s, visibility 0s;
+    }
+  }
 
   .menu-toggle { display: none; }
 
@@ -244,7 +283,7 @@
     border-radius: 50%;
     background: var(--ink);
     border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px rgba(42, 40, 36, 0.3);
+    box-shadow: 0 0 0 1px rgba(38, 38, 38, 0.3);
     display: flex; align-items: center; justify-content: center;
     color: var(--bg); font-size: 9px; font-weight: 700; line-height: 1;
     opacity: 0; pointer-events: none;
@@ -262,7 +301,7 @@
     from { transform: scale(0.55); opacity: 0.55; }
     to   { transform: scale(1.5);  opacity: 0; }
   }
-  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(42, 40, 36, 0.2); outline: none; }
+  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(38, 38, 38, 0.2); outline: none; }
   .globe-hint {
     margin: 22px 0 0;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
@@ -300,7 +339,7 @@
     color: var(--muted);
   }
   .gp-item .d { font-size: 11px; white-space: nowrap; }
-  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(42, 40, 36, 0.045); }
+  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(38, 38, 38, 0.045); }
   .gp-mq { overflow: hidden; }
   .gp-track {
     display: flex; width: max-content;
@@ -401,7 +440,7 @@
   /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(222, 218, 209, 0.98);
+    background: rgba(217, 217, 215, 0.98);
     display: none;
   }
   .lb.on { display: flex; flex-direction: row; }
@@ -493,6 +532,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .pin::after { animation: none; opacity: 0; }
+    .logo img, .logo .logo-text { animation: none; }
     .gp-track { animation: none; }
     .gp-mq { overflow-x: auto; }
     .gp-group[aria-hidden="true"] { display: none; }
@@ -615,7 +655,7 @@ if (typeof COLLECTIONS === 'undefined') {
 
 const site = (typeof SITE !== 'undefined' && SITE) || {};
 const CFG = Object.assign(
-  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150 },
+  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150, logoSway: 14 },
   (typeof SETTINGS !== 'undefined' && SETTINGS) || {}
 );
 
@@ -636,6 +676,7 @@ const SITE_NAME = site.name || 'Allwood Archives';
 document.title = SITE_NAME;
 $('siteName').textContent = SITE_NAME;
 document.documentElement.style.setProperty('--logo-width', (Number(CFG.logoWidth) || 150) + 'px');
+document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0) + 'deg');
 
 (function setupLogo() {
   const img = $('logoImg'), txt = $('logoText');
@@ -678,18 +719,24 @@ function coverOf(c) {
 /* ---------- nav ---------- */
 function buildNav() {
   const latest = COLLECTIONS.find(c => c.latest) || COLLECTIONS[COLLECTIONS.length - 1];
-  let html = `<li class="head"><a href="#home" data-route="home">Home</a></li>`;
-  if (latest) html += `<li><a href="#${esc(latest.id)}" data-route="latest" title="${esc(latest.title)}">Latest</a></li>`;
-  html += `<li><a href="#globe" data-route="globe">Globe</a></li>`;
-  html += `<li><a href="#index" data-route="index">Index</a></li>`;
-  html += `<li class="head">Projects</li>`;
-  COLLECTIONS.forEach(c => {
-    html += `<li><a href="#${esc(c.id)}" data-route="${esc(c.id)}">${esc(c.title)}</a></li>`;
-  });
-  html += `<li class="head">Info</li>`;
-  html += `<li><a href="#about" data-route="about">About</a></li>`;
-  html += `<li><a href="#contact" data-route="contact">Contact</a></li>`;
-  nav.innerHTML = html;
+  const link = (href, route, label, title) =>
+    `<li><a href="${href}" data-route="${route}"${title ? ` title="${esc(title)}"` : ''}>${label}</a></li>`;
+
+  let home = '';
+  if (latest) home += link('#' + esc(latest.id), 'latest', 'Latest', latest.title);
+  home += link('#globe', 'globe', 'Globe');
+  home += link('#index', 'index', 'Index');
+
+  const projects = COLLECTIONS.map(c => link('#' + esc(c.id), esc(c.id), esc(c.title))).join('');
+  const info = link('#about', 'about', 'About') + link('#contact', 'contact', 'Contact');
+
+  nav.innerHTML =
+    `<li class="sec"><div class="head"><a href="#home" data-route="home">Home</a></div>` +
+      `<div class="subs"><ul>${home}</ul></div></li>` +
+    `<li class="sec"><div class="head" tabindex="0">Projects</div>` +
+      `<div class="subs"><ul>${projects}</ul></div></li>` +
+    `<li class="sec"><div class="head" tabindex="0">Info</div>` +
+      `<div class="subs"><ul>${info}</ul></div></li>`;
 }
 
 /* Every name in the sidebar stays on one line. When you hover the sidebar it
@@ -697,15 +744,21 @@ function buildNav() {
    is ever cut off. */
 const sidebar = document.querySelector('.sidebar');
 function measureSidebar() {
-  const base = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar')) || 250;
+  const cs = getComputedStyle(sidebar);
+  const padding = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
   let widest = 0;
   nav.querySelectorAll('a').forEach(a => { widest = Math.max(widest, a.scrollWidth); });
-  const needed = Math.ceil(widest * 1.1) + 64 + 8;      // +10% for the hover zoom, +64 for the sidebar's padding
-  document.documentElement.style.setProperty('--sidebar-open', Math.max(base, needed) + 'px');
+  const needed = Math.ceil(widest * 1.1) + padding + 8;   // +10% for the hover zoom
+  document.documentElement.style.setProperty('--sidebar-open', Math.max(240, needed) + 'px');
 }
 /* after you pick a page the sidebar tucks away at once so you can see it;
    move the mouse off and back on to open it again */
-nav.addEventListener('click', e => { if (e.target.closest('a')) sidebar.classList.add('closed'); });
+nav.addEventListener('click', e => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  sidebar.classList.add('closed');
+  a.blur();                                  // so keyboard focus doesn't hold the sidebar open
+});
 sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'));
 
 function showView(name) {
@@ -856,9 +909,9 @@ function refreshGlobeColors() {
   g.colors = {
     ocean: css('--tile'),
     land: css('--panel'),
-    coast: 'rgba(95, 91, 83, 0.55)',
-    grat: 'rgba(42, 40, 36, 0.07)',
-    rim: 'rgba(42, 40, 36, 0.35)'
+    coast: 'rgba(92, 92, 90, 0.55)',
+    grat: 'rgba(38, 38, 38, 0.07)',
+    rim: 'rgba(38, 38, 38, 0.35)'
   };
 }
 
