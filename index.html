@@ -61,9 +61,9 @@
     width: var(--sidebar);
     padding: 36px 28px;
     overflow-x: hidden; overflow-y: auto;
-    background: var(--bg);
+    background-color: transparent;
     z-index: 20;
-    transition: width 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.28s ease;
+    transition: width 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.28s ease, background-color 0.28s ease;
   }
   /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
   .scrim {
@@ -82,6 +82,7 @@
     .sidebar:not(.closed):hover,
     .sidebar:not(.closed):focus-within {
       width: min(var(--sidebar-open, 250px), 70vw);
+      background-color: var(--bg);
       box-shadow: 8px 0 28px rgba(0, 0, 0, 0.25);
     }
     .sidebar:not(.closed):hover ~ .scrim,
@@ -699,6 +700,9 @@
     .layout-masonry { column-count: 2; }
     :root { --m-h: clamp(160px, 38vh, 320px); --m-gap: 12px; --gap: 8px; }
   }
+  #dotCanvas { position: fixed; left: 0; top: 0; z-index: -1; pointer-events: none; }
+  @media (max-width: 720px) { .sidebar { background-color: var(--bg); } }
+
   /* ---------- a little life in the buttons ---------- */
   .ch-tag, .i-tag, .sx-chip, .sx-mode button, .menu-toggle, .zoomctl button, .lb button, .tg-arrow {
     transition-property: color, border-color, background-color, transform, box-shadow, opacity;
@@ -1990,22 +1994,24 @@ window.addEventListener('hashchange', route);
 route();
 requestAnimationFrame(frame);
 
-/* ---------- paper texture ----------
-   A dotted graph-paper background drawn once on a canvas and used as a tiled
-   image. Every dot is nudged a little, varies in size and strength, and a few
-   are missing or doubled, with faint grain, smudges and specks, so it looks
-   hand-printed rather than perfect. */
+/* ---------- paper texture + living dot grid ----------
+   Two layers. The paper itself (soft blotches, grain, fibres) is drawn once
+   into a tiled image. The dotted graph-paper grid is a live canvas behind the
+   page: every dot is nudged, sized and weighted a little differently, a few
+   of them slowly twinkle, and any dots near the cursor dim at once, then
+   fade back in once the cursor has moved on. */
 (function paperTexture() {
+  const ink = (getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '241,239,234');
+  let seed = 20261109;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+
+  /* 1. the paper */
   try {
-    const S = 960, step = 24, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const S = 960, dpr = Math.min(2, window.devicePixelRatio || 1);
     const cv = document.createElement('canvas');
     cv.width = cv.height = S * dpr;
     const c = cv.getContext('2d');
     c.scale(dpr, dpr);
-    let seed = 20261109;
-    const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-    const ink = getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '102,71,52';
-    // soft uneven blotches, like paper that has aged unevenly
     for (let i = 0; i < 26; i++) {
       const x = rnd() * S, y = rnd() * S, r = 60 + rnd() * 170;
       const dark = rnd() < 0.55;
@@ -2015,33 +2021,97 @@ requestAnimationFrame(frame);
       c.fillStyle = gr;
       for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { c.save(); c.translate(ox, oy); c.fillRect(x - r, y - r, r * 2, r * 2); c.restore(); }
     }
-    // the dot grid
-    for (let gy = 0; gy < S / step; gy++) for (let gx = 0; gx < S / step; gx++) {
-      if (rnd() < 0.035) continue;                          // an occasional dot that never printed
-      const x = gx * step + step / 2 + (rnd() - 0.5) * 2.6;
-      const y = gy * step + step / 2 + (rnd() - 0.5) * 2.6;
-      const major = (gx % 5 === 0 && gy % 5 === 0);         // every fifth dot is a little stronger
-      const r = (major ? 1.35 : 0.85) * (0.75 + rnd() * 0.6);
-      const a = (major ? 0.34 : 0.20) * (0.45 + rnd() * 0.85);
-      c.fillStyle = 'rgba(' + ink + ',' + a.toFixed(3) + ')';
-      c.beginPath(); c.ellipse(x, y, r * (0.9 + rnd() * 0.25), r * (0.9 + rnd() * 0.25), rnd() * 3, 0, 6.283); c.fill();
-      if (rnd() < 0.02) { c.beginPath(); c.arc(x + (rnd() - 0.5) * 3, y + (rnd() - 0.5) * 3, r * 0.7, 0, 6.283); c.fill(); }  // doubled print
-    }
-    // fine grain and stray specks
     for (let i = 0; i < 2600; i++) {
       const x = rnd() * S, y = rnd() * S;
       c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(0,0,0,' + (0.05 + rnd() * 0.10).toFixed(3) + ')';
       const r = 0.3 + rnd() * 0.6; c.fillRect(x, y, r, r);
     }
-    for (let i = 0; i < 14; i++) {                          // a few little fibres
+    for (let i = 0; i < 14; i++) {
       const x = rnd() * S, y = rnd() * S, l = 4 + rnd() * 9, t = rnd() * 6.283;
       c.strokeStyle = 'rgba(' + ink + ',0.07)'; c.lineWidth = 0.5;
       c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(t) * l / 2 + 2, y + Math.sin(t) * l / 2 - 2, x + Math.cos(t) * l, y + Math.sin(t) * l); c.stroke();
     }
-    const st = document.createElement('style');
     const img = 'url(' + cv.toDataURL('image/png') + ')';
-    st.textContent = 'body,.sidebar{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-repeat:repeat;background-attachment:fixed;}';
+    const st = document.createElement('style');
+    st.textContent = 'body{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-repeat:repeat;background-attachment:fixed;}' +
+      '.sidebar:not(.closed):hover,.sidebar:not(.closed):focus-within{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-attachment:fixed;}' +
+      '@media (max-width:720px){.sidebar{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-attachment:fixed;}}';
     document.head.appendChild(st);
+  } catch (_) {}
+
+  /* 2. the dots */
+  try {
+    const cvs = document.createElement('canvas');
+    cvs.id = 'dotCanvas'; cvs.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(cvs, document.body.firstChild);
+    const ctx = cvs.getContext('2d');
+    const STEP = 24, R = 78, REST = 0.9;                 // grid spacing, dim radius (px), how fast dimmed dots come back (per second)
+    let W = 0, H = 0, dpr = 1, mx = -9999, my = -9999;
+    const dim = new Map();                               // dots that are currently dimmed: key -> 0..1 (1 = normal)
+    const hash = (a, b, n) => {                          // a stable "random" number for each dot, so nothing repeats
+      let h = (a * 374761393 + b * 668265263 + n * 2246822519) >>> 0;
+      h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    };
+    function size() {
+      dpr = Math.min(2, window.devicePixelRatio || 1);
+      W = window.innerWidth; H = window.innerHeight;
+      cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
+      cvs.style.width = W + 'px'; cvs.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    let last = performance.now(), acc = 0;
+    function draw(now) {
+      const dt = Math.min(0.1, (now - last) / 1000); last = now;
+      ctx.clearRect(0, 0, W, H);
+      const t = now / 1000;
+      const gx0 = 0, gx1 = Math.ceil(W / STEP), gy1 = Math.ceil(H / STEP);
+      const near = mx > -9000;
+      // dots under the cursor dim at once
+      const k = Math.exp(-REST * dt * 2.2);
+      dim.forEach((v, key) => { const nv = 1 - (1 - v) * k; if (nv > 0.985) dim.delete(key); else dim.set(key, nv); });
+      for (let gy = 0; gy <= gy1; gy++) for (let gx = gx0; gx <= gx1; gx++) {
+        if (hash(gx, gy, 1) < 0.035) continue;                          // a dot that never printed
+        const x = gx * STEP + STEP / 2 + (hash(gx, gy, 2) - 0.5) * 2.6;
+        const y = gy * STEP + STEP / 2 + (hash(gx, gy, 3) - 0.5) * 2.6;
+        const major = (gx % 5 === 0 && gy % 5 === 0);
+        const r = (major ? 1.35 : 0.85) * (0.75 + hash(gx, gy, 4) * 0.6);
+        let a = (major ? 0.44 : 0.27) * (0.45 + hash(gx, gy, 5) * 0.85);
+        if (hash(gx, gy, 6) < 0.16) {                                    // about one dot in six is a slow twinkler
+          const sp = 0.25 + hash(gx, gy, 7) * 0.5, ph = hash(gx, gy, 8) * 6.283;
+          const w = Math.pow(0.5 + 0.5 * Math.sin(t * sp + ph), 2.2);     // mostly resting, now and then it glows
+          a *= 0.25 + w * 2.1;
+          if (!reduceMotion) { /* twinkle already applied */ }
+        }
+        const key = gx + ',' + gy;
+        if (near) {
+          const dx = x - mx, dy = y - my, d2 = dx * dx + dy * dy;
+          if (d2 < R * R) {
+            const f = Math.pow(Math.sqrt(d2) / R, 2) * 0.9;                // 0 at the cursor, ~1 at the edge
+            const old = dim.get(key);
+            if (old === undefined || f < old) dim.set(key, f);
+          }
+        }
+        const dv = dim.get(key);
+        if (dv !== undefined) a *= dv;
+        if (a < 0.01) continue;
+        ctx.fillStyle = 'rgba(' + ink + ',' + Math.min(0.7, a).toFixed(3) + ')';
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+      }
+    }
+    let raf = 0, moving = false;
+    function frame(now) {
+      raf = 0;
+      acc += now - last;
+      draw(now);
+      if (!reduceMotion || dim.size) raf = requestAnimationFrame(frame);
+    }
+    function wake() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+    window.addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; wake(); }, { passive: true });
+    document.addEventListener('pointerleave', () => { mx = my = -9999; wake(); });
+    window.addEventListener('blur', () => { mx = my = -9999; });
+    window.addEventListener('resize', () => { size(); wake(); });
+    size(); wake();
   } catch (_) {}
 })();
 </script>
