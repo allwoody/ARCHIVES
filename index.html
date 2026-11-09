@@ -7,167 +7,335 @@
 <meta name="description" content="Allwood Archives: a portfolio of selected work.">
 <style>
   :root {
-    --paper: #f5f0e6;
-    --ink: #1f1b16;
-    --muted: #6b6257;
-    --line: #d9d0bf;
-    --accent: #8a3b24;
-    --card: #fbf8f1;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #17140f;
-      --ink: #ece5d6;
-      --muted: #9b9181;
-      --line: #332d24;
-      --accent: #d98a6a;
-      --card: #1e1a14;
-    }
+    --bg: #ffffff;
+    --ink: #111111;
+    --muted: #8a8a8a;
+    --tile: #ececec;
+    --sidebar: 250px;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
-    background: var(--paper);
+    background: var(--bg);
     color: var(--ink);
-    font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.65;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
   }
-  a { color: var(--accent); }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 
-  header.site {
-    border-bottom: 1px solid var(--line);
-    padding: 20px 0;
+  /* ---------- sidebar ---------- */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar);
+    padding: 36px 32px;
+    overflow-y: auto;
+    background: var(--bg);
+    z-index: 20;
   }
-  header.site .wrap {
-    display: flex; justify-content: space-between; align-items: baseline;
-    flex-wrap: wrap; gap: 12px;
+  .logo {
+    display: block;
+    font-size: 20px; line-height: 1.1; letter-spacing: 0.02em;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 44px;
   }
-  .brand { font-size: 1.15rem; letter-spacing: 0.12em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
-  nav a { margin-left: 20px; color: var(--muted); text-decoration: none; font-size: 0.95rem; }
-  nav a:hover { color: var(--accent); }
-
-  .hero { padding: 96px 0 72px; }
-  .hero .eyebrow { color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.8rem; margin: 0 0 16px; }
-  .hero h1 { font-size: clamp(2.6rem, 7vw, 4.8rem); line-height: 1.05; margin: 0 0 24px; font-weight: normal; }
-  .hero p.lead { font-size: 1.25rem; max-width: 36em; color: var(--muted); margin: 0; }
-
-  section { padding: 64px 0; border-top: 1px solid var(--line); }
-  h2 { font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: normal; margin: 0 0 32px; }
-
-  .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    padding: 24px;
-    display: flex; flex-direction: column; gap: 8px;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+  .logo:hover { color: var(--ink); }
+  .nav { list-style: none; margin: 0; padding: 0; }
+  .nav li { margin: 0 0 9px; }
+  .nav a, .nav button {
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-align: left;
+    transition: color 0.15s;
   }
-  .card:hover { transform: translateY(-3px); border-color: var(--accent); }
-  .card .num { font-size: 0.8rem; color: var(--accent); letter-spacing: 0.15em; }
-  .card h3 { margin: 0; font-size: 1.25rem; font-weight: normal; }
-  .card p { margin: 0; color: var(--muted); font-size: 0.97rem; }
-  .card .year { margin-top: auto; padding-top: 12px; font-size: 0.85rem; color: var(--muted); }
+  .nav a:hover, .nav button:hover,
+  .nav a.active, .nav button.active { color: var(--ink); }
+  .nav .group {
+    margin-top: 28px; margin-bottom: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink);
+  }
 
-  .about { display: grid; gap: 32px; grid-template-columns: 1fr; }
-  @media (min-width: 720px) { .about { grid-template-columns: 2fr 1fr; } }
-  .about p { margin: 0 0 1em; font-size: 1.08rem; }
-  .facts { list-style: none; padding: 0; margin: 0; font-size: 0.95rem; color: var(--muted); }
-  .facts li { padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .facts li:last-child { border-bottom: 0; }
+  .menu-toggle { display: none; }
 
-  .contact p { font-size: 1.2rem; margin: 0 0 8px; }
+  /* ---------- main ---------- */
+  main {
+    margin-left: var(--sidebar);
+    min-height: 100vh;
+    padding: 36px 36px 0 8px;
+    display: flex; flex-direction: column;
+  }
+  .view { display: none; flex: 1; }
+  .view.on { display: block; }
 
-  footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 0.9rem; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    position: relative;
+    display: block; width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--tile);
+    overflow: hidden;
+  }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #b5b5b5; letter-spacing: 0.12em; font-size: 12px;
+  }
+  .tile .hint {
+    position: absolute; left: 10px; bottom: 8px;
+    color: #fff; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    opacity: 0; transition: opacity 0.15s;
+    text-shadow: 0 0 6px rgba(0,0,0,0.5);
+  }
+  .tile:hover .hint { opacity: 1; }
+
+  .text-page { max-width: 560px; padding-top: 4px; font-size: 15px; line-height: 1.6; }
+  .text-page h1 {
+    font-size: 13px; font-weight: normal; text-transform: uppercase;
+    letter-spacing: 0.06em; margin: 0 0 22px;
+  }
+  .text-page p { margin: 0 0 1.1em; }
+  .text-page a { text-decoration: underline; text-underline-offset: 3px; }
+
+  footer {
+    padding: 56px 0 28px;
+    font-size: 11px; color: var(--muted);
+  }
+
+  /* ---------- lightbox ---------- */
+  .lb {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(255,255,255,0.97);
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 56px 72px;
+  }
+  .lb.on { display: flex; }
+  .lb-stage {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lb-stage .ph-big {
+    width: min(100%, 1100px); aspect-ratio: 16 / 9;
+    background: var(--tile);
+    display: flex; align-items: center; justify-content: center;
+    color: #b5b5b5; letter-spacing: 0.12em;
+  }
+  .lb button.ctl {
+    position: absolute; font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .lb button.ctl:hover { color: var(--ink); }
+  .lb .close { top: 22px; right: 28px; }
+  .lb .prev { left: 22px; top: 50%; transform: translateY(-50%); }
+  .lb .next { right: 22px; top: 50%; transform: translateY(-50%); }
+  .lb .count { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--muted); }
+
+  /* ---------- tablet / mobile ---------- */
+  @media (max-width: 1000px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .sidebar {
+      position: sticky; top: 0; bottom: auto; width: 100%;
+      padding: 16px 18px; overflow: visible;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    }
+    .logo { margin: 0; }
+    .menu-toggle { display: block; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); }
+    .nav { display: none; width: 100%; padding-top: 22px; }
+    .nav.open { display: block; }
+    main { margin-left: 0; padding: 8px 12px 0; }
+    .grid { grid-template-columns: 1fr; gap: 8px; }
+    .lb { padding: 56px 12px; }
+    .lb .prev { left: 6px; } .lb .next { right: 6px; }
+  }
 </style>
 </head>
 <body>
 
-<header class="site">
-  <div class="wrap">
-    <a class="brand" href="#top">Allwood Archives</a>
-    <nav>
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
-</header>
+<aside class="sidebar">
+  <a class="logo" href="#" id="logo">Allwood<br>Archives</a>
+  <button class="menu-toggle" id="menuToggle" aria-expanded="false">Menu</button>
+  <ul class="nav" id="nav"></ul>
+</aside>
 
-<main id="top">
-  <div class="wrap">
-    <div class="hero">
-      <p class="eyebrow">Portfolio</p>
-      <h1>Allwood Archives</h1>
-      <p class="lead">A collection of selected work, kept in one place. Replace this line with a sentence about what you do.</p>
-    </div>
-  </div>
+<main>
+  <!-- gallery view -->
+  <section class="view on" id="view-gallery">
+    <div class="grid" id="grid"></div>
+  </section>
 
-  <section id="work">
-    <div class="wrap">
-      <h2>Selected Work</h2>
-      <div class="grid">
-        <article class="card">
-          <span class="num">01</span>
-          <h3>Project Title One</h3>
-          <p>A short description of this piece of work. Say what it is and what you did.</p>
-          <span class="year">2026</span>
-        </article>
-        <article class="card">
-          <span class="num">02</span>
-          <h3>Project Title Two</h3>
-          <p>A short description of this piece of work. Say what it is and what you did.</p>
-          <span class="year">2025</span>
-        </article>
-        <article class="card">
-          <span class="num">03</span>
-          <h3>Project Title Three</h3>
-          <p>A short description of this piece of work. Say what it is and what you did.</p>
-          <span class="year">2025</span>
-        </article>
-        <article class="card">
-          <span class="num">04</span>
-          <h3>Project Title Four</h3>
-          <p>A short description of this piece of work. Say what it is and what you did.</p>
-          <span class="year">2024</span>
-        </article>
-      </div>
+  <!-- about view -->
+  <section class="view" id="view-about">
+    <div class="text-page">
+      <h1>About</h1>
+      <p>Write a few sentences here about who you are and what Allwood Archives is.</p>
+      <p>A second paragraph is optional. This is a good place for your background, your process, or what you are working on now.</p>
     </div>
   </section>
 
-  <section id="about">
-    <div class="wrap">
-      <h2>About</h2>
-      <div class="about">
-        <div>
-          <p>Write a few sentences here about who you are, what Allwood Archives is, and what kind of work you do.</p>
-          <p>A second paragraph is optional. This is a good place for your background or what you are working on now.</p>
-        </div>
-        <ul class="facts">
-          <li>Based in: Your location</li>
-          <li>Focus: Your specialty</li>
-          <li>Available for: Commissions, collaborations</li>
-        </ul>
-      </div>
+  <!-- contact view -->
+  <section class="view" id="view-contact">
+    <div class="text-page">
+      <h1>Contact</h1>
+      <p>For inquiries, email <a href="mailto:you@example.com">you@example.com</a>.</p>
+      <p><a href="#">Instagram</a><br><a href="#">LinkedIn</a></p>
     </div>
   </section>
 
-  <section id="contact" class="contact">
-    <div class="wrap">
-      <h2>Contact</h2>
-      <p>Get in touch: <a href="mailto:you@example.com">you@example.com</a></p>
-      <p><a href="#">Instagram</a> &middot; <a href="#">LinkedIn</a> &middot; <a href="#">GitHub</a></p>
-    </div>
-  </section>
+  <footer>&copy; <span id="yr">2026</span> Allwood Archives. All rights reserved.</footer>
 </main>
 
-<footer>
-  <div class="wrap">&copy; <span id="yr">2026</span> Allwood Archives. All rights reserved.</div>
-</footer>
+<!-- fullscreen viewer -->
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="ctl close" id="lbClose">Close</button>
+  <button class="ctl prev" id="lbPrev" aria-label="Previous">Prev</button>
+  <div class="lb-stage" id="lbStage"></div>
+  <button class="ctl next" id="lbNext" aria-label="Next">Next</button>
+  <div class="count" id="lbCount"></div>
+</div>
 
 <script>
-  document.getElementById('yr').textContent = new Date().getFullYear();
+/* ============================================================
+   EDIT THIS SECTION
+   - CATEGORIES: the page links in the left menu.
+   - ITEMS: one entry per tile. Put your images in an "images"
+     folder in the repo, then set src to e.g. "images/piece-1.jpg".
+     Leave src empty to show a grey placeholder tile.
+   ============================================================ */
+const CATEGORIES = [
+  { id: "collection-one",   label: "Collection One" },
+  { id: "collection-two",   label: "Collection Two" },
+  { id: "collection-three", label: "Collection Three" }
+];
+
+const ITEMS = [
+  { cat: "collection-one", title: "Untitled 01", src: "" },
+  { cat: "collection-one", title: "Untitled 02", src: "" },
+  { cat: "collection-one", title: "Untitled 03", src: "" },
+  { cat: "collection-one", title: "Untitled 04", src: "" },
+  { cat: "collection-one", title: "Untitled 05", src: "" },
+  { cat: "collection-one", title: "Untitled 06", src: "" },
+  { cat: "collection-two", title: "Untitled 07", src: "" },
+  { cat: "collection-two", title: "Untitled 08", src: "" },
+  { cat: "collection-two", title: "Untitled 09", src: "" },
+  { cat: "collection-two", title: "Untitled 10", src: "" },
+  { cat: "collection-three", title: "Untitled 11", src: "" },
+  { cat: "collection-three", title: "Untitled 12", src: "" }
+];
+/* ============================================================ */
+
+const nav = document.getElementById('nav');
+const grid = document.getElementById('grid');
+const views = { gallery: 'view-gallery', about: 'view-about', contact: 'view-contact' };
+let current = [];   // items currently shown
+let lbIndex = 0;
+
+function buildNav() {
+  let html = '';
+  CATEGORIES.forEach(c => {
+    html += `<li><a href="#${c.id}" data-route="${c.id}">${c.label}</a></li>`;
+  });
+  html += `<li class="group">Info</li>`;
+  html += `<li><a href="#about" data-route="about">About</a></li>`;
+  html += `<li><a href="#contact" data-route="contact">Contact</a></li>`;
+  nav.innerHTML = html;
+}
+
+function showView(name) {
+  Object.values(views).forEach(id => document.getElementById(id).classList.remove('on'));
+  document.getElementById(views[name]).classList.add('on');
+}
+
+function renderGrid(catId) {
+  current = ITEMS.filter(i => i.cat === catId);
+  grid.innerHTML = '';
+  current.forEach((item, idx) => {
+    const b = document.createElement('button');
+    b.className = 'tile';
+    b.setAttribute('aria-label', 'View ' + item.title);
+    b.innerHTML = item.src
+      ? `<img src="${item.src}" alt="${item.title}" loading="lazy">`
+      : `<span class="ph">${String(idx + 1).padStart(2, '0')}</span>`;
+    b.innerHTML += `<span class="hint">View fullsize</span>`;
+    b.addEventListener('click', () => openLb(idx));
+    grid.appendChild(b);
+  });
+}
+
+function route() {
+  const hash = (location.hash || '').replace('#', '');
+  let target = hash || CATEGORIES[0].id;
+
+  if (target === 'about') showView('about');
+  else if (target === 'contact') showView('contact');
+  else {
+    if (!CATEGORIES.some(c => c.id === target)) target = CATEGORIES[0].id;
+    renderGrid(target);
+    showView('gallery');
+  }
+
+  nav.querySelectorAll('[data-route]').forEach(a => {
+    a.classList.toggle('active', a.dataset.route === target);
+  });
+  nav.classList.remove('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', 'false');
+  window.scrollTo(0, 0);
+}
+
+/* ---- lightbox ---- */
+const lb = document.getElementById('lb');
+const stage = document.getElementById('lbStage');
+const count = document.getElementById('lbCount');
+
+function drawLb() {
+  const item = current[lbIndex];
+  stage.innerHTML = item.src
+    ? `<img src="${item.src}" alt="${item.title}">`
+    : `<div class="ph-big">${String(lbIndex + 1).padStart(2, '0')}</div>`;
+  count.textContent = `${lbIndex + 1} / ${current.length}`;
+}
+function openLb(i) { lbIndex = i; drawLb(); lb.classList.add('on'); lb.setAttribute('aria-hidden', 'false'); }
+function closeLb() { lb.classList.remove('on'); lb.setAttribute('aria-hidden', 'true'); }
+function stepLb(d) { lbIndex = (lbIndex + d + current.length) % current.length; drawLb(); }
+
+document.getElementById('lbClose').addEventListener('click', closeLb);
+document.getElementById('lbPrev').addEventListener('click', () => stepLb(-1));
+document.getElementById('lbNext').addEventListener('click', () => stepLb(1));
+lb.addEventListener('click', e => { if (e.target === lb || e.target === stage) closeLb(); });
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('on')) return;
+  if (e.key === 'Escape') closeLb();
+  if (e.key === 'ArrowLeft') stepLb(-1);
+  if (e.key === 'ArrowRight') stepLb(1);
+});
+
+/* ---- mobile menu ---- */
+document.getElementById('menuToggle').addEventListener('click', e => {
+  const open = nav.classList.toggle('open');
+  e.currentTarget.setAttribute('aria-expanded', open);
+});
+
+document.getElementById('logo').addEventListener('click', e => {
+  e.preventDefault();
+  location.hash = CATEGORIES[0].id;
+});
+
+document.getElementById('yr').textContent = new Date().getFullYear();
+buildNav();
+window.addEventListener('hashchange', route);
+route();
 </script>
 </body>
 </html>
