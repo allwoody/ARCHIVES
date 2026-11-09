@@ -18,18 +18,19 @@
 /* ---------- SITE ---------- */
 const SITE = {
   name: "Allwood Archives",
-  logo: "images/logo.png",      // your logo file, uploaded to the images folder
+  logo: "images/allwood.png",      // your logo file, uploaded to the images folder
 
   about: [
-    "Write a few sentences here about who you are and what Allwood Archives is.",
-    "A second paragraph is optional. This is a good place for your background, your process, or what you are working on now."
+    "archival location for any and all products.",
+    "Find what you love, and let it destroy you."
   ],
 
   contact: {
-    email: "you@example.com",
+    email: "aidan.allwood@gmail.com",
     links: [
-      { label: "Instagram", url: "#" },
-      { label: "LinkedIn",  url: "#" }
+      { label: "Instagram", url: "https://www.instagram.com/4llwood/" },
+      { label: "Letterboxd",  url: "https://letterboxd.com/allwoody/" }
+      { label: "Youtube",  url: "https://www.youtube.com/@allwoody" }
       // add more like:  { label: "YouTube", url: "https://youtube.com/..." },
     ]
   }
@@ -38,7 +39,7 @@ const SITE = {
 
 /* ---------- SETTINGS ---------- */
 const SETTINGS = {
-  marqueeSpeed: 50,    // how fast the Home row drifts, pixels per second (lower = slower)
+  marqueeSpeed: 40,    // how fast the Home row drifts, pixels per second (lower = slower)
   peekDelay: 2500,     // how long the cursor rests on a photo before it goes fullscreen (1000 = 1 second)
   globeSpin: 4,        // how fast the globe turns by itself, degrees per second (0 = it stays still)
   logoWidth: 150       // width of your logo in the top left, in pixels
