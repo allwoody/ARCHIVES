@@ -80,19 +80,21 @@
   @media (hover: hover) and (min-width: 721px) {
     :root { --sidebar: 160px; }
     .sidebar:not(.closed):hover,
+    .sidebar.navpeek:not(.closed),
     .sidebar:not(.closed):focus-within {
       width: min(var(--sidebar-open, 250px), 70vw);
       background-color: var(--bg);
       box-shadow: 4px 0 12px rgba(0, 0, 0, 0.22);
     }
     .sidebar:not(.closed):hover ~ .scrim,
+    .sidebar.navpeek:not(.closed) ~ .scrim,
     .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
   }
   @media (hover: hover) and (min-width: 721px) {
     .sidebar .nav { transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s; }
-    body.nav-hidden .sidebar:not(.peek) { pointer-events: none; }
+    body.nav-hidden .sidebar:not(.navpeek) { pointer-events: none; }
     body.nav-hidden .sidebar .logo { pointer-events: auto; }
-    body.nav-hidden .sidebar:not(.peek):not(:hover) .nav { opacity: 0; transform: translateX(-14px); visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; }
+    body.nav-hidden .sidebar:not(.navpeek):not(:hover) .nav { opacity: 0; transform: translateX(-14px); visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; }
   }
   .logo {
     display: block;
@@ -736,10 +738,27 @@
 
   /* ---------- favorites: one glossy magazine per project ---------- */
   #view-favorites { padding-right: 0; }
+  #view-favorites.on { display: flex; flex-direction: column; }
+  /* centre the magazines on the whole screen (the page area is pushed right by the menu) */
+  @media (min-width: 721px) { .mg-wrap, .mag-viewer { position: relative; left: calc((var(--sidebar) + 8px) / -2); } }
+  .mg-top { display: flex; justify-content: center; align-items: center; gap: 14px; min-height: 36px; margin: 0 0 6px; }
+  .pill { display: inline-flex; align-items: center; gap: 9px; min-height: 36px; padding: 0 20px; border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(71, 74, 79, 0.9); color: var(--muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, transform 0.18s ease, background 0.2s; }
+  .pill:hover, .pill:focus-visible { border-color: var(--muted); color: var(--ink); outline: none; }
+  .pill:active { transform: scale(0.96); }
+  .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .mg-info, .mg-stage { transition: opacity 0.35s ease; }
+  .mg-wrap.going .mg-info, .mg-wrap.going .mg-nav, .mg-wrap.going .mg-top { opacity: 0; transition: opacity 0.25s ease; }
+  @keyframes mvIn { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
+  @keyframes mvOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(10px) scale(0.92); } }
+  .mag-viewer.in .mag-stage, .mag-viewer.in .mag-foot { animation: mvIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .mag-viewer.out .mag-stage, .mag-viewer.out .mag-foot { animation: mvOut 0.32s ease both; }
+  .pg .shd { position: absolute; inset: 0; z-index: 9; background: #000; opacity: 0; pointer-events: none; }
   .mag-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 18px; }
   .mag-head h1 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
   .mag-head span { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
-  .mg-wrap { --ch: clamp(260px, calc(100vh - 330px), 440px); --cw: calc(var(--ch) * 0.74); position: relative; max-width: 1200px; padding-right: 36px; }
+  .mg-wrap { --ch: clamp(260px, calc(100vh - 330px), 440px); --cw: calc(var(--ch) * 0.74); position: relative; width: 100%; max-width: 1200px; margin: auto; padding: 0 36px; }
   .mg-wrap[hidden] { display: none; }
   .mg-stage { position: relative; height: calc(var(--ch) + 70px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
   .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
@@ -758,13 +777,14 @@
   .mg-card .dim { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; border-radius: 3px 7px 7px 3px; transition: opacity 0.5s ease; pointer-events: none; }
   .mg-card.side .dim { opacity: 0.38; }
   @media (hover: hover) { .mg-card.side:hover .dim { opacity: 0.16; } }
-  .mg-nav { position: absolute; top: calc(var(--ch) / 2 + 24px); z-index: 300; margin-top: -23px; }
-  .mg-prev { left: 0; } .mg-next { right: 36px; }
+  .mg-nav { position: absolute; top: calc(var(--ch) / 2 + 66px); z-index: 300; margin-top: -23px; }
+  .mg-prev { left: 36px; } .mg-next { right: 36px; }
   .mg-info { text-align: center; margin-top: 2px; min-height: 48px; }
   .mg-info b { display: block; font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; }
   .mg-info span { display: block; margin-top: 6px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   .mag-viewer[hidden] { display: none; }
-  .mv-bar { display: flex; align-items: center; gap: 16px; margin: -6px 0 8px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mag-viewer:not([hidden]) { margin: auto; width: 100%; }
+  .mv-bar-unused { display: flex; align-items: center; gap: 16px; margin: -6px 0 8px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
   .mv-bar button { color: var(--muted); display: inline-flex; align-items: center; gap: 8px; padding: 4px 0; transition: color 0.15s, transform 0.15s; }
   .mv-bar button:hover { color: var(--ink); transform: translateX(-2px); }
   .mv-bar span { color: var(--ink); }
@@ -1029,13 +1049,14 @@
   <section class="view" id="view-favorites">
     <div class="mag-head" id="magHead"><h1>Favorites</h1><span id="magMeta"></span></div>
     <div class="mg-wrap" id="magGrid">
+      <div class="mg-top"><button type="button" class="pill" id="mgEnter">Enter</button></div>
       <div class="mg-stage" id="mgStage"></div>
       <button type="button" class="mag-arrow mg-nav mg-prev" id="mgPrev" aria-label="Previous magazine">&#8592;</button>
       <button type="button" class="mag-arrow mg-nav mg-next" id="mgNext" aria-label="Next magazine">&#8594;</button>
       <div class="mg-info" id="mgInfo"></div>
     </div>
     <div class="mag-viewer" id="magViewer" hidden>
-      <div class="mv-bar"><button type="button" id="magBack">&#8592; All magazines</button><span id="mvTitle"></span></div>
+      <div class="mg-top"><button type="button" class="pill" id="magBack">Leave</button><span class="mv-title" id="mvTitle"></span></div>
       <div class="mag-stage">
         <button class="mag-arrow" id="magPrev" aria-label="Previous page">&#8592;</button>
         <div class="mag" id="mag" aria-roledescription="magazine"><div class="mag-book" id="magBook"></div></div>
@@ -1275,9 +1296,9 @@ function armNavHide(delay) {
     else document.body.classList.add('nav-hidden');
   }, delay || 3000);
 }
-$('logo').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('peek'); });
+$('logo').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('navpeek'); });
 sidebar.addEventListener('mouseenter', () => clearTimeout(peekTimer2));
-sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); peekTimer2 = setTimeout(() => { sidebar.classList.remove('peek'); armNavHide(1200); }, 350); });
+sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); peekTimer2 = setTimeout(() => { sidebar.classList.remove('navpeek'); armNavHide(1200); }, 350); });
 window.addEventListener('hashchange', () => armNavHide(3000));
 armNavHide(3000);
 /* Home page menu on touch screens: tap a heading to open its list */
@@ -1518,21 +1539,20 @@ function buildWorld(cT, sT) {
   featuresOf(cT, 'countries').forEach(f => {
     const id = contOfName(f), polys = polysOf(f);
     if (f.properties.name === 'Russia') {
-      const tipP = polys.filter(pc => pc[0] && pc[0].every(pt => pt[0] < -100));           // the tip that crosses the date line stays on the Russian side
-      const mainP = polys.filter(pc => !tipP.includes(pc));
-      const mf = { type: 'Feature', properties: f.properties, geometry: { type: 'MultiPolygon', coordinates: mainP } };
-      const parts = [['EU', clipProj(-9000, RU_X)], ['AS', clipProj(RU_X, 9000)]];
+      const LON_TIP = wxOf(-100);                                                          // anything of Russia west of here is the tip across the date line
+      const parts = [['EU', clipProj(LON_TIP, RU_X)], ['AS', clipProj(RU_X, 9000)]];
       parts.forEach(([cid, cp]) => {
-        const bb = boundsWith(cp, mf);
+        const bb = boundsWith(cp, f);
         if (!isFinite(bb.x0) || bb.x1 - bb.x0 < 1) return;
-        const co = { f, name: 'Russia', cont: cid, path: mkWith(cp, mf), bb, all: bb, events: 0, places: 0, grps: [], hasStates: false };
+        const co = { f, name: 'Russia', cont: cid, path: mkWith(cp, f), bb, all: bb, events: 0, places: 0, grps: [], hasStates: false };
         byId[cid].countries.push(co); g.countries.push(co);
         byId[cid].extras.push({ path: co.path, bb });
       });
-      if (tipP.length) {
-        const tg = { type: 'MultiPolygon', coordinates: tipP }, tp = new Path2D();
-        tp.addPath(mkPath(tg), new DOMMatrix([1, 0, 0, 1, WW, 0]));
-        const b0 = boundsWith(g.proj, tg), bb = { x0: b0.x0 + WW, x1: b0.x1 + WW, y0: b0.y0, y1: b0.y1 };
+      const tcp = clipProj(-9000, LON_TIP), tb0 = boundsWith(tcp, f);
+      if (isFinite(tb0.x0) && tb0.x1 - tb0.x0 > 0.5) {                                    // the far-eastern tip belongs to Asia: carry it to Asia's east edge
+        const tp = new Path2D();
+        tp.addPath(mkWith(tcp, f), new DOMMatrix([1, 0, 0, 1, WW, 0]));
+        const bb = { x0: tb0.x0 + WW, x1: tb0.x1 + WW, y0: tb0.y0, y1: tb0.y1 };
         byId.AS.extras.push({ path: tp, bb }); byId.AS.tip = tp;
       }
       return;
@@ -1556,7 +1576,7 @@ function buildWorld(cT, sT) {
     ct.extras.forEach(x => { ct.path.addPath(x.path); ct.bb.x0 = Math.min(ct.bb.x0, x.bb.x0); ct.bb.y0 = Math.min(ct.bb.y0, x.bb.y0); ct.bb.x1 = Math.max(ct.bb.x1, x.bb.x1); ct.bb.y1 = Math.max(ct.bb.y1, x.bb.y1); });
     ct.cxw = (ct.bb.x0 + ct.bb.x1) / 2; ct.cyw = (ct.bb.y0 + ct.bb.y1) / 2;
     ct.spath = new Path2D();                                  // the iceberg is a touch smaller than the land, so neighbours don't touch
-    const s = 0.91;
+    const s = 1;
     ct.spath.addPath(ct.path, new DOMMatrix([s, 0, 0, s, ct.cxw * (1 - s), ct.cyw * (1 - s)]));
     ct.sb = { x0: ct.cxw + (ct.bb.x0 - ct.cxw) * s, x1: ct.cxw + (ct.bb.x1 - ct.cxw) * s, y0: ct.cyw + (ct.bb.y0 - ct.cyw) * s, y1: ct.cyw + (ct.bb.y1 - ct.cyw) * s };
   });
@@ -1613,12 +1633,12 @@ function buildSprites() {
     /* the glow used when you point at it */
     const hv = mk(), h = hv.getContext('2d'), OFF = sw + 200;
     h.setTransform(S, 0, 0, S, ox - OFF, oy);
-    h.shadowColor = 'rgba(196,220,255,1)'; h.shadowBlur = 34 * d; h.shadowOffsetX = OFF; h.fillStyle = '#fff';
+    h.shadowColor = 'rgba(255,255,255,0.27)'; h.shadowBlur = 30 * d; h.shadowOffsetX = OFF; h.fillStyle = '#fff';
     h.fill(ct.spath); h.fill(ct.spath);
     h.shadowColor = 'transparent'; h.shadowBlur = 0; h.shadowOffsetX = 0;
     h.setTransform(S, 0, 0, S, ox, oy);
-    h.fillStyle = 'rgba(214,232,255,0.30)'; h.fill(ct.spath);
-    h.setTransform(S, 0, 0, S, ox, oy + D * 0.5); h.fillStyle = 'rgba(160,196,255,0.16)'; h.fill(ct.spath);
+    h.fillStyle = 'rgba(255,255,255,0.17)'; h.fill(ct.spath);
+    h.setTransform(S, 0, 0, S, ox, oy + D * 0.5); h.fillStyle = 'rgba(255,255,255,0.07)'; h.fill(ct.spath);
     ct.spr = { cv, hv, S, pad, ox, oy };
   });
 }
@@ -1666,7 +1686,7 @@ function renderSharp() {
 
 /* ---- the United States view: Alaska and Hawaii tucked in below the mainland, everything else softened ---- */
 const TERR = NAMES('Puerto Rico|Guam|American Samoa|Northern Mariana Islands|Commonwealth of the Northern Mariana Islands|U.S. Virgin Islands|United States Virgin Islands');
-const INSET = { Alaska: { s: 0.3, lon: -116.5, lat: 27.3, keep: 0.3 }, Hawaii: { s: 1.0, lon: -104.6, lat: 26.2, keep: 0 } };
+const INSET = { Alaska: { s: 0.24, lon: -134.5, lat: 41, keep: 0.3 }, Hawaii: { s: 0.9, lon: -132.5, lat: 32.5, keep: 0 } };
 function setupInsets() {
   const pg = d3.geoPath(g.proj);
   g.usAll = new Path2D();
@@ -1689,6 +1709,11 @@ function setupInsets() {
     st.ins = { tpath: tp, s: k, icx, icy, tx, ty, tbb: { x0: tx + k * (bb.x0 - icx), x1: tx + k * (bb.x1 - icx), y0: ty + k * (bb.y0 - icy), y1: ty + k * (bb.y1 - icy) } };
     g.usAll.addPath(tp);
   });
+  if (rect.x1 > rect.x0) {                                       // leave room on both sides so the mainland stays centred while Alaska and Hawaii sit off its west coast
+    let ext = 0;
+    g.states.forEach(st => { if (st.ins) ext = Math.max(ext, rect.x0 - st.ins.tbb.x0 + (rect.x1 - rect.x0) * 0.03); });
+    rect.x0 -= ext; rect.x1 += ext;
+  }
   g.usRect = rect.x1 > rect.x0 ? rect : null;
 }
 function usPos(grp) {
@@ -1822,6 +1847,7 @@ function showLock(title, msg) {
 /* ---- what is under the cursor ---- */
 const scrToWorld = (x, y) => [(x - g.w / 2) / g.cam.z + g.cam.cx, (y - g.h / 2) / g.cam.z + g.cam.cy];
 function driftOf(ct, t, k) {
+  return [0, 0];                                                 // the continents sit still
   if (reduceMotion || k <= 0) return [0, 0];
   const A = 3.2 / g.z0 * (0.8 + (ct.bb.x1 - ct.bb.x0) / WW * 0.8);        // bigger icebergs move a little more, but never enough to touch a neighbour
   const dx = A * (Math.sin(t * ct.fq[0] + ct.ph[0]) + 0.45 * Math.sin(t * ct.fq[0] * 2.3 + ct.ph[1])) / 1.45;
@@ -2731,10 +2757,15 @@ requestAnimationFrame(frame);
         `<span class="ttl">${esc(c.title)}<small>${esc(c.date || '')}</small></span></span><span class="dim"></span></div>`).join('');
     layoutFlow();
   }
-  function layoutFlow() {
+  function layoutFlow(mode) {
     const cards = stage.children, n = cards.length;
     for (let i = 0; i < n; i++) {
       const o = i - act, a = Math.abs(o), sg = Math.sign(o), el = cards[i];
+      if (mode === 'gather') {                                         // everything draws in towards the chosen magazine
+        el.style.transform = o === 0 ? 'translate3d(0, -8px, 90px) scale(1.08)' : `translate3d(0, 0, -120px) scale(0.7)`;
+        el.style.opacity = o === 0 ? '1' : '0'; el.style.pointerEvents = 'none';
+        continue;
+      }
       const x = o === 0 ? 0 : sg * (0.74 + (a - 1) * 0.15) * 100, z = o === 0 ? 40 : -30 - a * 12, ry = o === 0 ? 0 : -sg * 62;
       el.style.transform = `translate3d(calc(var(--cw) * ${(x / 100).toFixed(3)}), 0, ${z}px) rotateY(${ry}deg) scale(${o === 0 ? 1 : 0.94})`;
       el.style.zIndex = String(100 - a);
@@ -2744,7 +2775,7 @@ requestAnimationFrame(frame);
       el.tabIndex = a > 7 ? -1 : 0;
     }
     const c = eventsWithPhotos[act];
-    if (c) info.innerHTML = `<b>${esc(c.title)}</b><span>${esc(dateLine(c))} &middot; ${Math.ceil((picksFor(c).length + 2) / 2) * 2} pages &middot; click to open</span>`;
+    if (c) info.innerHTML = `<b>${esc(c.title)}</b><span>${esc(dateLine(c))} &middot; ${Math.ceil((picksFor(c).length + 2) / 2) * 2} pages &middot; press enter</span>`;
     $('mgPrev').disabled = act === 0; $('mgNext').disabled = act >= eventsWithPhotos.length - 1;
   }
   const goFlow = d => { const t = clamp(act + d, 0, eventsWithPhotos.length - 1); if (t !== act) { act = t; layoutFlow(); } };
@@ -2766,7 +2797,7 @@ requestAnimationFrame(frame);
     list.push({ cls: 'endcover', html: `<span>${esc(SITE.name || 'Allwood Archives')}</span>` });
     return list;
   }
-  const faceEl = (pg, side, extra) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}</div>`;
+  const faceEl = (pg, side, extra) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}<div class="shd"></div></div>`;
 
   function openMagazine(c) {
     evt = c; pages = buildPages(c); L = pages.length / 2; cur = 0; busy = false;
@@ -2781,9 +2812,27 @@ requestAnimationFrame(frame);
     $('mvTitle').textContent = c.title;
     grid.hidden = true; $('magHead').hidden = true; viewer.hidden = false;
     mag.style.transition = 'none'; settle(); show(); void mag.offsetWidth; mag.style.transition = '';
+    viewer.classList.remove('out'); viewer.classList.add('in');
     window.scrollTo(0, 0);
   }
-  function closeMagazine() { viewer.hidden = true; grid.hidden = false; $('magHead').hidden = false; book.innerHTML = ''; evt = null; }
+  let moving = false;
+  function enterMagazine(c) {                                          // the others gather in, then the magazine opens on its own
+    if (moving || !c) return; moving = true;
+    grid.classList.add('going'); layoutFlow('gather');
+    setTimeout(() => { openMagazine(c); grid.classList.remove('going'); moving = false; }, reduceMotion ? 0 : 520);
+  }
+  function closeMagazine(instant) {
+    if (moving) return;
+    const done = () => {
+      viewer.hidden = true; viewer.classList.remove('in', 'out'); book.innerHTML = ''; evt = null;
+      grid.hidden = false; $('magHead').hidden = false;
+      layoutFlow('gather'); void stage.offsetWidth;                    // start gathered, then spread back out
+      requestAnimationFrame(() => { layoutFlow(); moving = false; });
+    };
+    if (instant === true || reduceMotion) { moving = true; done(); return; }
+    moving = true; viewer.classList.remove('in'); viewer.classList.add('out');
+    setTimeout(done, 320);
+  }
   const settle = () => leaves.forEach((el, i) => { el.style.zIndex = i < cur ? i + 1 : L - i; el.classList.toggle('flipped', i < cur); });
   function show() {
     mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
@@ -2791,36 +2840,16 @@ requestAnimationFrame(frame);
     $('magFoot').textContent = cur === 0 ? 'Cover' : cur === L ? 'Back cover' : `Pages ${cur * 2} – ${cur * 2 + 1} of ${pages.length}`;
   }
 
-  /* ---- the page turn: the leaf is cut into strips that bend as it swings over ---- */
-  function makeSegLeaf(i) {
-    const pw = leaves[i].offsetWidth, ph = leaves[i].offsetHeight, sw = pw / SEGS;
-    const root = document.createElement('div'); root.className = 'sleaf';
-    const segs = []; let parent = root;
-    for (let k = 0; k < SEGS; k++) {
-      const seg = document.createElement('div'); seg.className = 'seg';
-      seg.style.width = (sw + 1) + 'px'; seg.style.left = (k ? sw : 0) + 'px';
-      const fr = document.createElement('div'); fr.className = 'piece';
-      fr.innerHTML = `<div class="pgc" style="left:${-k * sw}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i], 'front', 'pgx')}</div><div class="shd"></div>`;
-      const bk = document.createElement('div'); bk.className = 'piece bk';
-      bk.innerHTML = `<div class="pgc" style="left:${-(pw - (k + 1) * sw)}px;width:${pw}px;height:${ph}px">${faceEl(pages[2 * i + 1], 'back', 'pgx')}</div><div class="shd"></div>`;
-      seg.appendChild(fr); seg.appendChild(bk);
-      fr.firstChild.firstChild.style.position = 'absolute'; bk.firstChild.firstChild.style.position = 'absolute';
-      parent.appendChild(seg); parent = seg;
-      segs.push({ seg, fs: fr.querySelector('.shd'), bs: bk.querySelector('.shd') });
-    }
-    return { root, segs };
-  }
+  /* ---- the page turn: the real page swings over the spine, leaning and shading as it goes ---- */
   function flip(d) {
     if (busy) return;
     const to = clamp(cur + d, 0, L);
     if (to === cur) return;
     busy = true;
     const idx = d > 0 ? cur : cur - 1, leaf = leaves[idx];
-    const from = d > 0 ? 0 : -180, goal = d > 0 ? -180 : 0, s = d > 0 ? -1 : 1;
-    const sl = makeSegLeaf(idx);
-    leaf.style.visibility = 'hidden';
-    book.appendChild(sl.root);
-    const frame = ang => { sl.root.style.transform = `rotateY(${ang}deg)`; };
+    const from = d > 0 ? 0 : -180, goal = d > 0 ? -180 : 0, sgn = d > 0 ? -1 : 1;
+    const fs = leaf.querySelector('.pg.front .shd'), bs = leaf.querySelector('.pg.back .shd');
+    leaf.style.zIndex = 500; leaf.style.willChange = 'transform';
     const t0 = performance.now(), dur = reduceMotion ? 1 : FLIP_MS;
     cur = to; mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = true; next.disabled = true;
@@ -2828,21 +2857,14 @@ requestAnimationFrame(frame);
       const p = clamp((now - t0) / dur, 0, 1);
       const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;       // ease in and out
       const th = from + (goal - from) * e;
-      const bend = s * Math.sin(Math.PI * e) * BEND / (SEGS - 1);               // each strip leans a little further than the one before
-      let orient = th;
-      sl.segs.forEach((o, k) => {
-        const r = k === 0 ? th : bend;
-        o.seg.style.transform = k ? `rotateY(${r.toFixed(3)}deg) translateZ(0.03px)` : `rotateY(${r.toFixed(3)}deg)`;
-        if (k) orient += bend;
-        const c = Math.cos(orient * Math.PI / 180);                              // facing us = 1, edge-on = 0
-        const dark = (0.5 * (1 - Math.abs(c))).toFixed(3);
-        o.fs.style.opacity = dark; o.bs.style.opacity = dark;
-      });
+      const lean = sgn * Math.sin(Math.PI * e) * 3.2;                            // the free edge lifts a little as the page goes over
+      leaf.style.transform = `rotateY(${th.toFixed(3)}deg) skewY(${lean.toFixed(3)}deg)`;
+      const dark = (0.5 * (1 - Math.abs(Math.cos(th * Math.PI / 180)))).toFixed(3);
+      fs.style.opacity = dark; bs.style.opacity = dark;
       if (p < 1) requestAnimationFrame(step);
       else {
-        sl.root.remove();
-        settle(); leaf.style.visibility = '';
-        busy = false; show();
+        leaf.style.transform = ''; leaf.style.willChange = ''; fs.style.opacity = 0; bs.style.opacity = 0;
+        settle(); busy = false; show();
       }
     }
     requestAnimationFrame(step);
@@ -2852,7 +2874,7 @@ requestAnimationFrame(frame);
   stage.addEventListener('click', e => {
     const el = e.target.closest('.mg-card'); if (!el || flowDrag) return;
     const i = +el.dataset.i;
-    if (i === act) openMagazine(eventsWithPhotos[i]); else { act = i; layoutFlow(); }
+    if (i === act) enterMagazine(eventsWithPhotos[i]); else { act = i; layoutFlow(); }
   });
   stage.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('mg-card')) { e.preventDefault(); e.target.click(); } });
   $('mgPrev').addEventListener('click', () => goFlow(-1));
@@ -2868,12 +2890,13 @@ requestAnimationFrame(frame);
     const now = performance.now(); if (now - wheelAt < 280) return; wheelAt = now;
     goFlow(d > 0 ? 1 : -1);
   }, { passive: false });
-  $('magBack').addEventListener('click', closeMagazine);
+  $('magBack').addEventListener('click', () => closeMagazine());
+  $('mgEnter').addEventListener('click', () => enterMagazine(eventsWithPhotos[act]));
   prev.addEventListener('click', () => flip(-1));
   next.addEventListener('click', () => flip(1));
   document.addEventListener('keydown', e => {
     if (!$('view-favorites').classList.contains('on') || lb.classList.contains('on')) return;
-    if (!evt) { if (e.key === 'ArrowRight') goFlow(1); else if (e.key === 'ArrowLeft') goFlow(-1); return; }
+    if (!evt) { if (e.key === 'ArrowRight') goFlow(1); else if (e.key === 'ArrowLeft') goFlow(-1); else if (e.key === 'Enter' && !e.target.closest('button, a, .mg-card')) enterMagazine(eventsWithPhotos[act]); return; }
     if (e.key === 'ArrowRight') flip(1); else if (e.key === 'ArrowLeft') flip(-1); else if (e.key === 'Escape') closeMagazine();
   });
   mag.addEventListener('click', e => {
@@ -2883,8 +2906,66 @@ requestAnimationFrame(frame);
   let sx = null;
   mag.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
   mag.addEventListener('touchend', e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 40) flip(dx < 0 ? 1 : -1); }, { passive: true });
-  window.magReset = () => { if (evt) closeMagazine(); };
+  window.magReset = () => { if (evt) closeMagazine(true); };
   drawGrid();
+})();
+
+/* ---------- photo protection ----------
+   Photos can't be dragged out of the page, and when someone right-clicks a photo and
+   chooses "Save image as", what they get is a copy carrying the Allwood logo. The
+   watermark only exists in that saved copy: on the page the photos look untouched.
+   (A web page can't make photos impossible to copy: screenshots and the browser's
+   developer tools always exist. This stops the casual save / drag / copy.) */
+(function protectPhotos() {
+  let shield = null, born = 0;
+  const isPhoto = el => el && el.tagName === 'IMG' && el.id !== 'logoImg' && el.id !== 'homeLogoImg' && !el.closest('.logo, .home-logo');
+  const dropShield = () => { if (shield) { shield.remove(); shield = null; } };
+  function stamp(cx, w, h) {
+    const L = $('logoImg'), ok = L && L.complete && L.naturalWidth > 0;
+    const put = (x, y, mw, a) => {
+      cx.save(); cx.globalAlpha = a; cx.translate(x, y);
+      if (ok) {
+        const mh = mw * L.naturalHeight / L.naturalWidth;
+        cx.shadowColor = 'rgba(0,0,0,0.6)'; cx.shadowBlur = mw * 0.04;
+        cx.drawImage(L, -mw / 2, -mh / 2, mw, mh);
+      } else {
+        cx.font = '700 ' + Math.round(mw * 0.16) + 'px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+        cx.shadowColor = 'rgba(0,0,0,0.6)'; cx.shadowBlur = mw * 0.03; cx.fillStyle = '#fff';
+        cx.fillText(SITE.name || 'Allwood Archives', 0, 0);
+      }
+      cx.restore();
+    };
+    put(w / 2, h / 2, Math.max(w, h) * 0.42, 0.62);                                  // one large mark in the middle
+    const gap = Math.max(w, h) * 0.26;                                                // and small ones across the whole picture
+    for (let y = gap / 2, r = 0; y < h; y += gap, r++) for (let x = (r % 2 ? gap : gap / 2); x < w; x += gap * 1.4) put(x, y, gap * 0.5, 0.3);
+  }
+  function makeShield(im, e) {
+    dropShield();
+    if (!im.complete || !im.naturalWidth) return;
+    const r = im.getBoundingClientRect();
+    if (r.width < 8 || r.height < 8) return;
+    const k = Math.min(1, 2400 / Math.max(im.naturalWidth, im.naturalHeight));
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k);
+    const cx = cv.getContext('2d');
+    try { cx.drawImage(im, 0, 0, cv.width, cv.height); stamp(cx, cv.width, cv.height); } catch (_) { return; }
+    cv.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;width:' + r.width + 'px;height:' + r.height + 'px;opacity:0.012;z-index:2147483000;';
+    document.body.appendChild(cv); shield = cv; born = performance.now();
+  }
+  document.addEventListener('mousedown', e => {
+    if (e.button === 2 || (e.button === 0 && e.ctrlKey)) { const im = isPhoto(e.target) ? e.target : null; if (im) makeShield(im, e); else dropShield(); }
+    else dropShield();
+  }, true);
+  document.addEventListener('mousemove', () => { if (shield && performance.now() - born > 300) dropShield(); }, { passive: true });
+  window.addEventListener('keydown', dropShield, true);
+  window.addEventListener('scroll', dropShield, { passive: true, capture: true });
+  document.addEventListener('dragstart', e => { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); }, true);
+  document.addEventListener('contextmenu', e => {
+    if (isPhoto(e.target) && !shield) e.preventDefault();                          // touch screens (long-press): no save menu
+  }, true);
+  const st = document.createElement('style');
+  st.textContent = 'img{-webkit-user-drag:none;user-select:none;-webkit-touch-callout:none;}';
+  document.head.appendChild(st);
 })();
 
 /* ---------- background music ----------
