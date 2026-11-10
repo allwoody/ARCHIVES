@@ -15,7 +15,7 @@
 <!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Permanent+Marker&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Sedgwick+Ave+Display&display=swap">
 <!--
   index.html is the CODE of the site. Your content (events, photos, About,
   Contact) lives in events.js, so you can replace this file with a newer
@@ -263,18 +263,13 @@
   .ch-score:empty { display: none; }
   .ch-score + .ch-meta { font-size: 12px; }
   #collTitle + .ch-meta { font-size: 12px; }
-  /* event titles: written on in chalk, whiteboard-marker handwriting, with a little hand-drawn wiggle */
-  #collTitle.chalk { font-family: "Permanent Marker", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.01em; color: #f6f3ea;
-    filter: url(#chalkRough); text-shadow: 0 0 6px rgba(255, 255, 255, 0.18); }
+  /* event titles: a readable graffiti hand, written on letter by letter, then the whole word ripples like a turbulent-displace effect */
+  #collTitle.chalk { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.02em; color: #f6f3ea;
+    filter: url(#titleWobble); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
   #collTitle .cw { display: inline-block; white-space: pre; }
-  #collTitle .cl { display: inline-block; clip-path: inset(-10% 100% -10% -4%); will-change: transform; }
-  #collTitle.go .cl { animation: chalkWrite 0.22s cubic-bezier(0.3, 0.6, 0.4, 1) forwards var(--d, 0s), chalkWiggle 0.8s steps(1, end) infinite var(--w, 0s); }
+  #collTitle .cl { display: inline-block; clip-path: inset(-10% 100% -10% -4%); }
+  #collTitle.go .cl { animation: chalkWrite 0.22s cubic-bezier(0.3, 0.6, 0.4, 1) forwards var(--d, 0s); }
   @keyframes chalkWrite { from { clip-path: inset(-10% 100% -10% -4%); opacity: 0.4; } to { clip-path: inset(-10% -6% -10% -4%); opacity: 1; } }
-  @keyframes chalkWiggle {
-    0%   { transform: translate(0, 0) rotate(var(--r, 0deg)); }
-    33%  { transform: translate(0.7px, -0.9px) rotate(calc(var(--r, 0deg) + 0.9deg)); }
-    66%  { transform: translate(-0.6px, 0.7px) rotate(calc(var(--r, 0deg) - 0.8deg)); }
-  }
   @media (prefers-reduced-motion: reduce) { #collTitle.go .cl { animation: none; clip-path: none; } }
   .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--bg); padding: 10px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
   .skip:focus { top: 8px; }
@@ -1050,7 +1045,7 @@
   <section class="view" id="view-collection">
     <div class="collection-head">
       <h1 class="ch-title" id="collTitle"></h1>
-      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="chalkRough" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" result="d"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.95" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="titleWobble" x="-4%" y="-25%" width="108%" height="150%"><feTurbulence id="wobNoise" type="turbulence" baseFrequency="0.011 0.019" numOctaves="2" seed="7" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
       <div class="ch-score" id="collScore"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
@@ -2574,13 +2569,25 @@ function chalkTitle(el, text) {
     [...word].forEach(ch => {
       const l = document.createElement('span'); l.className = 'cl'; l.textContent = ch;
       l.style.setProperty('--d', (0.25 + n * 0.055).toFixed(3) + 's');                 // letters are written one after another
-      l.style.setProperty('--w', (-Math.random() * 0.8).toFixed(2) + 's');             // each wiggles out of step with the others
-      l.style.setProperty('--r', (Math.random() * 3 - 1.5).toFixed(1) + 'deg');        // and sits a little crooked, like handwriting
       w.appendChild(l); n++;
     });
     el.appendChild(w);
   });
   void el.offsetWidth; el.classList.add('go');
+  startWobble(el);
+}
+/* the whole title ripples as one piece: the noise field that bends it slowly morphs (only while the title is on screen) */
+let wobbleTimer = 0;
+function startWobble(el) {
+  clearInterval(wobbleTimer);
+  const noise = document.getElementById('wobNoise');
+  if (!noise || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  wobbleTimer = setInterval(() => {
+    if (document.hidden) return;
+    if (!el.offsetParent) { clearInterval(wobbleTimer); return; }
+    const t = performance.now() / 1000;
+    noise.setAttribute('baseFrequency', (0.011 + 0.003 * Math.sin(t * 1.3)).toFixed(4) + ' ' + (0.019 + 0.004 * Math.cos(t * 1.1)).toFixed(4));
+  }, 50);
 }
 
 /* ---------- routing ---------- */
@@ -2976,7 +2983,7 @@ requestAnimationFrame(frame);
     resetCards(); layoutFlow(); grid.classList.remove('going');      // the others fall back into their stacks
     moving = false;
   }
-  const settle = () => leaves.forEach((el, i) => { el.style.zIndex = i < cur ? i + 1 : L - i; el.classList.toggle('flipped', i < cur); });
+  const settle = () => leaves.forEach((el, i) => { el.style.zIndex = i < cur ? i + 1 : L - i; el.classList.toggle('flipped', i < cur); el.style.willChange = (i === cur - 1 || i === cur) ? 'transform' : ''; });   // the two leaves next to be turned are kept ready
   function show() {
     mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = cur === 0; next.disabled = cur === L;
@@ -2992,25 +2999,21 @@ requestAnimationFrame(frame);
     const idx = d > 0 ? cur : cur - 1, leaf = leaves[idx];
     const from = d > 0 ? 0 : -180, goal = d > 0 ? -180 : 0, sgn = d > 0 ? -1 : 1;
     const fs = leaf.querySelector('.pg.front .shd'), bs = leaf.querySelector('.pg.back .shd');
-    leaf.style.zIndex = 500; leaf.style.willChange = 'transform';
-    const t0 = performance.now(), dur = reduceMotion ? 1 : FLIP_MS;
+    const dur = reduceMotion ? 1 : FLIP_MS, N = 18, lk = [], sk = [];
+    for (let i = 0; i <= N; i++) {                                            // the whole turn is handed to the browser to run on its own
+      const p = i / N, e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      const th = from + (goal - from) * e, lean = sgn * Math.sin(Math.PI * e) * 3.2;
+      lk.push({ offset: p, transform: `rotateY(${th.toFixed(2)}deg) skewY(${lean.toFixed(2)}deg)` });
+      sk.push({ offset: p, opacity: +(0.5 * (1 - Math.abs(Math.cos(th * Math.PI / 180)))).toFixed(3) });
+    }
+    leaf.style.zIndex = 500;
     cur = to; mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = true; next.disabled = true;
-    function step(now) {
-      const p = clamp((now - t0) / dur, 0, 1);
-      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;       // ease in and out
-      const th = from + (goal - from) * e;
-      const lean = sgn * Math.sin(Math.PI * e) * 3.2;                            // the free edge lifts a little as the page goes over
-      leaf.style.transform = `rotateY(${th.toFixed(3)}deg) skewY(${lean.toFixed(3)}deg)`;
-      const dark = (0.5 * (1 - Math.abs(Math.cos(th * Math.PI / 180)))).toFixed(3);
-      fs.style.opacity = dark; bs.style.opacity = dark;
-      if (p < 1) requestAnimationFrame(step);
-      else {
-        leaf.style.transform = ''; leaf.style.willChange = ''; fs.style.opacity = 0; bs.style.opacity = 0;
-        settle(); busy = false; show();
-      }
-    }
-    requestAnimationFrame(step);
+    const opts = { duration: dur, easing: 'linear', fill: 'forwards' };
+    const anims = [leaf.animate(lk, opts), fs.animate(sk, opts), bs.animate(sk, opts)];
+    anims[0].onfinish = () => {
+      settle(); anims.forEach(a => a.cancel()); busy = false; show();
+    };
   }
 
   /* ---- controls ---- */
