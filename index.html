@@ -1610,7 +1610,8 @@ function buildSprites() {
     const sw = Math.ceil(bw + pad * 2), sh = Math.ceil(bh + pad * 2 + D * 2.4);
     const ox = pad - b.x0 * S, oy = pad - b.y0 * S;
     const mk = () => { const cv = document.createElement('canvas'); cv.width = sw; cv.height = sh; return cv; };
-    const cv = mk(), c = cv.getContext('2d');
+    const cv = mk(), c0 = cv.getContext('2d');
+    const sdv = mk(); let c = sdv.getContext('2d');                        // the sides are drawn apart, then the neighbours' land is cut out of them
     const set = (dy, dx) => c.setTransform(S, 0, 0, S, ox + (dx || 0), oy + dy);
     for (let i = D; i >= 1; i--) {                              // the sides, light near the waterline and darker below
       const t = i / D;
@@ -1619,6 +1620,11 @@ function buildSprites() {
       set(i); c.fill(ct.spath);
     }
     c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
+    set(0); c.globalCompositeOperation = 'destination-out'; c.fillStyle = '#000';
+    g.conts.forEach(o => { if (o !== ct && o.bb.x1 > ct.bb.x0 - 4 && o.bb.x0 < ct.bb.x1 + 4 && o.bb.y1 > ct.bb.y0 - 4 && o.bb.y0 < ct.bb.y1 + 4) c.fill(o.spath); });
+    c.globalCompositeOperation = 'source-over';
+    c0.drawImage(sdv, 0, 0);
+    c = c0;                                           // (the top surface is drawn on the real sprite)
     set(0);
     const gr = c.createLinearGradient(0, b.y0, 0, b.y1);
     gr.addColorStop(0, '#aeb4bc'); gr.addColorStop(1, '#767c86');
@@ -1639,6 +1645,9 @@ function buildSprites() {
     h.setTransform(S, 0, 0, S, ox, oy);
     h.fillStyle = 'rgba(255,255,255,0.17)'; h.fill(ct.spath);
     h.setTransform(S, 0, 0, S, ox, oy + D * 0.5); h.fillStyle = 'rgba(255,255,255,0.07)'; h.fill(ct.spath);
+    h.setTransform(S, 0, 0, S, ox, oy); h.globalCompositeOperation = 'destination-out'; h.fillStyle = '#000';   // the glow stays on its own continent
+    g.conts.forEach(o => { if (o !== ct && o.bb.x1 > ct.bb.x0 - 40 && o.bb.x0 < ct.bb.x1 + 40 && o.bb.y1 > ct.bb.y0 - 40 && o.bb.y0 < ct.bb.y1 + 40) h.fill(o.spath); });
+    h.globalCompositeOperation = 'source-over';
     ct.spr = { cv, hv, S, pad, ox, oy };
   });
 }
@@ -1868,9 +1877,13 @@ function pickHover(now) {
     const t = now / 1000, depth = 15 / g.z0;
     for (let i = g.conts.length - 1; i >= 0; i--) {
       const ct = g.conts[i], [dx, dy] = driftOf(ct, t, 1);
-      const lift = ct.hv * 5 / g.z0, px = x - dx, py = y - dy + lift;
+      const px = x - dx, py = y - dy;
       if (!inBB({ x0: ct.sb.x0, x1: ct.sb.x1, y0: ct.sb.y0, y1: ct.sb.y1 + depth }, px, py)) continue;
-      if (hitCtx.isPointInPath(ct.spath, px, py) || hitCtx.isPointInPath(ct.spath, px, py - depth * 0.6)) { g.hover = ct; g.hoverKind = 'cont'; return; }
+      if (hitCtx.isPointInPath(ct.spath, px, py)) { g.hover = ct; g.hoverKind = 'cont'; return; }
+    }
+    for (let i = g.conts.length - 1; i >= 0; i--) {                      // then the sides of an iceberg
+      const ct = g.conts[i], [dx, dy] = driftOf(ct, t, 1), px = x - dx, py = y - dy;
+      if (inBB({ x0: ct.sb.x0, x1: ct.sb.x1, y0: ct.sb.y0, y1: ct.sb.y1 + depth }, px, py) && hitCtx.isPointInPath(ct.spath, px, py - depth * 0.6)) { g.hover = ct; g.hoverKind = 'cont'; return; }
     }
   } else if (g.level === 'cont') {
     const co = g.cont.countries.find(c => isIn(c, x, y));
@@ -1937,17 +1950,18 @@ function globeStep() {
   const fz = sel ? clamp(Math.log(z / g.z0) / Math.log(g.zc / g.z0), 0, 1.2) : 0;
   c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, w, h);
   const t = now / 1000;
-  g.conts.slice().sort((p, q) => p.hv - q.hv).forEach(ct => {
+  [false, true].forEach(glowPass => g.conts.forEach(ct => {                // every continent first, then the glows on top, so nothing jumps in front of a neighbour
+    if (glowPass && ct.hv <= 0.01) return;
     const a = sel ? (ct === sel ? 1 - ss(0.5, 0.92, fz) : 1 - ss(0, 0.4, fz)) : 1;
     if (a <= 0.01 || !ct.spr) return;
     const k = sel ? (ct === sel ? 1 - ss(0, 0.5, fz) : 1) : 1;
     const [dx, dy] = driftOf(ct, t, k), sx = shakeOf(ct, now);
     const sp = ct.spr, r = z / sp.S;
     const x = (ct.sb.x0 - g.cam.cx + dx + sx) * z + w / 2 - sp.pad * r;
-    const y = (ct.sb.y0 - g.cam.cy + dy - ct.hv * 5 / g.z0) * z + h / 2 - sp.pad * r;
-    c.globalAlpha = a; c.drawImage(sp.cv, x, y, sp.cv.width * r, sp.cv.height * r);
-    if (ct.hv > 0.01) { c.globalAlpha = a * ct.hv; c.drawImage(sp.hv, x, y, sp.hv.width * r, sp.hv.height * r); }
-  });
+    const y = (ct.sb.y0 - g.cam.cy + dy) * z + h / 2 - sp.pad * r;
+    if (!glowPass) { c.globalAlpha = a; c.drawImage(sp.cv, x, y, sp.cv.width * r, sp.cv.height * r); }
+    else { c.globalAlpha = a * ct.hv; c.drawImage(sp.hv, x, y, sp.hv.width * r, sp.hv.height * r); }
+  }));
   c.globalAlpha = 1;
   if (sel) {
     const da = ss(0.35, 0.85, fz);
