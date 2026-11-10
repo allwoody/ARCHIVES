@@ -97,6 +97,8 @@
     .sidebar .nav { transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s; }
     body.nav-hidden .sidebar:not(.navpeek) { pointer-events: none; }
     body.nav-hidden .sidebar .logo { pointer-events: auto; }
+    .logo { transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.2, 1); }
+    body.nav-hidden .sidebar:not(.navpeek):not(:hover) .logo { transform: translateY(calc(50vh - 36px - var(--logo-half, 34px))); }
     body.nav-hidden .sidebar:not(.navpeek):not(:hover) .nav { opacity: 0; transform: translateX(-14px); visibility: hidden; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s 0.3s; }
   }
   .logo {
@@ -193,18 +195,19 @@
     width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;
     filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.3));   /* trims the empty margin round the logo; a steady soft glow */
   }
-  /* the flicker is in the logo itself, not the glow: it dips and jumps back like a tired neon tube */
+  /* the flicker is a brightness flicker on the logo (its transparency never changes) */
   @keyframes logo-flick {
-    0%, 100% { opacity: 1; }
-    7% { opacity: 0.55; } 8% { opacity: 1; } 9% { opacity: 0.4; } 11% { opacity: 1; }
-    71% { opacity: 0.6; } 72% { opacity: 1; } 74% { opacity: 0.5; } 76% { opacity: 1; }
+    0%, 100% { filter: brightness(1); }
+    7% { filter: brightness(0.8); } 8% { filter: brightness(1.22); } 9% { filter: brightness(0.86); } 11% { filter: brightness(1.05); }
+    46% { filter: brightness(1.08); }
+    71% { filter: brightness(0.84); } 72% { filter: brightness(1.2); } 74% { filter: brightness(0.9); } 76% { filter: brightness(1); }
   }
   @media (prefers-reduced-motion: reduce) { .home-logo img { animation: none; } }
   .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite, logo-flick 6s steps(1, end) infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
-  body:not(.is-home) .home-logo { display: none; }
-  body.is-home { --m-h: clamp(160px, calc(100vh - 500px), 600px); }
+  body:not(.is-landing) .home-logo { display: none; }
+  body.is-home { --m-h: clamp(160px, calc(100vh - 380px), 620px); }
 
   /* ---------- home marquee (drag it, or let it drift) ---------- */
   .marquee {
@@ -267,10 +270,13 @@
   #collTitle.chalk { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.02em; color: #f6f3ea;
     filter: url(#titleWobble); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
   #collTitle .cw { display: inline-block; white-space: pre; }
-  #collTitle .cl { display: inline-block; clip-path: inset(-10% 100% -10% -4%); }
-  #collTitle.go .cl { animation: chalkWrite 0.22s cubic-bezier(0.3, 0.6, 0.4, 1) forwards var(--d, 0s); }
-  @keyframes chalkWrite { from { clip-path: inset(-10% 100% -10% -4%); opacity: 0.4; } to { clip-path: inset(-10% -6% -10% -4%); opacity: 1; } }
-  @media (prefers-reduced-motion: reduce) { #collTitle.go .cl { animation: none; clip-path: none; } }
+  @property --wp { syntax: '<percentage>'; inherits: false; initial-value: -40%; }
+  /* each letter is completely invisible until its turn, then draws itself in with a quick diagonal stroke */
+  #collTitle .cl { display: inline-block; opacity: 0; visibility: hidden; --wp: -40%;
+    -webkit-mask-image: linear-gradient(120deg, #000 var(--wp), transparent calc(var(--wp) + 32%)); mask-image: linear-gradient(120deg, #000 var(--wp), transparent calc(var(--wp) + 32%)); }
+  #collTitle.go .cl { animation: letterWrite 0.46s cubic-bezier(0.45, 0.1, 0.3, 1) both var(--d, 0s); }
+  @keyframes letterWrite { 0% { --wp: -40%; opacity: 0; visibility: hidden; } 0.1% { visibility: visible; opacity: 1; } 100% { --wp: 112%; opacity: 1; visibility: visible; } }
+  @media (prefers-reduced-motion: reduce) { #collTitle .cl { opacity: 1; visibility: visible; animation: none !important; -webkit-mask-image: none; mask-image: none; } }
   .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--bg); padding: 10px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
   .skip:focus { top: 8px; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -736,7 +742,7 @@
       border-bottom: 1px solid var(--line);
     }
     .logo { margin: 0; }
-    body.is-home main { padding: 12px 0 0; }
+    body.is-home main { padding-top: 12px; }
     body.is-home { --m-h: clamp(150px, 34vh, 300px); }
     .home-logo { --hl: min(78vw, 420px); }
     .logo img { width: min(var(--logo-width), 120px); }
@@ -783,7 +789,6 @@
   .mg-stage { position: relative; height: calc(var(--ch) + 70px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
   .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
     transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.45s ease, scale 0.3s ease; will-change: transform; transform-style: preserve-3d; cursor: pointer; scale: 1; }
-  @media (hover: hover) { .mg-card:hover { scale: 1.08; z-index: 250 !important; } }
   .mg-cover { position: absolute; inset: 0; display: block; border-radius: 3px 7px 7px 3px; overflow: hidden; background: #1b1c1f;
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
   .mg-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
@@ -868,11 +873,61 @@
   .mag-foot { margin: 16px 0 0; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   @media (max-width: 720px) { .mag-arrow { width: 38px; height: 38px; } .mag-stage { gap: 6px; } .mag { --ph: clamp(240px, min(calc(100vh - 260px), calc((100vw - 120px) / 1.5)), 500px); } .pg-photo { margin: 12px 12px 0; }  }
 
+  /* ---------- landing page: five columns of photos drifting up and down, the logo, then Enter ---------- */
+  #view-landing { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; height: 100dvh; max-height: none; flex: none; padding: 0; z-index: 15; background: #2f3236; overflow: hidden; }
+  #view-landing.on { display: block; }
+  .ld-cols { position: absolute; inset: 0; display: flex; gap: 10px; padding: 0 10px; opacity: 0; transition: opacity 1.5s ease; }
+  #view-landing.in .ld-cols { opacity: 1; }
+  .ld-col { flex: 1 1 0; min-width: 0; overflow: hidden; }
+  .ld-stack { will-change: transform; animation: ldUp var(--dur, 80s) linear infinite; animation-delay: var(--dl, 0s); }
+  .ld-col.down .ld-stack { animation-name: ldDown; }
+  .ld-item { margin-bottom: 10px; background: #3a3d41; overflow: hidden; }
+  .ld-item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  @keyframes ldUp { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, -50%, 0); } }
+  @keyframes ldDown { from { transform: translate3d(0, -50%, 0); } to { transform: translate3d(0, 0, 0); } }
+  .ld-vig { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.5s ease;
+    background: radial-gradient(ellipse at center, rgba(28, 30, 34, 0.82) 0%, rgba(28, 30, 34, 0.5) 45%, rgba(28, 30, 34, 0.22) 100%); }
+  #view-landing.in .ld-vig { opacity: 1; }
+  .ld-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; }
+  .ld-center .home-logo { --hl: clamp(300px, 46vw, 700px); }
+  .ld-logo { opacity: 0; transform: translateY(18px) scale(0.95); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  #view-landing.logo .ld-logo { opacity: 1; transform: none; }
+  #view-landing.shift .ld-logo { transform: translateY(-44px); transition: transform 0.9s cubic-bezier(0.5, 0, 0.2, 1); }
+  .ld-enter { position: absolute; top: 100%; margin-top: -26px; padding: 11px 34px; border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 999px; color: var(--ink);
+    text-decoration: none; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; background: rgba(40, 42, 46, 0.55);
+    opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity 0.8s ease 0.35s, transform 0.8s ease 0.35s, background 0.2s, border-color 0.2s; }
+  #view-landing.shift .ld-enter { opacity: 1; transform: none; pointer-events: auto; }
+  .ld-enter:hover, .ld-enter:focus-visible { background: rgba(255, 255, 255, 0.16); border-color: #fff; outline: none; }
+  @media (prefers-reduced-motion: reduce) { .ld-stack { animation: none; } }
+
+  /* ---------- home: "jump to a project" and "or browse the menu" ---------- */
+  .jump { align-self: center; display: flex; align-items: flex-end; gap: 6px; margin-bottom: -6px; }
+  .jump-txt { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-size: clamp(34px, 4.4vw, 58px); line-height: 1; color: #f6f3ea; text-shadow: 0 3px 0 rgba(0, 0, 0, 0.4); padding-bottom: 8px; }
+  .jump-arrow { flex: none; margin-bottom: -44px; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25)); }
+  .ja-line { stroke: #f6f3ea; stroke-width: 6; }
+  .ja-shadow { stroke: rgba(0, 0, 0, 0.45); stroke-width: 9; }
+  #view-home.on .jump-arrow path { stroke-dasharray: 340; stroke-dashoffset: 340; animation: jaDraw 1s cubic-bezier(0.4, 0, 0.2, 1) 0.35s forwards; }
+  @keyframes jaDraw { to { stroke-dashoffset: 0; } }
+  .nav-hint { display: none; position: fixed; left: 168px; top: 52px; z-index: 12; pointer-events: none; text-align: right; }
+  body.is-home .nav-hint { display: block; }
+  .nav-hint svg { display: block; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)); }
+  .nav-hint span { display: block; margin-top: 2px; font-family: "Sedgwick Ave Display", "Segoe Print", cursive; font-size: 22px; color: #f6f3ea; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4); white-space: nowrap; }
+  body.is-home .nav-hint path { stroke-dasharray: 220; stroke-dashoffset: 220; animation: jaDraw 0.9s ease 0.9s forwards; }
+  body.is-home .nav-hint span { opacity: 0; animation: hintIn 0.6s ease 1.3s forwards; }
+  @keyframes hintIn { to { opacity: 1; } }
+  @media (max-width: 720px) { .nav-hint { display: none !important; } .jump-arrow { display: none; } }
+
+  /* ---------- explore pages: a proper heading ---------- */
+  #view-globe .ch-title, #view-index .ch-title { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
+  #view-globe .ch-meta, #view-index .ch-meta { font-size: 12px; margin-top: 8px; }
+  .mag-head { align-items: baseline; gap: 18px; margin: 0 0 14px; }
+  .mag-head h1 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
+  .mag-head span { font-size: 12px; }
+
   /* ---------- home page menu (the sidebar's links, laid out as a row between the logo and the photos) ---------- */
-  body.is-home .sidebar, body.is-home .scrim { display: none; }
-  body.is-home main { margin-left: 0; padding-left: 0; }
-  .home-nav { display: none; }
-  body.is-home .home-nav { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 38px; position: relative; z-index: 35; }
+  body.is-landing .sidebar, body.is-landing .scrim, body.is-landing footer { display: none; }
+  body.is-landing main { margin-left: 0; padding: 0; }
+  .home-nav { display: none !important; }
   .hn-sec { position: relative; }
   .hn-head {
     display: inline-block; padding: 8px 2px; cursor: pointer;
@@ -979,17 +1034,44 @@
 
 <main id="main">
   <!-- home: marquee of cover photos -->
-  <section class="view on" id="view-home">
+  <section class="view" id="view-landing" aria-label="Welcome">
+    <div class="ld-cols" id="ldCols" aria-hidden="true"></div>
+    <div class="ld-vig" aria-hidden="true"></div>
+    <div class="ld-center">
+      <h1 class="sr-only">Allwood Archives</h1>
+      <div class="ld-logo">
+        <a class="home-logo" href="#home" id="homeLogo" aria-label="Allwood Archives">
+          <img id="homeLogoImg" alt="" style="display:none">
+          <span class="logo-text" id="homeLogoText" style="display:none"></span>
+        </a>
+      </div>
+      <a class="ld-enter" href="#home" id="ldEnter">Enter site</a>
+    </div>
+  </section>
+
+  <section class="view" id="view-home">
     <h1 class="sr-only">Allwood Archives</h1>
-    <a class="home-logo" href="#home" id="homeLogo" aria-label="Allwood Archives">
-      <img id="homeLogoImg" alt="" style="display:none">
-      <span class="logo-text" id="homeLogoText" style="display:none"></span>
-    </a>
+    <div class="jump" aria-hidden="true">
+      <span class="jump-txt">Jump to a project</span>
+      <svg class="jump-arrow" viewBox="0 0 230 130" width="230" height="130" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path class="ja-shadow" d="M12 22 C 90 -14, 196 6, 208 100" />
+        <path class="ja-shadow" d="M208 100 L 186 76 M208 100 L 228 78" />
+        <path class="ja-line" d="M10 20 C 88 -16, 194 4, 206 98" />
+        <path class="ja-line" d="M206 98 L 184 74 M206 98 L 226 76" />
+      </svg>
+    </div>
     <nav class="home-nav" id="homeNav" aria-label="Main"></nav>
     <div class="marquee" id="marquee">
       <div class="track" id="track"></div>
     </div>
   </section>
+  <div class="nav-hint" id="navHint" aria-hidden="true">
+    <svg viewBox="0 0 110 80" width="110" height="80" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path class="ja-shadow" d="M100 76 C 92 30, 56 12, 14 18" /><path class="ja-shadow" d="M14 18 L 32 6 M14 18 L 30 34" />
+      <path class="ja-line" d="M98 74 C 90 28, 54 10, 12 16" /><path class="ja-line" d="M12 16 L 30 4 M12 16 L 28 32" />
+    </svg>
+    <span>Or browse the menu</span>
+  </div>
 
   <!-- map: every event on a flat, endlessly draggable world map -->
   <section class="view" id="view-globe">
@@ -1045,7 +1127,7 @@
   <section class="view" id="view-collection">
     <div class="collection-head">
       <h1 class="ch-title" id="collTitle"></h1>
-      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="titleWobble" x="-4%" y="-25%" width="108%" height="150%"><feTurbulence id="wobNoise" type="turbulence" baseFrequency="0.011 0.019" numOctaves="2" seed="7" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="7" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="titleWobble" x="-4%" y="-35%" width="108%" height="170%" color-interpolation-filters="sRGB"><feImage id="wobImg" x="0" y="0" width="640" height="320" preserveAspectRatio="none" result="tile"/><feTile in="tile" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="20" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
       <div class="ch-score" id="collScore"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
@@ -1151,7 +1233,7 @@ const pad = n => String(n).padStart(2, '0');
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 const nav = $('nav'), grid = $('grid'), track = $('track'), marquee = $('marquee');
-const views = ['home', 'globe', 'index', 'collection', 'about', 'contact', 'favorites'];
+const views = ['landing', 'home', 'globe', 'index', 'collection', 'about', 'contact', 'favorites'];
 const homeOn = () => $('view-home').classList.contains('on');
 const globeOn = () => $('view-globe').classList.contains('on');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1177,7 +1259,9 @@ document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0)
   const img = $('logoImg'), txt = $('logoText');
   txt.innerHTML = esc(SITE_NAME).replace(' ', '<br>');
   img.alt = SITE_NAME;
-  img.onload = () => { img.style.display = 'block'; txt.style.display = 'none'; };
+  const half = () => document.documentElement.style.setProperty('--logo-half', ((img.getBoundingClientRect().height || 68) / 2) + 'px');
+  img.onload = () => { img.style.display = 'block'; txt.style.display = 'none'; half(); };
+  window.addEventListener('resize', half);
   img.onerror = () => { img.style.display = 'none'; txt.style.display = 'block'; };
   img.src = site.logo || 'images/logo.png';
 })();
@@ -1334,7 +1418,7 @@ nav.addEventListener('click', e => {
 sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('closed'));
 /* On a computer the menu tucks away 3 seconds after a page opens; point at the logo (top left) to bring it back. */
 let navTimer = 0, peekTimer2 = 0;
-const navCanHide = () => window.matchMedia('(hover: hover) and (min-width: 721px)').matches && !document.body.classList.contains('is-home');
+const navCanHide = () => window.matchMedia('(hover: hover) and (min-width: 721px)').matches && !document.body.classList.contains('is-home') && !document.body.classList.contains('is-landing');
 function armNavHide(delay) {
   clearTimeout(navTimer);
   document.body.classList.remove('nav-hidden');
@@ -1366,6 +1450,7 @@ document.addEventListener('click', e => { if (!e.target.closest('#homeNav')) doc
 function showView(name) {
   views.forEach(v => $('view-' + v).classList.toggle('on', v === name));
   document.body.classList.toggle('is-home', name === 'home');
+  document.body.classList.toggle('is-landing', name === 'landing');
 }
 
 /* ---------- home marquee ----------
@@ -2556,6 +2641,49 @@ function renderCollection(c) {
   });
 }
 
+/* ---------- landing page ---------- */
+let ldTimers = [];
+function stopLanding() { ldTimers.forEach(clearTimeout); ldTimers = []; }
+function startLanding() {
+  stopLanding();
+  const v = $('view-landing'), cols = $('ldCols');
+  v.classList.remove('in', 'logo', 'shift');
+  const pool = PHOTOS.filter(x => x.p && x.p.src);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }   // any order, not grouped by event
+  const NC = 5, PER = Math.max(1, Math.min(8, Math.floor(pool.length / NC)));
+  const ratios = ['3 / 2', '4 / 5', '1 / 1', '2 / 3', '16 / 10', '5 / 4'];
+  const imgs = [];
+  cols.innerHTML = '';
+  for (let k = 0; k < NC; k++) {
+    const col = document.createElement('div'); col.className = 'ld-col' + (k % 2 ? ' down' : '');
+    const stack = document.createElement('div'); stack.className = 'ld-stack';
+    stack.style.setProperty('--dur', (70 + Math.random() * 40).toFixed(0) + 's');
+    stack.style.setProperty('--dl', (-Math.random() * 60).toFixed(1) + 's');
+    const items = [];
+    for (let i = 0; i < PER; i++) { const e = pool[k * PER + i]; if (e) items.push([e.p.src, ratios[Math.floor(Math.random() * ratios.length)]]); }
+    [0, 1].forEach(copy => items.forEach(([src, r]) => {            // the run of photos twice, so it loops without a seam
+      const d = document.createElement('div'); d.className = 'ld-item'; d.style.aspectRatio = r;
+      const im = document.createElement('img'); im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+      d.appendChild(im); stack.appendChild(d); if (!copy) imgs.push(im);
+    }));
+    col.appendChild(stack); cols.appendChild(col);
+  }
+  const ready = Promise.race([
+    Promise.all(imgs.slice(0, 15).map(im => im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+    new Promise(r => setTimeout(r, 2500))
+  ]);
+  const at = (ms, fn) => ldTimers.push(setTimeout(fn, ms));
+  ready.then(() => {
+    if (!v.classList.contains('on')) return;
+    v.classList.add('in');                                          // photos fade in
+    at(1000, () => v.classList.add('logo'));                        // about a second later the logo comes in
+    at(1000 + 1200 + 3000, () => v.classList.add('shift'));         // after ~3 s on screen it lifts to reveal Enter site
+  });
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.body.classList.contains('is-landing') && $('view-landing').classList.contains('shift')) location.hash = '#home';
+});
+
 /* ---------- chalk title ---------- */
 function chalkTitle(el, text) {
   el.classList.remove('go'); el.classList.add('chalk');
@@ -2568,7 +2696,7 @@ function chalkTitle(el, text) {
     if (/^\s+$/.test(word)) { w.textContent = ' '; el.appendChild(w); n++; return; }
     [...word].forEach(ch => {
       const l = document.createElement('span'); l.className = 'cl'; l.textContent = ch;
-      l.style.setProperty('--d', (0.25 + n * 0.055).toFixed(3) + 's');                 // letters are written one after another
+      l.style.setProperty('--d', (0.3 + n * 0.085).toFixed(3) + 's');                 // letters are written one after another
       w.appendChild(l); n++;
     });
     el.appendChild(w);
@@ -2576,18 +2704,44 @@ function chalkTitle(el, text) {
   void el.offsetWidth; el.classList.add('go');
   startWobble(el);
 }
-/* the whole title ripples as one piece: the noise field that bends it slowly morphs (only while the title is on screen) */
-let wobbleTimer = 0;
+/* The whole title ripples as one piece, like a turbulent-displace effect: a soft, tileable noise picture is slid
+   across the title at a steady speed (never stopping or reversing) and bends the letters where it passes. */
+let wobbleRaf = 0, wobbleReady = false;
+const WOB_W = 640, WOB_H = 320;
+function wobbleSetup() {
+  if (wobbleReady) return true;
+  const fe = document.getElementById('wobImg');
+  if (!fe) return false;
+  const cv = document.createElement('canvas'); cv.width = 160; cv.height = 80;
+  const c = cv.getContext('2d'), im = c.createImageData(160, 80);
+  const waves = [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]].map((k, i) => ({ kx: k[0], ky: k[1], pr: i * 1.7 + 0.4, pg: i * 2.3 + 1.1, a: [0.34, 0.3, 0.22, 0.14, 0.12][i] }));
+  for (let y = 0; y < 80; y++) for (let x = 0; x < 160; x++) {
+    let r = 0.5, g = 0.5;
+    waves.forEach(w => { const ph = 6.2832 * (w.kx * x / 160 + w.ky * y / 80); r += w.a * Math.sin(ph + w.pr) * 0.5; g += w.a * Math.sin(ph + w.pg) * 0.5; });
+    const o = (y * 160 + x) * 4;
+    im.data[o] = Math.max(0, Math.min(255, r * 255)); im.data[o + 1] = Math.max(0, Math.min(255, g * 255)); im.data[o + 2] = 128; im.data[o + 3] = 255;
+  }
+  c.putImageData(im, 0, 0);
+  fe.setAttribute('href', cv.toDataURL('image/png'));
+  wobbleReady = true; return true;
+}
 function startWobble(el) {
-  clearInterval(wobbleTimer);
-  const noise = document.getElementById('wobNoise');
-  if (!noise || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  wobbleTimer = setInterval(() => {
-    if (document.hidden) return;
-    if (!el.offsetParent) { clearInterval(wobbleTimer); return; }
-    const t = performance.now() / 1000;
-    noise.setAttribute('baseFrequency', (0.011 + 0.003 * Math.sin(t * 1.3)).toFixed(4) + ' ' + (0.019 + 0.004 * Math.cos(t * 1.1)).toFixed(4));
-  }, 50);
+  cancelAnimationFrame(wobbleRaf);
+  const fe = document.getElementById('wobImg');
+  if (!fe || matchMedia('(prefers-reduced-motion: reduce)').matches || !wobbleSetup()) { el.style.filter = 'none'; return; }
+  el.style.filter = '';
+  const t0 = performance.now();
+  let last = 0;
+  const tick = now => {
+    if (!el.offsetParent) return;                                   // title left the screen: stop
+    wobbleRaf = requestAnimationFrame(tick);
+    if (document.hidden || now - last < 33) return;                 // about 30 updates a second
+    last = now;
+    const t = (now - t0) / 1000;
+    fe.setAttribute('x', (-((t * 26) % WOB_W)).toFixed(2));         // slides one way at a constant speed; the picture tiles, so it never jumps
+    fe.setAttribute('y', (-((t * 11) % WOB_H)).toFixed(2));
+  };
+  wobbleRaf = requestAnimationFrame(tick);
 }
 
 /* ---------- routing ---------- */
@@ -2595,12 +2749,14 @@ function route() {
   const raw = (location.hash || '').replace('#', '');
   const qi = raw.indexOf('?');                              // e.g.  index?tags=sports,nature
   const name = qi < 0 ? raw : raw.slice(0, qi);
-  let target = name || 'home';
+  let target = name || 'landing';
   const coll = COLLECTIONS.find(c => c.id === target);
 
   hidePeek();
   closePop();
-  if (target === 'about') showView('about');
+  if (target !== 'landing') stopLanding();
+  if (target === 'landing') { showView('landing'); startLanding(); }
+  else if (target === 'about') showView('about');
   else if (target === 'favorites') { showView('favorites'); if (window.magReset) window.magReset(); }
   else if (target === 'contact') showView('contact');
   else if (target === 'globe' || target === 'map') { showView('globe'); openGlobe(); }
@@ -2862,6 +3018,7 @@ requestAnimationFrame(frame);
     const cards = stage.children, n = cards.length;
     for (let i = 0; i < n; i++) {
       const o = i - act, a = Math.abs(o), sg = Math.sign(o), el = cards[i];
+      el.style.scale = o === 0 ? '1.07' : '1';                         // only the centred magazine is enlarged
       if (mode === 'gather') {                                         // everything draws in towards the chosen magazine
         el.style.transform = o === 0 ? 'translate3d(0, -8px, 90px) scale(1.08)' : `translate3d(0, 0, -120px) scale(0.7)`;
         el.style.opacity = o === 0 ? '1' : '0'; el.style.pointerEvents = 'none';
@@ -2930,7 +3087,7 @@ requestAnimationFrame(frame);
   }
   const coverTf = (R, T) => `translate(${T.left - R.left}px, ${T.top - R.top}px) scale(${T.width / R.width})`;
   const ZOOM = 'transform 0.9s cubic-bezier(0.62, 0, 0.22, 1)';
-  function resetCards() { [...stage.children].forEach(el => { el.style.visibility = ''; el.style.transition = ''; el.style.scale = ''; }); }
+  function resetCards() { [...stage.children].forEach(el => { el.style.visibility = ''; el.style.transition = ''; }); }
 
   async function enterMagazine(c) {
     if (moving || !c) return; moving = true;
