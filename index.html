@@ -63,14 +63,13 @@
     overflow-x: hidden; overflow-y: auto;
     background-color: transparent;
     z-index: 20;
+    contain: layout paint style;
     transition: width 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease;
   }
   /* blur layer that covers the page (but not the sidebar) while the sidebar is open */
   .scrim {
     position: fixed; inset: 0; z-index: 19;
-    background: rgba(71, 74, 79, 0.34);
-    -webkit-backdrop-filter: blur(1px);
-            backdrop-filter: blur(1px);
+    background: rgba(40, 42, 46, 0.5);                 /* a plain dim, not a blur: blurring the live page every frame was the lag */
     opacity: 0; pointer-events: none; will-change: opacity;
     transition: opacity 0.2s ease;
   }
@@ -79,13 +78,15 @@
      behind it blurs slightly. */
   @media (hover: hover) and (min-width: 721px) {
     :root { --sidebar: 160px; }
+    .sidebar { width: min(var(--sidebar-open, 250px), 70vw); clip-path: inset(0 calc(100% - var(--sidebar)) 0 0); transition: clip-path 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease; }
     .sidebar:not(.closed):hover,
     .sidebar.navpeek:not(.closed),
     .sidebar:not(.closed):focus-within {
-      width: min(var(--sidebar-open, 250px), 70vw);
+      clip-path: inset(0 0 0 0);
       background-color: var(--bg);
-      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.22);
     }
+    /* freeze the sliding dots while the menu is open so the browser has less to redraw */
+    body:has(.sidebar:not(.closed):hover) #dotLayer, body:has(.sidebar.navpeek) #dotLayer { animation-play-state: paused; }
     .sidebar:not(.closed):hover ~ .scrim,
     .sidebar.navpeek:not(.closed) ~ .scrim,
     .sidebar:not(.closed):focus-within ~ .scrim { opacity: 1; }
@@ -188,8 +189,22 @@
     display: block; align-self: center; text-decoration: none; color: var(--ink);
     --hl: clamp(300px, 34vw, 540px);
     width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;
-    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));   /* trims the empty margin round the logo */
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.45));   /* trims the empty margin round the logo */
+    animation: logo-glow 6s steps(1, end) infinite;                    /* a soft glow that flickers now and then, like a neon sign */
   }
+  @keyframes logo-glow {
+    0%, 100% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.45)); }
+    7%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 8px rgba(255,255,255,0.18)); }
+    8%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 16px rgba(255,255,255,0.6)); }
+    9%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 7px rgba(255,255,255,0.12)); }
+    11% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.5)); }
+    46% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.36)); }
+    71% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 6px rgba(255,255,255,0.1)); }
+    72% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 15px rgba(255,255,255,0.55)); }
+    74% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 9px rgba(255,255,255,0.22)); }
+    76% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.45)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .home-logo { animation: none; } }
   .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
@@ -282,11 +297,12 @@
   .layout-square { --cols: 4; --ratio: 1 / 1; }   /* 4 across, square tiles */
   .layout-wide   { --cols: 2; --ratio: 16 / 9; }  /* 2 across, big cinematic tiles */
   .layout-masonry {                               /* 3 columns, photos keep their own shape (no cropping) */
-    display: block;
+    display: flex; gap: var(--gap); align-items: flex-start;
     column-count: 3;
     column-gap: var(--gap);
   }
-  .layout-masonry .tile { margin-bottom: var(--gap); break-inside: avoid; }
+  .layout-masonry .mcol { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+  .layout-masonry .tile { break-inside: avoid; }
   .layout-masonry .tile img { height: auto; }
   .layout-masonry .tile.r0 { aspect-ratio: 3 / 2; }
   .layout-masonry .tile.r1 { aspect-ratio: 2 / 3; }
@@ -1191,6 +1207,14 @@ COLLECTIONS.forEach(c => {
 });
 
 let currentColl = null;
+/* how often each photo has been opened (kept in this browser; add  views: 120  to a photo in events.js to count visits from elsewhere too) */
+const VIEWS = (() => { try { return JSON.parse(localStorage.getItem('aa.views') || '{}') || {}; } catch (_) { return {}; } })();
+const viewsOf = p => (Number(p.views) || 0) + (VIEWS[p.src] || 0);
+function countView(p) {
+  if (!p || !p.src) return;
+  VIEWS[p.src] = (VIEWS[p.src] || 0) + 1;
+  try { localStorage.setItem('aa.views', JSON.stringify(VIEWS)); } catch (_) {}
+}
 let lbList = [];     // what the fullscreen viewer is stepping through: [{ c: event, p: photo, idx }]
 let lbIndex = 0;
 
@@ -2476,7 +2500,8 @@ tagArrow.addEventListener('click', () => setTagsOpen(!tagBar.classList.contains(
 
 function renderCollection(c) {
   currentColl = c;
-  lbList = c.photos.map((p, idx) => ({ c, p, idx }));
+  const ordered = c.photos.map((p, idx) => ({ c, p, idx })).sort((a, b) => viewsOf(b.p) - viewsOf(a.p) || a.idx - b.idx);   // most viewed first
+  lbList = ordered;
   hidePeek();
   $('collTitle').textContent = c.title;
   $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
@@ -2490,16 +2515,20 @@ function renderCollection(c) {
   grid.className = 'grid layout-' + layout;
   grid.innerHTML = '';
 
-  c.photos.forEach((p, idx) => {
+  const cols = layout === 'masonry' ? (window.innerWidth <= 734 ? 2 : 3) : 0;
+  const colEls = [];
+  for (let k = 0; k < cols; k++) { const d = document.createElement('div'); d.className = 'mcol'; grid.appendChild(d); colEls.push(d); }
+  ordered.forEach((e, pos) => {                                      // placed left to right, then the next row down
+    const p = e.p, idx = e.idx;
     const b = document.createElement('button');
     b.className = 'tile' + (layout === 'masonry' && !p.src ? ' r' + (idx % 4) : '');
-    b.setAttribute('aria-label', `View photo ${idx + 1} of ${c.title}`);
+    b.setAttribute('aria-label', `View photo ${pos + 1} of ${c.title}`);
     b.innerHTML = p.src
       ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">`
       : `<span class="ph">${pad(idx + 1)}</span>`;
-    b.addEventListener('click', () => openLb(idx));
+    b.addEventListener('click', () => openLb(pos));
     attachPeek(b, c, p, idx);
-    grid.appendChild(b);
+    (cols ? colEls[pos % cols] : grid).appendChild(b);
   });
 }
 
@@ -2548,9 +2577,6 @@ function infoHTML(c, p) {
   const date = p.date || c.date, loc = p.location || c.location;
   if (date) h += infoRow('Date', date);
   if (loc) h += infoRow('Location', loc);
-  /* this photo's own description comes first; the event description is only used when a photo has none */
-  const about = p.caption || c.description;
-  if (about) h += `<p class="i-desc">${esc(about)}</p>`;
   h += `</div>`;
 
   const cam = [
@@ -2585,6 +2611,7 @@ function setInfo(open) {
 }
 function openLb(i, list) {
   if (list) lbList = list;
+  if (lbList[i]) countView(lbList[i].p);
   if (!lbList.length) return;
   hidePeek();
   lbIndex = i;
@@ -2603,6 +2630,7 @@ function stepLb(d) {
   const n = lbList.length;
   if (!n) return;
   lbIndex = (lbIndex + d + n) % n;
+  countView(lbList[lbIndex] && lbList[lbIndex].p);
   drawLb();
 }
 
@@ -2689,7 +2717,7 @@ requestAnimationFrame(frame);
     const img = 'url(' + cv.toDataURL('image/png') + ')';
     const st = document.createElement('style');
     st.textContent = 'body{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-repeat:repeat;background-attachment:fixed;}' +
-      '.sidebar:not(.closed):hover,.sidebar:not(.closed):focus-within{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-attachment:fixed;}' +
+      '.sidebar:not(.closed):hover,.sidebar:not(.closed):focus-within{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;}' +
       '@media (max-width:720px){.sidebar{background-image:' + img + ';background-size:' + S + 'px ' + S + 'px;background-attachment:fixed;}}';
     document.head.appendChild(st);
   } catch (_) {}
@@ -2800,7 +2828,7 @@ requestAnimationFrame(frame);
   const gearHTML = (c, p) => { const h = condensedGear(c, p); return h ? `<div class="gear">${h}</div>` : ''; };
   const photoPage = (c, p) =>
     `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || c.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>` +
-    `<div class="pg-cap"><b>${esc(c.title)}</b>${p.caption ? `<span class="c">${esc(p.caption)}</span>` : ''}${gearHTML(c, p)}</div>`;
+    `<div class="pg-cap"><b>${esc(c.title)}</b>${gearHTML(c, p)}</div>`;
   /* a page is { cls, html } */
   function buildPages(c) {
     const picks = picksFor(c);

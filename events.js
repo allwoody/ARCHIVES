@@ -471,7 +471,6 @@ const COLLECTIONS = [
     cover: "images/unc-oct-2026/261002-a-vu646-0580.jpg",
     photos: [
       { src: "images/unc-oct-2026/261002-a-vu646-0015.jpg", caption: "A UNC goalkeeper dives for the ball in warmups in front of the ACC boards.", focal: "197mm", aperture: "f/2.8", shutter: "1/400s", iso: "1000", tags: ["warmup", "pregame"] },
-      { src: "images/unc-oct-2026/261002-a-vu646-0061.jpg", caption: "Two UNC players run toward the camera in teal warmup kits, one smiling.", focal: "200mm", aperture: "f/3.2", shutter: "1/500s", iso: "1250", tags: ["warmup", "pregame"] },
       { src: "images/unc-oct-2026/261002-a-vu646-0070.jpg", caption: "A UNC player winds up for a long kick in warmups.", focal: "119mm", aperture: "f/3.2", shutter: "1/500s", iso: "1250", tags: ["warmup", "pregame"] },
       { src: "images/unc-oct-2026/261002-a-vu646-0086.jpg", caption: "A UNC player strides through a ball in warmups with the stands behind her.", focal: "127mm", aperture: "f/3.2", shutter: "1/500s", iso: "1250", tags: ["warmup", "pregame"] },
       { src: "images/unc-oct-2026/261002-a-vu646-0087.jpg", caption: "A UNC player strides through a ball in warmups with the stands behind her.", focal: "127mm", aperture: "f/3.2", shutter: "1/500s", iso: "1250", tags: ["warmup", "pregame"] },
