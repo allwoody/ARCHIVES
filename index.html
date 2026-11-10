@@ -776,17 +776,19 @@
   .mg-wrap.going .mg-info, .mg-wrap.going .mg-nav, .mg-wrap.going .mg-top { opacity: 0; transition: opacity 0.25s ease; }
   @keyframes mvIn { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
   @keyframes mvOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(10px) scale(0.92); } }
-  .mag-viewer.in .mag-stage, .mag-viewer.in .mag-foot { animation: mvIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-  .mag-viewer.out .mag-stage, .mag-viewer.out .mag-foot { animation: mvOut 0.32s ease both; }
+    .mag-viewer.pre { visibility: hidden; }
+  @keyframes mvFade { from { opacity: 0; } to { opacity: 1; } }
+  .mag-viewer.fadein { animation: mvFade 0.3s ease both; }
   .pg .shd { position: absolute; inset: 0; z-index: 9; background: #000; opacity: 0; pointer-events: none; }
   .mag-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 18px; }
   .mag-head h1 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
   .mag-head span { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
-  .mg-wrap { --ch: clamp(260px, calc(100vh - 330px), 440px); --cw: calc(var(--ch) * 0.74); position: relative; width: 100%; max-width: 1200px; margin: auto; padding: 0 36px; }
+  .mg-wrap { --ch: clamp(300px, calc(100vh - 320px), 600px); --cw: calc(var(--ch) * 0.74); position: relative; width: 100%; max-width: 1200px; margin: auto; padding: 0 36px; }
   .mg-wrap[hidden] { display: none; }
   .mg-stage { position: relative; height: calc(var(--ch) + 70px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
   .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
-    transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.45s ease; will-change: transform; transform-style: preserve-3d; cursor: pointer; }
+    transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.45s ease, scale 0.3s ease; will-change: transform; transform-style: preserve-3d; cursor: pointer; scale: 1; }
+  @media (hover: hover) { .mg-card:hover { scale: 1.08; z-index: 250 !important; } }
   .mg-cover { position: absolute; inset: 0; display: block; border-radius: 3px 7px 7px 3px; overflow: hidden; background: #1b1c1f;
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
   .mg-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
@@ -2904,26 +2906,75 @@ requestAnimationFrame(frame);
     $('mvTitle').textContent = c.title;
     grid.hidden = true; $('magHead').hidden = true; viewer.hidden = false;
     mag.style.transition = 'none'; settle(); show(); void mag.offsetWidth; mag.style.transition = '';
-    viewer.classList.remove('out'); viewer.classList.add('in');
     window.scrollTo(0, 0);
   }
   let moving = false;
-  function enterMagazine(c) {                                          // the others gather in, then the magazine opens on its own
-    if (moving || !c) return; moving = true;
-    grid.classList.add('going'); layoutFlow('gather');
-    setTimeout(() => { openMagazine(c); grid.classList.remove('going'); moving = false; }, reduceMotion ? 0 : 520);
+  /* The magazine you pick is lifted off the row and carried, as one piece, up to the size of the open magazine;
+     everything else fades away. Leaving runs exactly the same journey backwards. */
+  const wait = ms => new Promise(r => setTimeout(r, reduceMotion ? 0 : ms));
+  const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
+  function makeFlyer(card, R) {
+    const f = card.cloneNode(true);
+    f.removeAttribute('tabindex'); f.removeAttribute('role'); f.removeAttribute('data-i'); f.classList.remove('side');
+    f.style.cssText = `position:fixed;left:${R.left}px;top:${R.top}px;width:${R.width}px;height:${R.height}px;margin:0;transform:none;transform-origin:0 0;` +
+      `z-index:500;pointer-events:none;opacity:1;transition:none;scale:1;--cw:${R.width}px;--ch:${R.height}px;`;
+    document.body.appendChild(f);
+    return f;
   }
-  function closeMagazine(instant) {
-    if (moving) return;
-    const done = () => {
-      viewer.hidden = true; viewer.classList.remove('in', 'out'); book.innerHTML = ''; evt = null;
-      grid.hidden = false; $('magHead').hidden = false;
-      layoutFlow('gather'); void stage.offsetWidth;                    // start gathered, then spread back out
-      requestAnimationFrame(() => { layoutFlow(); moving = false; });
-    };
-    if (instant === true || reduceMotion) { moving = true; done(); return; }
-    moving = true; viewer.classList.remove('in'); viewer.classList.add('out');
-    setTimeout(done, 320);
+  const coverTf = (R, T) => `translate(${T.left - R.left}px, ${T.top - R.top}px) scale(${T.width / R.width})`;
+  const ZOOM = 'transform 0.9s cubic-bezier(0.62, 0, 0.22, 1)';
+  function resetCards() { [...stage.children].forEach(el => { el.style.visibility = ''; el.style.transition = ''; el.style.scale = ''; }); }
+
+  async function enterMagazine(c) {
+    if (moving || !c) return; moving = true;
+    const card = stage.children[act];
+    grid.classList.add('going'); card.style.scale = '1';
+    [...stage.children].forEach(el => { if (el !== card) { el.style.transition = 'opacity 0.35s ease'; el.style.opacity = '0'; el.style.pointerEvents = 'none'; } });
+    await wait(380);
+    window.scrollTo(0, 0);
+    const R = card.getBoundingClientRect();
+    const fl = makeFlyer(card, R);
+    card.style.visibility = 'hidden';
+    openMagazine(c);                                                  // built out of sight, at the spot it will end up
+    viewer.classList.add('pre');
+    const T = leaves[0].getBoundingClientRect();                      // where its cover lands
+    void fl.offsetWidth; fl.style.transition = ZOOM; fl.style.transform = coverTf(R, T);
+    await wait(900);
+    viewer.classList.remove('pre'); viewer.classList.add('fadein');
+    fl.style.transition = 'opacity 0.3s ease'; fl.style.opacity = '0';
+    await wait(320);
+    fl.remove(); viewer.classList.remove('fadein'); grid.classList.remove('going');
+    moving = false;
+  }
+  function hardClose() {
+    viewer.hidden = true; viewer.style.cssText = ''; viewer.classList.remove('pre', 'fadein'); book.innerHTML = ''; evt = null;
+    grid.hidden = false; $('magHead').hidden = false; grid.classList.remove('going');
+    resetCards(); layoutFlow(); moving = false;
+  }
+  async function closeMagazine(instant) {
+    if (moving || busy) return;
+    if (instant === true || reduceMotion) { moving = true; hardClose(); return; }
+    moving = true;
+    cur = 0; mag.style.transition = 'none'; settle(); show(); void mag.offsetWidth; mag.style.transition = '';   // closes back to its cover
+    window.scrollTo(0, 0);
+    const T = leaves[0].getBoundingClientRect(), vr = viewer.getBoundingClientRect();
+    viewer.style.cssText = `position:fixed;left:${vr.left}px;top:${vr.top}px;width:${vr.width}px;margin:0;`;      // hold it still while the row comes back underneath
+    grid.hidden = false; $('magHead').hidden = false; grid.classList.add('going');
+    const card = stage.children[act];
+    card.style.scale = '1'; card.style.visibility = 'hidden';
+    [...stage.children].forEach(el => { if (el !== card) { el.style.transition = 'none'; el.style.opacity = '0'; } });
+    const R = card.getBoundingClientRect();
+    const fl = makeFlyer(card, R);
+    fl.style.transform = coverTf(R, T); fl.style.opacity = '0'; void fl.offsetWidth;
+    fl.style.transition = 'opacity 0.28s ease'; fl.style.opacity = '1';
+    viewer.style.transition = 'opacity 0.28s ease'; viewer.style.opacity = '0';
+    await wait(300);
+    viewer.hidden = true; viewer.style.cssText = ''; book.innerHTML = ''; evt = null;
+    void fl.offsetWidth; fl.style.transition = ZOOM; fl.style.transform = 'none';
+    await wait(900);
+    card.style.visibility = ''; fl.remove();
+    resetCards(); layoutFlow(); grid.classList.remove('going');      // the others fall back into their stacks
+    moving = false;
   }
   const settle = () => leaves.forEach((el, i) => { el.style.zIndex = i < cur ? i + 1 : L - i; el.classList.toggle('flipped', i < cur); });
   function show() {
