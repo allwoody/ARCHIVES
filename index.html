@@ -15,7 +15,7 @@
 <!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Permanent+Marker&display=swap">
 <!--
   index.html is the CODE of the site. Your content (events, photos, About,
   Contact) lives in events.js, so you can replace this file with a newer
@@ -263,6 +263,19 @@
   .ch-score:empty { display: none; }
   .ch-score + .ch-meta { font-size: 12px; }
   #collTitle + .ch-meta { font-size: 12px; }
+  /* event titles: written on in chalk, whiteboard-marker handwriting, with a little hand-drawn wiggle */
+  #collTitle.chalk { font-family: "Permanent Marker", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.01em; color: #f6f3ea;
+    filter: url(#chalkRough); text-shadow: 0 0 6px rgba(255, 255, 255, 0.18); }
+  #collTitle .cw { display: inline-block; white-space: pre; }
+  #collTitle .cl { display: inline-block; clip-path: inset(-10% 100% -10% -4%); will-change: transform; }
+  #collTitle.go .cl { animation: chalkWrite 0.22s cubic-bezier(0.3, 0.6, 0.4, 1) forwards var(--d, 0s), chalkWiggle 0.8s steps(1, end) infinite var(--w, 0s); }
+  @keyframes chalkWrite { from { clip-path: inset(-10% 100% -10% -4%); opacity: 0.4; } to { clip-path: inset(-10% -6% -10% -4%); opacity: 1; } }
+  @keyframes chalkWiggle {
+    0%   { transform: translate(0, 0) rotate(var(--r, 0deg)); }
+    33%  { transform: translate(0.7px, -0.9px) rotate(calc(var(--r, 0deg) + 0.9deg)); }
+    66%  { transform: translate(-0.6px, 0.7px) rotate(calc(var(--r, 0deg) - 0.8deg)); }
+  }
+  @media (prefers-reduced-motion: reduce) { #collTitle.go .cl { animation: none; clip-path: none; } }
   .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--ink); color: var(--bg); padding: 10px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
   .skip:focus { top: 8px; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -1035,6 +1048,7 @@
   <section class="view" id="view-collection">
     <div class="collection-head">
       <h1 class="ch-title" id="collTitle"></h1>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="chalkRough" x="-5%" y="-10%" width="110%" height="125%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" result="d"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.95" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
       <div class="ch-score" id="collScore"></div>
       <div class="ch-meta" id="collMeta"></div>
       <p class="ch-desc" id="collDesc"></p>
@@ -2516,7 +2530,7 @@ function renderCollection(c) {
   const ordered = c.photos.map((p, idx) => ({ c, p, idx })).sort((a, b) => viewsOf(b.p) - viewsOf(a.p) || a.idx - b.idx);   // most viewed first
   lbList = ordered;
   hidePeek();
-  $('collTitle').textContent = c.title;
+  chalkTitle($('collTitle'), c.title);
   $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
     .filter(Boolean).join('  ·  ');
   $('collScore').textContent = c.score || '';
@@ -2543,6 +2557,28 @@ function renderCollection(c) {
     attachPeek(b, c, p, idx);
     (cols ? colEls[pos % cols] : grid).appendChild(b);
   });
+}
+
+/* ---------- chalk title ---------- */
+function chalkTitle(el, text) {
+  el.classList.remove('go'); el.classList.add('chalk');
+  el.setAttribute('aria-label', text);
+  el.innerHTML = '';
+  let n = 0;
+  String(text).split(/(\s+)/).forEach(word => {
+    if (!word) return;
+    const w = document.createElement('span'); w.className = 'cw'; w.setAttribute('aria-hidden', 'true');
+    if (/^\s+$/.test(word)) { w.textContent = ' '; el.appendChild(w); n++; return; }
+    [...word].forEach(ch => {
+      const l = document.createElement('span'); l.className = 'cl'; l.textContent = ch;
+      l.style.setProperty('--d', (0.25 + n * 0.055).toFixed(3) + 's');                 // letters are written one after another
+      l.style.setProperty('--w', (-Math.random() * 0.8).toFixed(2) + 's');             // each wiggles out of step with the others
+      l.style.setProperty('--r', (Math.random() * 3 - 1.5).toFixed(1) + 'deg');        // and sits a little crooked, like handwriting
+      w.appendChild(l); n++;
+    });
+    el.appendChild(w);
+  });
+  void el.offsetWidth; el.classList.add('go');
 }
 
 /* ---------- routing ---------- */
