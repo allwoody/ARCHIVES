@@ -1639,11 +1639,11 @@ function buildSprites() {
     /* the glow used when you point at it */
     const hv = mk(), h = hv.getContext('2d'), OFF = sw + 200;
     h.setTransform(S, 0, 0, S, ox - OFF, oy);
-    h.shadowColor = 'rgba(255,255,255,0.27)'; h.shadowBlur = 30 * d; h.shadowOffsetX = OFF; h.fillStyle = '#fff';
+    h.shadowColor = 'rgba(255,255,255,0.5)'; h.shadowBlur = 32 * d; h.shadowOffsetX = OFF; h.fillStyle = '#fff';
     h.fill(ct.spath); h.fill(ct.spath);
     h.shadowColor = 'transparent'; h.shadowBlur = 0; h.shadowOffsetX = 0;
     h.setTransform(S, 0, 0, S, ox, oy);
-    h.fillStyle = 'rgba(255,255,255,0.17)'; h.fill(ct.spath);
+    h.fillStyle = 'rgba(255,255,255,0.26)'; h.fill(ct.spath);
     h.setTransform(S, 0, 0, S, ox, oy + D * 0.5); h.fillStyle = 'rgba(255,255,255,0.07)'; h.fill(ct.spath);
     h.setTransform(S, 0, 0, S, ox, oy); h.globalCompositeOperation = 'destination-out'; h.fillStyle = '#000';   // the glow stays on its own continent
     g.conts.forEach(o => { if (o !== ct && o.bb.x1 > ct.bb.x0 - 40 && o.bb.x0 < ct.bb.x1 + 40 && o.bb.y1 > ct.bb.y0 - 40 && o.bb.y0 < ct.bb.y1 + 40) h.fill(o.spath); });
