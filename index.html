@@ -78,6 +78,8 @@
      behind it blurs slightly. */
   @media (hover: hover) and (min-width: 721px) {
     :root { --sidebar: 160px; }
+    /* keep the logo inside the narrow resting sidebar, centred on it, so its edge isn't cut off */
+    .logo img { width: min(var(--logo-width), calc(var(--sidebar) - 12px)); margin-left: calc((var(--sidebar) - min(var(--logo-width), var(--sidebar) - 12px)) / 2 - 28px); }
     .sidebar { width: min(var(--sidebar-open, 250px), 70vw); clip-path: inset(0 calc(100% - var(--sidebar)) 0 0); transition: clip-path 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease; }
     .sidebar:not(.closed):hover,
     .sidebar.navpeek:not(.closed),
@@ -189,24 +191,17 @@
     display: block; align-self: center; text-decoration: none; color: var(--ink);
     --hl: clamp(300px, 34vw, 540px);
     width: var(--hl); aspect-ratio: 16 / 5.6; overflow: hidden; perspective: 700px;
-    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 255, 255, 0.45));   /* trims the empty margin round the logo */
-    animation: logo-glow 6s steps(1, end) infinite;                    /* a soft glow that flickers now and then, like a neon sign */
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(255, 255, 255, 0.3));   /* trims the empty margin round the logo; a steady soft glow */
   }
-  @keyframes logo-glow {
-    0%, 100% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.45)); }
-    7%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 8px rgba(255,255,255,0.18)); }
-    8%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 16px rgba(255,255,255,0.6)); }
-    9%  { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 7px rgba(255,255,255,0.12)); }
-    11% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.5)); }
-    46% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255,255,255,0.36)); }
-    71% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 6px rgba(255,255,255,0.1)); }
-    72% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 15px rgba(255,255,255,0.55)); }
-    74% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 9px rgba(255,255,255,0.22)); }
-    76% { filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 14px rgba(255,255,255,0.45)); }
+  /* the flicker is in the logo itself, not the glow: it dips and jumps back like a tired neon tube */
+  @keyframes logo-flick {
+    0%, 100% { opacity: 1; }
+    7% { opacity: 0.55; } 8% { opacity: 1; } 9% { opacity: 0.4; } 11% { opacity: 1; }
+    71% { opacity: 0.6; } 72% { opacity: 1; } 74% { opacity: 0.5; } 76% { opacity: 1; }
   }
-  @media (prefers-reduced-motion: reduce) { .home-logo { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .home-logo img { animation: none; } }
   .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
-    transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite; }
+    transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite, logo-flick 6s steps(1, end) infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
   body:not(.is-home) .home-logo { display: none; }
   body.is-home { --m-h: clamp(160px, calc(100vh - 500px), 600px); }
@@ -1135,7 +1130,7 @@ if (typeof COLLECTIONS === 'undefined') {
 
 const site = (typeof SITE !== 'undefined' && SITE) || {};
 const CFG = Object.assign(
-  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150, logoSway: 14, music: '', favorites: [] },
+  { marqueeSpeed: 50, peekDelay: 2500, globeSpin: 4, logoWidth: 150, logoSway: 14, music: '', favorites: [], viewsApi: '' },
   (typeof SETTINGS !== 'undefined' && SETTINGS) || {}
 );
 
@@ -1207,13 +1202,31 @@ COLLECTIONS.forEach(c => {
 });
 
 let currentColl = null;
-/* how often each photo has been opened (kept in this browser; add  views: 120  to a photo in events.js to count visits from elsewhere too) */
+/* How often each photo has been opened. With SETTINGS.viewsApi set, the counts are shared by every visitor (kept by a small Cloudflare Worker);
+   without it they are kept in this browser only. A photo can also carry its own  views: 120  in events.js. */
+const VIEWS_API = String(CFG.viewsApi || '').replace(/\/+$/, '');
 const VIEWS = (() => { try { return JSON.parse(localStorage.getItem('aa.views') || '{}') || {}; } catch (_) { return {}; } })();
-const viewsOf = p => (Number(p.views) || 0) + (VIEWS[p.src] || 0);
+let REMOTE = {};
+try { REMOTE = JSON.parse(sessionStorage.getItem('aa.rv') || '{}') || {}; } catch (_) {}
+const viewsOf = p => (Number(p.views) || 0) + (VIEWS_API ? (REMOTE[p.src] || 0) : (VIEWS[p.src] || 0));
+const sentViews = new Set();
 function countView(p) {
   if (!p || !p.src) return;
+  if (VIEWS_API) {
+    if (sentViews.has(p.src)) return;
+    sentViews.add(p.src); REMOTE[p.src] = (REMOTE[p.src] || 0) + 1;
+    try { fetch(VIEWS_API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ src: p.src }), keepalive: true }).catch(() => {}); } catch (_) {}
+    return;
+  }
   VIEWS[p.src] = (VIEWS[p.src] || 0) + 1;
   try { localStorage.setItem('aa.views', JSON.stringify(VIEWS)); } catch (_) {}
+}
+if (VIEWS_API) {
+  fetch(VIEWS_API, { cache: 'no-store' }).then(r => r.json()).then(j => {
+    if (!j || typeof j !== 'object') return;
+    REMOTE = j; try { sessionStorage.setItem('aa.rv', JSON.stringify(j)); } catch (_) {}
+    if (window.scrollY < 40 && !document.getElementById('lb')?.classList.contains('on') && typeof route === 'function') route();   // re-sort once the real totals arrive
+  }).catch(() => {});
 }
 let lbList = [];     // what the fullscreen viewer is stepping through: [{ c: event, p: photo, idx }]
 let lbIndex = 0;
@@ -2577,6 +2590,7 @@ function infoHTML(c, p) {
   const date = p.date || c.date, loc = p.location || c.location;
   if (date) h += infoRow('Date', date);
   if (loc) h += infoRow('Location', loc);
+  if (VIEWS_API) h += infoRow('Views', String(viewsOf(p)));
   h += `</div>`;
 
   const cam = [
