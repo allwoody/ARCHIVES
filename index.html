@@ -325,7 +325,7 @@
     aspect-ratio: var(--ratio, auto);
     background: var(--tile);
     overflow: hidden;
-    cursor: zoom-in;
+    cursor: default;
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tile .ph {
@@ -624,14 +624,20 @@
   /* ---------- hover preview (desktop): photo goes fullscreen while you rest on it ---------- */
   .peek {
     position: fixed; inset: 0; z-index: 40;
-    background: var(--bg);
+    background: #202226;
     display: flex; align-items: center; justify-content: center;
-    padding: 28px;
+    padding: 28px; overflow: hidden;
     opacity: 0; visibility: hidden;
     transition: opacity 0.18s ease, visibility 0.18s;
     pointer-events: none;            /* so the photo underneath keeps the hover */
   }
   .peek.on { opacity: 1; visibility: visible; }
+  /* the same photo, enlarged, inverted (so its highlights are the darkest part), dark and heavily blurred behind it */
+  .peek .peek-bg { position: absolute; left: -200px; top: -200px; width: calc(100% + 400px); height: calc(100% + 400px); max-width: none; max-height: none; object-fit: cover;
+    filter: invert(1) hue-rotate(180deg) saturate(0.9) brightness(0.36) blur(46px); transform: scale(1.12); z-index: 0; }
+  #peekStage { position: relative; z-index: 1; }
+  .peek .peek-main, .peek .ph-big { position: relative; z-index: 1; }
+  .peek-info { z-index: 2; }
   .peek img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
   .peek .ph-big {
     width: min(100%, 1100px); aspect-ratio: 16 / 9;
@@ -2423,7 +2429,7 @@ function condensedGear(c, p) {
 
 function showPeek(c, p, idx) {
   peekStage.innerHTML = p.src
-    ? `<img src="${esc(p.src)}" alt="">`
+    ? `<img class="peek-bg" src="${esc(p.src)}" alt="" aria-hidden="true"><img class="peek-main" src="${esc(p.src)}" alt="">`
     : `<div class="ph-big">${pad(idx + 1)}</div>`;
   peekInfo.innerHTML = condensedGear(c, p);
   peek.classList.add('on');
