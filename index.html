@@ -343,7 +343,7 @@
     background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
   .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
   .grail.big { position: absolute; width: 34px; height: 49px; right: auto; z-index: 3; }
-  .grail.big i { top: 5px; font-size: 38px; }
+  .grail.big i { top: 7px; font-size: 22px; }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
   @keyframes tileGlow { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); }
     22% { box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 46px 14px rgba(255,255,255,0.6); filter: brightness(1.14); }
@@ -1909,8 +1909,10 @@ const hasD3 = typeof d3 !== 'undefined' && !!d3.geoEquirectangular;
 const gwrap = $('globeWrap'), gcanvas = $('globeCanvas'), gpins = $('pins'), gpop = $('gpop');
 const mhud = $('mhud'), minfo = $('minfo'), mtip = $('mtip'), lockCard = $('lockCard');
 const MAP_TOP = 84, MAP_BOTTOM = -58;                        // latitudes shown
-/* a web-map (Mercator) projection, so Greenland, Alaska, Canada and Russia keep their true shapes instead of looking squashed */
-const MERC = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+/* the Miller projection, the classic flat world-map look: Greenland, Alaska, Canada and Russia keep believable shapes (not squashed flat), and the map stays the same height as before */
+const rawMiller = (lam, phi) => [lam, 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * phi))];
+rawMiller.invert = (x, y) => [x, 2.5 * Math.atan(Math.exp(0.8 * y)) - 0.625 * Math.PI];
+const MERC = lat => rawMiller(0, lat * Math.PI / 180)[1];
 const WW = 2000, KK = WW / (2 * Math.PI), WH = KK * (MERC(MAP_TOP) - MERC(MAP_BOTTOM));     // the world, in map units
 const wxOf = lon => (lon + 180) / 360 * WW, wyOf = lat => KK * (MERC(MAP_TOP) - MERC(lat));
 const ss = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
@@ -1990,10 +1992,10 @@ const featuresOf = (t, name) => !t ? [] : t.type === 'Topology' ? (typeof topojs
 
 function buildWorld(cT, sT) {
   const kk = KK;
-  g.proj = d3.geoMercator().scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[-WW, 0], [2 * WW, WH]]);
+  g.proj = d3.geoProjection(rawMiller).scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[-WW, 0], [2 * WW, WH]]);
   const byId = {};
   g.conts = CONT_DEFS.map(([id, name], i) => (byId[id] = { id, name, polys: [], extras: [], countries: [], grps: [], events: 0, places: 0, hv: 0, ph: [i * 1.7 + 0.4, i * 2.3 + 1.1, i * 0.9 + 2], fq: [0.21 + (i % 3) * 0.05, 0.17 + (i % 4) * 0.04] }));
-  const clipProj = (x0, x1) => d3.geoMercator().scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[x0, 0], [x1, WH]]);
+  const clipProj = (x0, x1) => d3.geoProjection(rawMiller).scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[x0, 0], [x1, WH]]);
   const mkWith = (proj, obj) => { const p = new Path2D(); d3.geoPath(proj, p)(obj); return p; };
   const boundsWith = (proj, obj) => { const b = d3.geoPath(proj).bounds(obj); return { x0: b[0][0], y0: b[0][1], x1: b[1][0], y1: b[1][1] }; };
   const RU_X = wxOf(60);                                       // the Urals: Russia west of here belongs to Europe
