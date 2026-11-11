@@ -333,6 +333,11 @@
     cursor: default;
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .grail { position: absolute; top: 0; right: 9px; z-index: 2; width: 20px; height: 29px; pointer-events: none; display: block;
+    background: linear-gradient(180deg, #2b2e33, #1c1e22); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; color: #f0c94c; text-shadow: 0 0 5px rgba(240, 201, 76, 0.7); }
+  .grail.big { position: absolute; width: 34px; height: 50px; right: auto; z-index: 3; }
+  .grail.big i { top: 8px; font-size: 22px; }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
   @keyframes tileGlow { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); }
     22% { box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 46px 14px rgba(255,255,255,0.6); filter: brightness(1.14); }
@@ -736,6 +741,10 @@
   .i-sec { margin-bottom: 20px; }
   .i-sec:last-child { margin-bottom: 0; }
   .i-title { text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .i-grail { margin: 0 0 20px; padding: 12px 14px; border: 1px solid rgba(240, 201, 76, 0.35); border-radius: 6px; background: rgba(240, 201, 76, 0.06); }
+  .i-grail b { display: block; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; background: linear-gradient(100deg, #b8872a 0%, #f6dc84 28%, #d5a53a 50%, #fff0b0 72%, #b8872a 100%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; animation: goldFoil 6s ease-in-out infinite alternate; }
+  .i-grail span { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0.06em; color: #e9cf7a; }
+  @keyframes goldFoil { from { background-position: 0% 0; } to { background-position: 100% 0; } }
   .i-head { text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-size: 11px; margin-bottom: 8px; }
   .i-row { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; border-bottom: 1px solid var(--line); }
   .i-row span:first-child { color: var(--muted); flex-shrink: 0; }
@@ -804,7 +813,8 @@
   #magBack .b, #magBack.is-back .a { opacity: 0; } #magBack.is-back .b { opacity: 1; }
   .pill:hover, .pill:focus-visible { border-color: var(--muted); color: var(--ink); outline: none; }
   .pill:active { transform: scale(0.96); }
-  .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; line-height: 1.2; }
+  .mv-title b { font-weight: 500; } .mv-title small { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); }
   .mg-info, .mg-stage { transition: opacity 0.35s ease; }
   .mg-wrap.going .mg-info, .mg-wrap.going .mg-nav, .mg-wrap.going .mg-top { opacity: 0; transition: opacity 0.25s ease; }
   @keyframes mvIn { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
@@ -862,7 +872,7 @@
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
   /* the Holy Grails book: shiny silver foil, with a slow shimmer */
-  .mg-cover.foil { --ac: linear-gradient(115deg, #6d7581 0%, #d9dee6 12%, #9aa3b0 25%, #f6f8fb 38%, #b9aedd 49%, #9fd3e6 57%, #e9edf2 68%, #7c8491 84%, #cdd3dc 100%); --ad: rgba(255, 255, 255, 0.85); }
+  .mg-cover.foil { --ac: linear-gradient(115deg, #8a86ae 0%, #ecd9ee 11%, #aab4d6 23%, #fdeaf1 35%, #e7b7d2 44%, #c3b0e4 52%, #a3d6ea 60%, #f6dfe9 71%, #9a93bf 85%, #dfd0ea 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
   .mg-cover.foil .stp { border-color: rgba(27, 33, 48, 0.7); } .mg-cover.foil .stp u { border-top-color: rgba(27, 33, 48, 0.7); }
@@ -2576,6 +2586,11 @@ function showPeek(c, p, idx) {
   const seq = ++peekSeq;                                              // it fades in only once the picture is ready, so it never just cuts to it
   Promise.all([...peekStage.querySelectorAll('img')].map(im => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()))).then(() => {
     if (seq !== peekSeq) return;
+    const mi = peekStage.querySelector('.peek-main');
+    if (mi && grailInfo(p.src)) {                                    // the star stays on the enlarged picture, at its top right corner
+      const r = mi.getBoundingClientRect(), pr = peek.getBoundingClientRect(), g = document.createElement('span');
+      g.innerHTML = GRAIL_RIBBON; const gr = g.firstChild; gr.style.cssText = `left:${r.right - pr.left - 46}px;top:${r.top - pr.top}px;`; gr.classList.add('big'); peekStage.appendChild(gr);
+    }
     requestAnimationFrame(() => { if (seq === peekSeq) peek.classList.add('on'); });
   });
 }
@@ -2736,6 +2751,8 @@ function goToTag(k) {
 }
 
 /* ---------- hover preview on a photo tile (desktop only) ---------- */
+const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Holy Grails, and which one
+const GRAIL_RIBBON = '<span class="grail" aria-label="One of my favorite photos" title="One of my favorite photos"><i>★</i></span>';
 function attachPeek(b, c, p, idx) {
   if (!canHover) return;
   let ax = 0, ay = 0;                                     // where the cursor started resting
@@ -2852,7 +2869,7 @@ async function renderCollection(c, focusSrc) {
     if (cols) b.style.aspectRatio = String(e.ratio);
     b.setAttribute('aria-label', `View photo ${pos + 1} of ${c.title}`);
     b.innerHTML = p.src
-      ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">`
+      ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">${grailInfo(p.src) ? GRAIL_RIBBON : ''}`
       : `<span class="ph">${pad(idx + 1)}</span>`;
     b.addEventListener('click', () => openLb(pos));
     attachPeek(b, c, p, idx);
@@ -3044,6 +3061,8 @@ function infoHTML(c, p) {
   if (VIEWS_API) h += infoRow('Views', String(viewsOf(p)));
   h += `</div>`;
 
+  const gr = p.src ? grailInfo(p.src) : null;
+  if (gr) h += `<div class="i-grail"><b>★ One of my favorite photos</b><span>${gr.n}/${gr.total} in the Holy Grails look book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3311,6 +3330,7 @@ requestAnimationFrame(frame);
   const FAV_N = 15, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : shuffled(allPics).slice(0, FAV_N);
   const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Holy Grails', date: '', location: 'My all-time favorites', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
+  window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
   const picksFor = c => {
@@ -3369,8 +3389,8 @@ requestAnimationFrame(frame);
     const corners = [[8, 92], [94, 6], [92, 90], [6, 8]];
     corners.forEach(([x, y], k) => { if (rnd() < [0.5, 0.9, 0.7, 0.4][v]) L.push(`radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,${(0.08 + rnd() * 0.14).toFixed(2)}), transparent ${(12 + rnd() * 18).toFixed(0)}%)`); });
     if (v === 2) for (let k = 0; k < 3; k++) L.push(`radial-gradient(circle at ${(10 + rnd() * 80).toFixed(0)}% ${(10 + rnd() * 80).toFixed(0)}%, rgba(255,240,200,${(0.05 + rnd() * 0.06).toFixed(2)}), transparent ${(6 + rnd() * 9).toFixed(0)}%)`);   // faded patches
-    { const ds = 5 + rnd() * 4.5, dr = 0.9 + rnd() * 0.5, da = (0.025 + rnd() * 0.03).toFixed(3), ox = Math.round(rnd() * 9), oy = Math.round(rnd() * 9);   // the halftone dots, a different size and strength on each cover
-      L.push(`radial-gradient(rgba(255,255,255,${v === 3 ? 0.05 : da}) ${dr.toFixed(1)}px, transparent ${(dr + 0.4).toFixed(1)}px) ${ox}px ${oy}px / ${(v === 3 ? 7 : ds).toFixed(1)}px ${(v === 3 ? 7 : ds).toFixed(1)}px`); }
+    { const ds = 5 + rnd() * 4.5, dr = 0.9 + rnd() * 0.5, da = ((0.025 + rnd() * 0.03) * (FAV0 && i === 0 ? 0.3 : 1)).toFixed(3), ox = Math.round(rnd() * 9), oy = Math.round(rnd() * 9);   // the halftone dots, a different size and strength on each cover
+      L.push(`radial-gradient(rgba(255,255,255,${v === 3 ? (FAV0 && i === 0 ? 0.015 : 0.05) : da}) ${dr.toFixed(1)}px, transparent ${(dr + 0.4).toFixed(1)}px) ${ox}px ${oy}px / ${(v === 3 ? 7 : ds).toFixed(1)}px ${(v === 3 ? 7 : ds).toFixed(1)}px`); }
     return { pt: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg).replace(/'/g, '%27')}")`, sc: L.join(', '), po: [0.5, 0.42, 0.55, 0.46][v] };
   }
   /* ---- title: split it like "UNC VS. / NOTRE DAME", and size it to fit the banner (the banner grows a little if it must) ---- */
@@ -3451,8 +3471,9 @@ requestAnimationFrame(frame);
   const photoPage = (c, p) => {
     const ev = c.special && p._ev ? p._ev : c;                         // in Holy Grails every photo names its own event, and the name is a link to it
     const name = c.special && p._ev ? `<a href="#${esc(ev.id)}?photo=${encodeURIComponent(p.src)}" title="Open this event and find the photo">${esc(ev.title)}</a>` : esc(c.title);
+    const head = c.special && p._ev ? `<b>${name}</b>${ev.score ? `<span class="c">${esc(ev.score)}</span>` : ''}` : '';   // the event's own comic already names it at the top, so only Holy Grails captions carry the name (and its score)
     return `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || ev.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>` +
-      `<div class="pg-cap"><b>${name}</b>${gearHTML(ev, p)}</div>`;
+      `<div class="pg-cap">${head}${gearHTML(ev, p)}</div>`;
   };
   /* a page is { cls, html } */
   function buildPages(c) {
@@ -3500,7 +3521,7 @@ requestAnimationFrame(frame);
       el.innerHTML = faceEl(pages[2 * i], 'front') + faceEl(pages[2 * i + 1], 'back');
       book.appendChild(el); leaves.push(el);
     }
-    $('mvTitle').textContent = c.title;
+    $('mvTitle').innerHTML = `<b>${esc(c.title)}</b>${!c.special && c.score ? `<small>${esc(c.score)}</small>` : ''}`;
     grid.hidden = true; $('magHead').hidden = true; viewer.hidden = false;
     mag.style.transition = 'none'; settle(); show(); void mag.offsetWidth; mag.style.transition = '';
     window.scrollTo(0, 0);
