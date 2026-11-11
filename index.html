@@ -835,6 +835,18 @@
   .mg-stage { position: relative; height: calc(var(--ch) + 52px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
   .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
     transition: transform 0.7s cubic-bezier(0.22, 0.8, 0.2, 1), opacity 0.45s ease, scale 0.3s ease; transform-style: preserve-3d; cursor: pointer; scale: 1; }
+  /* thickness for the books on the shelf: pages on the right of the open volume, a spine on the left of it */
+  .mg-card { --T: calc(var(--cw) * 0.06); }
+  .edge { position: absolute; top: 0; height: 100%; width: var(--T); backface-visibility: hidden; -webkit-backface-visibility: hidden; pointer-events: none; transition: filter 0.5s ease; }
+  .edge.er { left: calc(100% - var(--T) / 2); transform: translateZ(calc(var(--T) / -2)) rotateY(90deg);
+    background: linear-gradient(90deg, rgba(0,0,0,0.22), transparent 45%, rgba(0,0,0,0.12)), repeating-linear-gradient(90deg, #f7f5ee 0 1px, #d9d4c5 1px 2px); }
+  .edge.el { left: calc(var(--T) / -2); transform: translateZ(calc(var(--T) / -2)) rotateY(-90deg); background: var(--ac, #2c5d9a); background-size: 320% 320%;
+    display: flex; align-items: center; gap: calc(var(--T) * 0.5); writing-mode: vertical-rl; padding: calc(var(--ch) * 0.05) 0; box-sizing: border-box; overflow: hidden;
+    font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: 0.1em; font-size: calc(var(--T) * 0.46); line-height: 1; color: #fff4d8; white-space: nowrap; }
+  .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.04) 45%, rgba(0,0,0,0.2)); pointer-events: none; }
+  .edge.el b { font-weight: 600; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+  .edge.el.foil { color: #1b2130; animation: foilMove 8s ease-in-out infinite alternate; }
+  .mg-card.side .edge { filter: brightness(0.72); }
   /* comic-book cover: a title banner across the top (so nothing sits on the action), a corner box top-left, the logo as a watermark top-right */
   .mg-cover { --ac: #2c5d9a; --ad: #0d1b2e; --pt: none; --sc: none; position: absolute; inset: 0; display: block; border-radius: 3px; overflow: hidden; background: var(--ac); padding: 5px;
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
@@ -854,9 +866,10 @@
   .mg-banner .vol { position: absolute; right: calc(var(--cw) * 0.035); top: 0; width: calc(var(--cw) * 0.19); height: calc(var(--bn) + var(--cw) * 0.07); z-index: 3; box-sizing: border-box;
     background: var(--ac); border: calc(var(--u) * 3) solid #fff; border-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff4d8;
     font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
-  .mg-banner .vol i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.03); letter-spacing: 0.16em; margin: 0 0 calc(var(--cw) * 0.008) 0.16em; }
+  .mg-banner .vol i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.04); letter-spacing: 0.16em; margin: 0 0 calc(var(--cw) * 0.008) 0.16em; }
   .mg-banner .vol b.star { font-size: calc(var(--cw) * 0.125); text-shadow: none; background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
     filter: url(#starDeboss); animation: goldFoil 4.5s ease-in-out infinite alternate; }
+  .mg-banner .vol b:not(.star) { padding: calc(var(--cw) * 0.008) calc(var(--cw) * 0.012); border-top: calc(var(--u) * 2.5) solid currentColor; border-bottom: calc(var(--u) * 2.5) solid currentColor; }   /* lines above and below the numeral */
   .mg-banner .vol b { font-weight: 500; font-size: calc(var(--cw) * 0.115); letter-spacing: 0; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad); }
   .mg-banner.hasmark { padding-right: calc(var(--cw) * 0.25); }
   .pg.endcover { background: #202226; }
@@ -877,7 +890,7 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Apex book: shiny silver foil, with a slow shimmer */
+  /* the Selects book: shiny silver foil, with a slow shimmer */
   .mg-cover.foil { --ac: linear-gradient(115deg, #aeb4c0 0%, #f3c9dc 9%, #dfe3ea 18%, #b9aee0 27%, #c9ced8 36%, #a6d8ea 45%, #f4f6f9 54%, #f0bfd6 63%, #bfc5d0 72%, #c7b6e8 81%, #e1e5ec 90%, #aeb4c0 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
@@ -1158,10 +1171,10 @@
   <feGaussianBlur in="SourceAlpha" stdDeviation="1.15" result="dome"/>
   <feSpecularLighting in="dome" surfaceScale="4" specularConstant="1.2" specularExponent="30" lighting-color="#fffbe2" result="spec"><feDistantLight azimuth="235" elevation="46"/></feSpecularLighting>
   <feComposite in="spec" in2="SourceAlpha" operator="in" result="gloss"/>
-  <feOffset in="SourceAlpha" dx="2.4" dy="2.4" result="o1"/>
+  <feOffset in="SourceAlpha" dx="2" dy="2" result="o1"/>
   <feComposite in="SourceAlpha" in2="o1" operator="out" result="edgeTL"/>
   <feGaussianBlur in="edgeTL" stdDeviation="0.5" result="edgeTLb"/>
-  <feFlood flood-color="#1c1000" flood-opacity="0.95"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
+  <feFlood flood-color="#1c1000" flood-opacity="0.88"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
   <feOffset in="SourceAlpha" dx="-0.7" dy="-0.7" result="o2"/>
   <feComposite in="SourceAlpha" in2="o2" operator="out" result="edgeBR"/>
   <feFlood flood-color="#fff2b8" flood-opacity="0.3"/><feComposite in2="edgeBR" operator="in" result="lit"/>
@@ -1173,10 +1186,10 @@
   <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="dome"/>
   <feSpecularLighting in="dome" surfaceScale="4" specularConstant="1.2" specularExponent="30" lighting-color="#fffbe2" result="spec"><feDistantLight azimuth="235" elevation="46"/></feSpecularLighting>
   <feComposite in="spec" in2="SourceAlpha" operator="in" result="gloss"/>
-  <feOffset in="SourceAlpha" dx="1.3" dy="1.3" result="o1"/>
+  <feOffset in="SourceAlpha" dx="1.1" dy="1.1" result="o1"/>
   <feComposite in="SourceAlpha" in2="o1" operator="out" result="edgeTL"/>
   <feGaussianBlur in="edgeTL" stdDeviation="0.3" result="edgeTLb"/>
-  <feFlood flood-color="#1c1000" flood-opacity="0.95"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
+  <feFlood flood-color="#1c1000" flood-opacity="0.88"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
   <feOffset in="SourceAlpha" dx="-0.4" dy="-0.4" result="o2"/>
   <feComposite in="SourceAlpha" in2="o2" operator="out" result="edgeBR"/>
   <feFlood flood-color="#fff2b8" flood-opacity="0.3"/><feComposite in2="edgeBR" operator="in" result="lit"/>
@@ -2807,7 +2820,7 @@ function goToTag(k) {
 }
 
 /* ---------- hover preview on a photo tile (desktop only) ---------- */
-const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Apex, and which one
+const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Selects, and which one
 const GRAIL_RIBBON = '<span class="grail" aria-label="Portfolio highlight" title="Portfolio highlight"><i>★</i></span>';
 function attachPeek(b, c, p, idx) {
   if (!canHover) return;
@@ -3119,7 +3132,7 @@ function infoHTML(c, p) {
   h += `</div>`;
 
   const gr = p.src ? grailInfo(p.src) : null;
-  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Apex look book</span></div>`;
+  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Selects look book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3381,7 +3394,7 @@ requestAnimationFrame(frame);
 (function magazines() {
   const grid = $('magGrid'), viewer = $('magViewer'), mag = $('mag'), book = $('magBook'), prev = $('magPrev'), next = $('magNext');
   const SEGS = 26, BEND = 34, FLIP_MS = 1150;
-  /* Vol. 0, "Apex": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
+  /* Vol. 0, "Selects": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
      until you do, it is 15 photos picked at random each time the site opens. */
   const allPics = []; BY_DATE.forEach(c => c.photos.forEach(p => { if (p.src) allPics.push({ c, p }); }));
   const spreadOut = groups => {                                        // mixes the events at random, never the same event twice in a row (when it can be helped)
@@ -3396,7 +3409,7 @@ requestAnimationFrame(frame);
   };
   const FAV_PER = 4, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : spreadOut(BY_DATE.map(c => shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER)));   // 4 random photos from each event, grouped by event
-  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Apex', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
+  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Selects', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
   window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
@@ -3425,7 +3438,8 @@ requestAnimationFrame(frame);
   /* pick the cover's colour from its photo so the banner and corner box match it */
   /* team colours: put  color: "#d4481f"  on an event in events.js to choose its cover colour, or add a team here */
   const TEAM_COLORS = [[/woodpecker/i, [1, 94, 47]]];
-  function tintCover(im, c) {
+  function tintCover(im, c) { tintCover0(im, c); const card = im.closest('.mg-card'), cv = im.closest('.mg-cover'), sp = card && card.querySelector('.edge.el'); if (sp) { const cs = getComputedStyle(cv); sp.style.setProperty('--ac', cs.getPropertyValue('--ac')); sp.style.setProperty('--ad', cs.getPropertyValue('--ad')); } }   // the spine is the cover's colour carried round the edge
+  function tintCover0(im, c) {
     const cover = im.closest('.mg-cover'); if (cover.classList.contains('foil')) return;
     const set = (h, sat, l) => { cover.style.setProperty('--ac', `hsl(${h}, ${sat}%, ${l}%)`); cover.style.setProperty('--ad', `hsl(${h}, ${Math.min(80, sat)}%, 12%)`); };
     if (c && c.color) { cover.style.setProperty('--ac', c.color); cover.style.setProperty('--ad', 'rgba(0,0,0,0.78)'); return; }
@@ -3505,7 +3519,7 @@ requestAnimationFrame(frame);
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
     eventsWithPhotos.forEach((c, i) => { if (!papers[i]) papers[i] = paperFor(i); });
     stage.innerHTML = eventsWithPhotos.map((c, i) =>
-      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="dim"></span></div>`).join('');
+      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><span>${esc(c.title)}</span></span><span class="dim"></span></div>`).join('');
     stage.querySelectorAll('.mg-card').forEach(card => { const im = card.querySelector('.mg-art img'), c = eventsWithPhotos[+card.dataset.i]; const go = () => tintCover(im, c); im.complete ? go() : im.addEventListener('load', go, { once: true }); });
     layoutFlow();
   }
@@ -3538,9 +3552,9 @@ requestAnimationFrame(frame);
   let cur = 0, L = 0, pages = [], leaves = [], busy = false, evt = null;
   const gearHTML = (c, p) => { const h = condensedGear(c, p); return h ? `<div class="gear">${h}</div>` : ''; };
   const photoPage = (c, p) => {
-    const ev = c.special && p._ev ? p._ev : c;                         // in Apex every photo names its own event, and the name is a link to it
+    const ev = c.special && p._ev ? p._ev : c;                         // in Selects every photo names its own event, and the name is a link to it
     const name = c.special && p._ev ? `<a href="#${esc(ev.id)}?photo=${encodeURIComponent(p.src)}" title="Open this event and find the photo">${esc(ev.title)}</a>` : esc(c.title);
-    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Apex pages carry the name, date and score
+    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Selects pages carry the name, date and score
     const idLine = sp ? `<b>${name}</b><span class="c">${[ev.date, ev.score].filter(Boolean).map(esc).join(' · ')}</span>` : '';
     const head = sp ? `<div class="pg-head"><b>${name}</b>${ev.date ? `<span>${esc(ev.date)}</span>` : ''}${ev.score ? `<span>${esc(ev.score)}</span>` : ''}</div>` : '';
     const photo = `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || ev.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>`;
@@ -3724,11 +3738,11 @@ requestAnimationFrame(frame);
     const slab = (x0, css) => { const d = document.createElement('div'); d.className = 'bk-slab'; d.style.cssText = css.replace(/X0/g, x0 + 'px'); book.appendChild(d); slabs.push(d); };
     const build = x0 => {                                              // the thickness of the closed book: spine and page edges, plus the far cover, so it is a solid object while it turns
       slabs.splice(0).forEach(d => d.remove());
-      slab(x0, `left:calc(X0 - ${T / 2}px);top:0;width:${T}px;height:100%;background:linear-gradient(90deg,#0e0f11,#25272b);transform:translateZ(-${T / 2}px) rotateY(-90deg)`);
+      slab(x0, `left:calc(X0 - ${T / 2}px);top:0;width:${T}px;height:100%;background:linear-gradient(90deg,#c9c4b4,#f4f2ea);transform:translateZ(-${T / 2}px) rotateY(-90deg)`);
       slab(x0, `left:calc(X0 + ${pw}px - ${T / 2}px);top:0;width:${T}px;height:100%;background:repeating-linear-gradient(90deg,#f2f0e8 0 1px,#cfcabb 1px 2px);transform:translateZ(-${T / 2}px) rotateY(90deg)`);
       slab(x0, `left:X0;top:-${T / 2}px;width:${pw}px;height:${T}px;background:repeating-linear-gradient(0deg,#f2f0e8 0 1px,#cfcabb 1px 2px);transform:translateZ(-${T / 2}px) rotateX(90deg)`);
       slab(x0, `left:X0;top:calc(100% - ${T / 2}px);width:${pw}px;height:${T}px;background:repeating-linear-gradient(0deg,#f2f0e8 0 1px,#cfcabb 1px 2px);transform:translateZ(-${T / 2}px) rotateX(-90deg)`);
-      slab(x0, `left:X0;top:0;width:${pw}px;height:100%;background:#17181b;transform:translateZ(-${T}px)`);
+      slab(x0, `left:X0;top:0;width:${pw}px;height:100%;background:#e9e6dc;transform:translateZ(-${T}px)`);
     };
     build(0);
     book.style.transformOrigin = '25% 50%';
