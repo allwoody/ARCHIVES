@@ -971,9 +971,9 @@
     background-size: auto, auto, calc(var(--cw) * 0.8) calc(var(--cw) * 0.8); mix-blend-mode: multiply; opacity: var(--po, 0.5); }
   /* scratches, creases and faded patches: different on every cover (built in the script) */
   .mg-cover::before { content: ""; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: var(--sc); mix-blend-mode: screen; opacity: 0.9; }
-  .mg-card .dim { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; border-radius: 3px; transition: opacity 0.5s ease; pointer-events: none; }
-  .mg-card.side .dim { opacity: 0.38; }
-  @media (hover: hover) { .mg-card.side:hover .dim { opacity: 0.16; } }
+  .mg-card .dim { position: absolute; inset: 0; z-index: 5; background: #000; opacity: calc(var(--dm, 0) * var(--o, 1)); border-radius: 3px; transition: opacity var(--ot, 0.5s) ease; pointer-events: none; }   /* the shade fades out together with the book, so no black panel is left behind */
+  .mg-card.side { --dm: 0.38; }
+  @media (hover: hover) { .mg-card.side:hover { --dm: 0.16; } }
   .mg-nav { position: absolute; top: calc(var(--ch) / 2 + 45px); z-index: 300; margin-top: -23px; }
   .mg-prev { left: 36px; } .mg-next { right: 36px; }
   .mg-info { text-align: center; margin-top: 2px; min-height: 48px; }
