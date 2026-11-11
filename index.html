@@ -854,7 +854,8 @@
   .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.05) 65%, transparent); pointer-events: none; }   /* darker at the back, fading to nothing where it meets the cover */
   .edge.el b { font-weight: 600; flex: none; } .edge.el i { font-style: normal; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; } .edge.el em { font-style: normal; flex: none; font-weight: 500; }
   /* the Showcase spine ends in an infinity sign: standing along the spine (turned a quarter turn), in gold foil with the same jitter and shadow as the headings */
-  .edge.el em.inf { width: calc(var(--T) * 0.5); height: calc(var(--T) * 1.05); margin-bottom: calc(var(--T) * 0.1);
+  .edge.el i.infw { display: block; flex: none; margin-bottom: calc(var(--T) * 0.1); filter: drop-shadow(0 calc(var(--T) * 0.05) calc(var(--T) * 0.05) rgba(0, 0, 0, 0.7)) drop-shadow(0 0 calc(var(--T) * 0.025) rgba(0, 0, 0, 0.55)); }   /* a drop shadow so the gold pops off the spine */
+  .edge.el em.inf { display: block; width: calc(var(--T) * 0.5); height: calc(var(--T) * 1.05);
     background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; animation: goldFoil 4.5s ease-in-out infinite alternate;
     -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 64'><path transform='translate(24 0) rotate(90)' d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / auto 100% no-repeat;
             mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 64'><path transform='translate(24 0) rotate(90)' d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / auto 100% no-repeat;
@@ -3597,8 +3598,9 @@ requestAnimationFrame(frame);
   let act = 0;
   const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   function cmParts(c) {
-    const d = new Date(c.date); if (!isNaN(d)) return [String(d.getFullYear()).slice(-2), MONTHS[d.getMonth()]];
-    const y = String(c.date || '').match(/(\d{4})/), m = MONTHS.find(M => new RegExp('^' + M, 'i').test(String(c.date || '').trim()));
+    const txt = String(c.date || '').trim(), y = txt.match(/\b(\d{4})\b/), m = MONTHS.find(M => new RegExp('^' + M, 'i').test(txt));
+    if (y && m) return [y[1].slice(-2), m];                              // "August 22-29, 2026" -> '26 AUG
+    const d = new Date(txt); if (!isNaN(d)) return [String(d.getFullYear()).slice(-2), MONTHS[d.getMonth()]];
     return [y ? y[1].slice(-2) : '--', m || '---'];
   }
   const cmYear = c => "'" + cmParts(c)[0], cmMonth = c => cmParts(c)[1];
@@ -3686,7 +3688,7 @@ requestAnimationFrame(frame);
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
     eventsWithPhotos.forEach((c, i) => { if (!papers[i]) papers[i] = paperFor(i); });
     stage.innerHTML = eventsWithPhotos.map((c, i) =>
-      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><i>&middot;</i><span>${esc(c.title)}</span>${c.special ? '<em class="inf" aria-hidden="true"></em>' : `<em>${cmMonth(c)} ${cmYear(c)}</em>`}</span><span class="dim"></span></div>`).join('');
+      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><i>&middot;</i><span>${esc(c.title)}</span>${c.special ? '<i class="infw"><em class="inf" aria-hidden="true"></em></i>' : `<em>${cmMonth(c)} ${cmYear(c)}</em>`}</span><span class="dim"></span></div>`).join('');
     stage.querySelectorAll('.mg-card').forEach(card => { const im = card.querySelector('.mg-art img'), c = eventsWithPhotos[+card.dataset.i]; const go = () => tintCover(im, c); im.complete ? go() : im.addEventListener('load', go, { once: true }); });
     layoutFlow();
   }
