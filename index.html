@@ -853,11 +853,11 @@
     text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad, #0d1b2e), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad, #0d1b2e), calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--ad, #0d1b2e); }
   .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.05) 65%, transparent); pointer-events: none; }   /* darker at the back, fading to nothing where it meets the cover */
   .edge.el b { font-weight: 600; flex: none; } .edge.el i { font-style: normal; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; } .edge.el em { font-style: normal; flex: none; font-weight: 500; }
-  /* the Showcase spine ends in an infinity sign: lying flat across the spine, wide and low, so it can't be read as an 8, in gold foil with the same jitter and shadow as the headings */
-  .edge.el em.inf { width: calc(var(--T) * 1.05); height: calc(var(--T) * 0.5); margin-bottom: calc(var(--T) * 0.1);
+  /* the Showcase spine ends in an infinity sign: standing along the spine (turned a quarter turn), in gold foil with the same jitter and shadow as the headings */
+  .edge.el em.inf { width: calc(var(--T) * 0.5); height: calc(var(--T) * 1.05); margin-bottom: calc(var(--T) * 0.1);
     background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; animation: goldFoil 4.5s ease-in-out infinite alternate;
-    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 24'><path d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / 100% auto no-repeat;
-            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 24'><path d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / 100% auto no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 64'><path transform='translate(24 0) rotate(90)' d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / auto 100% no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 64'><path transform='translate(24 0) rotate(90)' d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / auto 100% no-repeat;
     filter: url(#titleWobble) drop-shadow(calc(var(--u) * 1) calc(var(--u) * 1) 0 #4a3204) drop-shadow(calc(var(--u) * 2) calc(var(--u) * 2) 0 rgba(40, 28, 4, 0.7)); }
   .edge.el.foil { color: #1b2130; animation: foilMove 8s ease-in-out infinite alternate; text-shadow: none; }
   .mg-card.side .edge { filter: brightness(0.62); }
@@ -1908,9 +1908,11 @@ const MAP_DATA = {
 const hasD3 = typeof d3 !== 'undefined' && !!d3.geoEquirectangular;
 const gwrap = $('globeWrap'), gcanvas = $('globeCanvas'), gpins = $('pins'), gpop = $('gpop');
 const mhud = $('mhud'), minfo = $('minfo'), mtip = $('mtip'), lockCard = $('lockCard');
-const MAP_TOP = 84, MAP_BOTTOM = -90;                        // latitudes shown
-const WW = 2000, WH = WW * (MAP_TOP - MAP_BOTTOM) / 360;     // the world, in map units
-const wxOf = lon => (lon + 180) / 360 * WW, wyOf = lat => (MAP_TOP - lat) / (MAP_TOP - MAP_BOTTOM) * WH;
+const MAP_TOP = 84, MAP_BOTTOM = -58;                        // latitudes shown
+/* a web-map (Mercator) projection, so Greenland, Alaska, Canada and Russia keep their true shapes instead of looking squashed */
+const MERC = lat => Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+const WW = 2000, KK = WW / (2 * Math.PI), WH = KK * (MERC(MAP_TOP) - MERC(MAP_BOTTOM));     // the world, in map units
+const wxOf = lon => (lon + 180) / 360 * WW, wyOf = lat => KK * (MERC(MAP_TOP) - MERC(lat));
 const ss = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const LOCK_SVG = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 
@@ -1960,7 +1962,7 @@ const plural = (n, a, b) => n + ' ' + (n === 1 ? a : (b || a + 's'));
 
 function refreshMapColors() {
   const ink = getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '239,233,219';
-  g.colors = { land: '#6c6a67', explored: '#272625', country: 'rgba(' + ink + ',0.40)', state: 'rgba(' + ink + ',0.26)' };
+  g.colors = { land: '#9b9994', explored: '#4d4c4a', country: 'rgba(22,21,20,0.78)', state: 'rgba(22,21,20,0.42)' };
 }
 
 /* ---- build the continents, countries and states once the shapes have arrived ---- */
@@ -1987,11 +1989,11 @@ function fullBounds(f) {
 const featuresOf = (t, name) => !t ? [] : t.type === 'Topology' ? (typeof topojson !== 'undefined' ? topojson.feature(t, t.objects[name]).features : []) : (t.features || []);
 
 function buildWorld(cT, sT) {
-  const kk = WW / (2 * Math.PI);
-  g.proj = d3.geoEquirectangular().scale(kk).translate([WW / 2, kk * MAP_TOP * Math.PI / 180]).precision(0.25);
+  const kk = KK;
+  g.proj = d3.geoMercator().scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[-WW, 0], [2 * WW, WH]]);
   const byId = {};
   g.conts = CONT_DEFS.map(([id, name], i) => (byId[id] = { id, name, polys: [], extras: [], countries: [], grps: [], events: 0, places: 0, hv: 0, ph: [i * 1.7 + 0.4, i * 2.3 + 1.1, i * 0.9 + 2], fq: [0.21 + (i % 3) * 0.05, 0.17 + (i % 4) * 0.04] }));
-  const clipProj = (x0, x1) => d3.geoEquirectangular().scale(kk).translate([WW / 2, kk * MAP_TOP * Math.PI / 180]).precision(0.25).clipExtent([[x0, -9000], [x1, 9000]]);
+  const clipProj = (x0, x1) => d3.geoMercator().scale(kk).translate([WW / 2, kk * MERC(MAP_TOP)]).precision(0.25).clipExtent([[x0, 0], [x1, WH]]);
   const mkWith = (proj, obj) => { const p = new Path2D(); d3.geoPath(proj, p)(obj); return p; };
   const boundsWith = (proj, obj) => { const b = d3.geoPath(proj).bounds(obj); return { x0: b[0][0], y0: b[0][1], x1: b[1][0], y1: b[1][1] }; };
   const RU_X = wxOf(60);                                       // the Urals: Russia west of here belongs to Europe
@@ -2075,7 +2077,7 @@ function buildSprites() {
     const set = (dy, dx) => c.setTransform(S, 0, 0, S, ox + (dx || 0), oy + dy);
     for (let i = D; i >= 1; i--) {                              // the sides, light near the waterline and darker below
       const t = i / D;
-      c.fillStyle = mixc([112, 120, 132], [38, 44, 52], Math.pow(t, 0.8));
+      c.fillStyle = mixc([112, 110, 107], [26, 25, 24], Math.pow(t, 0.8));
       if (i === D) { c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 26 * d; c.shadowOffsetY = D * 1.2; } else { c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0; }
       set(i); c.fill(ct.spath);
     }
@@ -2087,15 +2089,15 @@ function buildSprites() {
     c = c0;                                           // (the top surface is drawn on the real sprite)
     set(0);
     const gr = c.createLinearGradient(0, b.y0, 0, b.y1);
-    gr.addColorStop(0, '#b0aeaa'); gr.addColorStop(1, '#6b6966');
+    gr.addColorStop(0, '#bbb9b4'); gr.addColorStop(1, '#8a8884');
     c.fillStyle = gr; c.fill(ct.spath);
     c.save(); c.clip(ct.spath);                                  // a soft bevel and a sheen across the top
-    c.lineJoin = 'round'; c.strokeStyle = 'rgba(18,22,28,0.24)'; c.lineWidth = 9 * d / S; c.stroke(ct.spath);
+    c.lineJoin = 'round'; c.strokeStyle = 'rgba(14,13,12,0.34)'; c.lineWidth = 9 * d / S; c.stroke(ct.spath);
     const sg = c.createLinearGradient(b.x0, b.y0, b.x1, b.y1);
     sg.addColorStop(0, 'rgba(255,255,255,0.20)'); sg.addColorStop(0.45, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(0,0,0,0.10)');
     c.fillStyle = sg; c.fill(ct.spath);
     c.restore();
-    c.strokeStyle = 'rgba(238,244,252,0.5)'; c.lineWidth = 1.2 * d / S; c.stroke(ct.spath);
+    c.strokeStyle = 'rgba(240,236,226,0.55)'; c.lineWidth = 1.2 * d / S; c.stroke(ct.spath);
     /* the glow used when you point at it */
     const hv = mk(), h = hv.getContext('2d'), OFF = sw + 200;
     h.setTransform(S, 0, 0, S, ox - OFF, oy);
@@ -2116,7 +2118,7 @@ function buildSprites() {
 function paintDetail(c, ct, S, ox, oy, d) {
   const col = g.colors, lw = px => px * d / S;
   const D = Math.round(7 * d);
-  for (let i = D; i >= 1; i--) { c.setTransform(S, 0, 0, S, ox, oy + i); c.fillStyle = mixc([104, 110, 120], [40, 45, 52], i / D); c.fill(ct.path); }
+  for (let i = D; i >= 1; i--) { c.setTransform(S, 0, 0, S, ox, oy + i); c.fillStyle = mixc([108, 106, 103], [30, 29, 28], i / D); c.fill(ct.path); }
   c.setTransform(S, 0, 0, S, ox, oy);
   c.fillStyle = col.land; c.fill(ct.path);
   c.fillStyle = col.explored;
@@ -2198,7 +2200,7 @@ function paintUS(c, S, ox, oy, d, w, h) {
   const t = tmp.getContext('2d');
   na.countries.forEach(co => { if (co.hasStates) return; });
   const others = na.countries.filter(co => !co.hasStates);
-  for (let i = D; i >= 1; i--) { t.setTransform(S, 0, 0, S, ox, oy + i); t.fillStyle = mixc([104, 110, 120], [40, 45, 52], i / D); others.forEach(co => t.fill(co.path)); }
+  for (let i = D; i >= 1; i--) { t.setTransform(S, 0, 0, S, ox, oy + i); t.fillStyle = mixc([108, 106, 103], [30, 29, 28], i / D); others.forEach(co => t.fill(co.path)); }
   t.setTransform(S, 0, 0, S, ox, oy); t.fillStyle = col.land; others.forEach(co => t.fill(co.path));
   t.strokeStyle = col.country; t.lineWidth = lw(0.9); t.lineJoin = 'round'; others.forEach(co => t.stroke(co.path));
   c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
@@ -2206,12 +2208,12 @@ function paintUS(c, S, ox, oy, d, w, h) {
   c.drawImage(tmp, 0, 0);
   c.restore();
   /* the country itself, sharp */
-  for (let i = D; i >= 1; i--) { c.setTransform(S, 0, 0, S, ox, oy + i); c.fillStyle = mixc([112, 118, 128], [44, 50, 58], i / D); c.fill(g.usAll); }
+  for (let i = D; i >= 1; i--) { c.setTransform(S, 0, 0, S, ox, oy + i); c.fillStyle = mixc([112, 110, 107], [32, 31, 30], i / D); c.fill(g.usAll); }
   c.setTransform(S, 0, 0, S, ox, oy);
   c.fillStyle = col.land; c.fill(g.usAll);
   c.fillStyle = col.explored;
   g.states.forEach(st => { if (st.events && !st.terr) c.fill(st.ins ? st.ins.tpath : st.path); });
-  c.lineJoin = 'round'; c.strokeStyle = 'rgba(239, 233, 219,0.38)'; c.lineWidth = lw(0.9);
+  c.lineJoin = 'round'; c.strokeStyle = 'rgba(22,21,20,0.55)'; c.lineWidth = lw(0.9);
   g.states.forEach(st => { if (!st.terr) c.stroke(st.ins ? st.ins.tpath : st.path); });
 }
 function ensureUS() {
@@ -2438,8 +2440,8 @@ function globeStep() {
       if (g.hover && (g.hoverKind === 'country' || g.hoverKind === 'state')) {
         const hp = (g.usMode && g.hover.ins) ? g.hover.ins.tpath : g.hover.path;
         c.save(); c.globalAlpha = da; c.setTransform(d * z, 0, 0, d * z, d * (w / 2 - g.cam.cx * z), d * (h / 2 - g.cam.cy * z));
-        c.fillStyle = 'rgba(214,232,255,0.20)'; c.fill(hp);
-        c.strokeStyle = 'rgba(235,244,255,0.85)'; c.lineWidth = 1.6 / z; c.lineJoin = 'round'; c.stroke(hp);
+        c.fillStyle = 'rgba(240,236,226,0.22)'; c.fill(hp);
+        c.strokeStyle = 'rgba(248,244,234,0.9)'; c.lineWidth = 1.6 / z; c.lineJoin = 'round'; c.stroke(hp);
         c.restore();
       }
       c.globalAlpha = 1;
@@ -3454,7 +3456,7 @@ requestAnimationFrame(frame);
       paint(w, a);                                                     // the pressed core
     };
     const lineRun = (pos, major, h) => {
-      const base = major ? 1.5 : 1.05, alpha = major ? 0.17 : 0.105;
+      const base = major ? 1.5 : 1.05, alpha = major ? 0.136 : 0.084;
       let t = rnd() * 70;                                              // where the first stroke begins
       while (t < T) {
         if (rnd() < 0.2) { t += 8 + rnd() * 70; continue; }              // the pen lifted: a gap
