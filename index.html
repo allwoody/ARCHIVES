@@ -206,12 +206,13 @@
     46% { filter: brightness(1.08); }
     71% { filter: brightness(0.84); } 72% { filter: brightness(1.2); } 74% { filter: brightness(0.9); } 76% { filter: brightness(1); }
   }
-  @media (prefers-reduced-motion: reduce) { .home-logo img { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .home-logo img, .home-logo .logo-vid { animation: none; } }
   .home-logo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 52%;
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite, logo-flick 6s steps(1, end) infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
   body:not(.is-landing) .home-logo { display: none; }
   .home-logo .logo-vid { display: block; width: 100%; height: 100%; }
+  .home-logo .logo-vid.done { animation: logo-flick 6s steps(1, end) infinite; }
   .home-logo.has-vid { aspect-ratio: var(--va, 2.5); }
   body.is-home { --m-h: clamp(150px, calc(100vh - 470px), 560px); }
 
@@ -1471,7 +1472,7 @@ document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0)
    green is left round the edges). It plays through once, then the last 3 seconds loop for as long as the page is open.
    The file is  images/allwood_animated.mp4  (or set  logoVideo: "..."  in SITE). If it is missing, the still logo is shown instead. */
 const logoVid = (function () {
-  const cv = $('homeLogoVid'), box = $('homeLogo'), still = $('homeLogoImg'), LOOP = 3;
+  const cv = $('homeLogoVid'), box = $('homeLogo'), still = $('homeLogoImg');
   let v = null, ctx = null, W = 0, H = 0, ok = false, raf = 0, running = false, stopT = 0, last = -1;
   const still_ = () => reduceMotion;
   function draw() {
@@ -1480,10 +1481,10 @@ const logoVid = (function () {
     const im = ctx.getImageData(0, 0, W, H), d = im.data;
     for (let i = 0, n = d.length; i < n; i += 4) {
       const r = d[i], g = d[i + 1], b = d[i + 2];
-      let a = 1 - (g - r) / 251;                                       // green: 251, red: 0 in the backdrop
-      a = (a - 0.05) / 0.88; a = a < 0 ? 0 : a > 1 ? 1 : a;
+      let a = 1 - (g - b) / 251;                                       // backdrop is R 56, G 251, B 0
+      a = (a - 0.04) / 0.9; a = a < 0 ? 0 : a > 1 ? 1 : a;
       if (a < 0.004) { d[i + 3] = 0; continue; }
-      let f = (r / a + (b - (1 - a) * 56) / a) / 2; f = f < 0 ? 0 : f > 255 ? 255 : f;
+      let f = (b / a + (r - (1 - a) * 56) / a) / 2; f = f < 0 ? 0 : f > 255 ? 255 : f;
       d[i] = d[i + 1] = d[i + 2] = f; d[i + 3] = a * 255;
     }
     ctx.putImageData(im, 0, 0);
@@ -1491,7 +1492,7 @@ const logoVid = (function () {
   function tick() {
     raf = 0; if (!running) return;
     if (v.currentTime !== last) { last = v.currentTime; draw(); }
-    if (v.duration && v.currentTime >= v.duration - 0.06) { v.currentTime = Math.max(0, v.duration - LOOP); const p = v.play(); if (p && p.catch) p.catch(() => {}); }   // after the full play, only the last 3 seconds repeat
+    if (v.ended) { draw(); cv.classList.add('done'); running = false; return; }   // plays once, holds the last frame, then the flicker starts
     raf = requestAnimationFrame(tick);
   }
   function init() {
@@ -1517,11 +1518,11 @@ const logoVid = (function () {
     init,
     play() {                                                            // called as the logo starts to fade in
       clearTimeout(stopT); if (!v) init(); if (still_()) return;
-      const go = () => { if (!ok) return; running = true; last = -1; v.currentTime = 0; const p = v.play(); if (p && p.catch) p.catch(() => {}); if (!raf) raf = requestAnimationFrame(tick); };
+      const go = () => { if (!ok) return; cv.classList.remove('done'); running = true; last = -1; v.currentTime = 0; const p = v.play(); if (p && p.catch) p.catch(() => {}); if (!raf) raf = requestAnimationFrame(tick); };
       if (ok) go(); else v.addEventListener('loadeddata', () => setTimeout(go, 30), { once: true });
     },
     stop() { clearTimeout(stopT); stopT = setTimeout(() => { running = false; if (v) v.pause(); }, 1200); },   // keeps playing while the logo fades out
-    rewind() { clearTimeout(stopT); running = false; if (v && ok) { v.pause(); v.currentTime = 0; } }
+    rewind() { clearTimeout(stopT); running = false; cv.classList.remove('done'); if (v && ok) { v.pause(); v.currentTime = 0; } }
   };
 })();
 logoVid.init();
