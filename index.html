@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Allwood Archives</title>
 <meta name="description" content="A portfolio of selected work.">
-<meta name="theme-color" content="#474a4f">
+<meta name="theme-color" content="#e9e9e9">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="apple-touch-icon" href="images/favicon.png">
 <meta property="og:type" content="website">
@@ -23,16 +23,16 @@
 -->
 <style>
   :root {
-    /* Iron gray palette: a mid charcoal background with soft off-white text. */
-    --bg: #474a4f;        /* background: iron gray */
-    --ink: #f1efea;       /* main text: warm off-white */
-    --muted: #c9c7c1;     /* menu + small text */
-    --tile: #383b3f;      /* boxes behind photos / placeholders / map water */
-    --ph: #c9c7c1;        /* text on placeholder boxes */
-    --line: #686b71;
-    --panel: #585b61;     /* info window, popups, map land: the raised surface */
-    --rgb-ink: 241, 239, 234;
-    --rgb-bg: 71, 74, 79;
+    /* Light gray palette: the darkest grey is gainsboro (#DCDCDC); everything else is lighter, with charcoal text. */
+    --bg: #e9e9e9;        /* background */
+    --ink: #26282c;       /* main text: charcoal */
+    --muted: #5d6066;     /* menu + small text */
+    --tile: #dcdcdc;      /* boxes behind photos / placeholders / map water: the darkest grey, gainsboro */
+    --ph: #6a6d73;        /* text on placeholder boxes */
+    --line: #dcdcdc;
+    --panel: #f4f4f4;     /* info window, popups, map land: the raised surface */
+    --rgb-ink: 38, 40, 44;
+    --rgb-bg: 233, 233, 233;
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
        files, it is used automatically; otherwise Inter (free) is used. */
@@ -152,7 +152,7 @@
     text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    outline: none; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); padding-bottom: 3px; margin-bottom: -3px;
+    outline: none; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7); padding-bottom: 3px; margin-bottom: -3px;
   }
   .nav .head a { color: var(--ink); }
   .nav .head:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
@@ -362,7 +362,7 @@
     user-select: none; -webkit-user-select: none;
   }
   .globe-wrap canvas { display: block; }
-  .mhud, .minfo { text-shadow: none; background: rgba(34, 36, 40, 0.78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: 10px; padding: 4px 12px; }   /* a dark panel behind the words, so the map lines never run through them */
+  .mhud, .minfo { text-shadow: none; background: rgba(244, 244, 244, 0.88); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border-radius: 10px; padding: 4px 12px; }   /* a dark panel behind the words, so the map lines never run through them */
   .mhud { position: absolute; left: 8px; top: 8px; z-index: 4; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px;
     font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
   .mhud .mc { color: var(--muted); padding: 5px 2px; transition: color 0.15s, transform 0.15s; }
@@ -390,10 +390,10 @@
   .lockcard .lm { font-size: 13px; color: var(--muted); line-height: 1.5; }
   .sbadge { position: absolute; left: 0; top: 0; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%;
     background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
-    border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(241,239,234,0.45), 0 6px 14px rgba(0,0,0,0.4);
+    border: 2px solid var(--bg); box-shadow: 0 0 0 1px rgba(38, 40, 44,0.45), 0 6px 14px rgba(0,0,0,0.4);
     opacity: 0; pointer-events: none; cursor: pointer; transition: opacity 0.3s ease, box-shadow 0.15s; z-index: 3; }
   .sbadge.on { opacity: 1; pointer-events: auto; }
-  .sbadge:hover { box-shadow: 0 0 0 6px rgba(241,239,234,0.25), 0 6px 14px rgba(0,0,0,0.4); }
+  .sbadge:hover { box-shadow: 0 0 0 6px rgba(38, 40, 44,0.25), 0 6px 14px rgba(0,0,0,0.4); }
   .pins { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
   .pin {
     position: absolute; left: 0; top: 0;
@@ -401,7 +401,7 @@
     border-radius: 50%;
     background: var(--ink);
     border: 2px solid var(--bg);
-    box-shadow: 0 0 0 1px rgba(241, 239, 234, 0.45);
+    box-shadow: 0 0 0 1px rgba(38, 40, 44, 0.45);
     display: flex; align-items: center; justify-content: center;
     color: var(--bg); font-size: 9px; font-weight: 700; line-height: 1;
     opacity: 0; pointer-events: none;
@@ -419,7 +419,7 @@
     from { transform: scale(0.55); opacity: 0.55; }
     to   { transform: scale(1.5);  opacity: 0; }
   }
-  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(241, 239, 234, 0.22); outline: none; }
+  .pin:hover, .pin.on, .pin:focus-visible { box-shadow: 0 0 0 5px rgba(38, 40, 44, 0.22); outline: none; }
   .globe-hint {
     margin: 16px 0 0; padding-right: 36px;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px;
@@ -457,7 +457,7 @@
     color: var(--muted);
   }
   .gp-item .d { font-size: 11px; white-space: nowrap; }
-  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(241, 239, 234, 0.07); }
+  .gp-item.on, .gp-item:hover { color: var(--ink); background: rgba(38, 40, 44, 0.07); }
   .gp-mq { overflow: hidden; }
   .gp-track {
     display: flex; width: max-content;
@@ -688,7 +688,7 @@
   /* ---------- fullscreen viewer + info window ---------- */
   .lb {
     position: fixed; inset: 0; z-index: 50;
-    background: rgba(71, 74, 79, 0.98);
+    background: rgba(233, 233, 233, 0.98);
     display: none;
   }
   .lb.on { display: flex; flex-direction: row; }
@@ -812,7 +812,7 @@
   @media (min-width: 721px) { .mg-wrap, .mag-viewer { position: relative; left: calc((var(--sidebar) + 8px) / -2); } }
   .mg-top { display: flex; justify-content: center; align-items: center; gap: 14px; min-height: 36px; margin: 0 0 12px; }
   .pill { display: inline-flex; align-items: center; gap: 9px; min-height: 36px; padding: 0 20px; border: 1px solid var(--line); border-radius: 999px;
-    background: rgba(71, 74, 79, 0.9); color: var(--muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+    background: rgba(233, 233, 233, 0.9); color: var(--muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
     transition: border-color 0.2s, color 0.2s, transform 0.18s ease, background 0.2s; }
   #magBack { position: relative; padding: 0; justify-content: center; overflow: hidden; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, color 0.2s, transform 0.18s ease, background 0.2s; }
   #magBack .bk { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; transition: opacity 0.14s ease; }   /* the old words leave at once, the new ones wait for the pill to finish widening */
@@ -1003,7 +1003,7 @@
   .pg.endcover, .pg.note { align-items: center; justify-content: center; text-align: center; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
   .pg.note { color: #55575c; }
   .pg.endcover span { opacity: 0.7; }
-  .mag-arrow { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: rgba(71,74,79,0.9);
+  .mag-arrow { width: 46px; height: 46px; flex: none; border-radius: 50%; border: 1px solid var(--line); background: rgba(233, 233, 233,0.9);
     color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; transition: transform 0.18s ease, border-color 0.2s, opacity 0.2s, background 0.2s; }
   .mag-arrow:hover:not(:disabled) { border-color: var(--muted); transform: scale(1.07); background: var(--panel); }
   .mag-arrow:active:not(:disabled) { transform: scale(0.94); }
@@ -1076,7 +1076,7 @@
   .mag-head { display: block; margin: 0 0 14px; }
   .mag-head > span { display: block; margin-top: 8px; }
   .mag-head[hidden] { display: none; }
-  .mag-desc { margin: 16px 0 0; max-width: 520px; font-size: 13px; line-height: 1.55; letter-spacing: 0.02em; color: #fff; }
+  .mag-desc { margin: 16px 0 0; max-width: 520px; font-size: 13px; line-height: 1.55; letter-spacing: 0.02em; color: var(--ink); }
   .mag-head h1 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
   .mag-head > span { font-size: 12px; }
 
@@ -1118,7 +1118,7 @@
   /* ---------- background music control (top right, every page) ---------- */
   .music { position: fixed; top: 14px; right: 18px; z-index: 60; display: flex; align-items: center; gap: 0;
     padding: 4px 6px 4px 4px; border: 1px solid var(--line); border-radius: 999px;
-    background: rgba(71, 74, 79, 0.9);
+    background: rgba(233, 233, 233, 0.9);
     transition: border-color 0.2s, background 0.2s, right 0.25s ease; }
   .music:hover, .music:focus-within { border-color: var(--muted); }
   body:has(.lb.on) .music { right: 190px; }
@@ -1153,7 +1153,7 @@
     .ch-tag:hover, .i-tag:hover, .sx-chip:not(.zero):hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28); }
     .sx-mode button:hover { transform: translateY(-1px); }
     a.ix-row { transition: padding-left 0.2s ease, background-color 0.2s ease; }
-    a.ix-row:hover { padding-left: 16px; background: rgba(241, 239, 234, 0.05); }
+    a.ix-row:hover { padding-left: 16px; background: rgba(38, 40, 44, 0.05); }
     .tile { transition: filter 0.25s ease; }
     .tile:hover { filter: brightness(1.07); }
   }
@@ -1950,8 +1950,8 @@ const isIn = (e, x, y) => inBB(e.bb, x, y) && hitCtx.isPointInPath(e.path, x, y)
 const plural = (n, a, b) => n + ' ' + (n === 1 ? a : (b || a + 's'));
 
 function refreshMapColors() {
-  const ink = getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '241,239,234';
-  g.colors = { land: '#7d8189', explored: '#4b4f55', country: 'rgba(' + ink + ',0.40)', state: 'rgba(' + ink + ',0.26)' };
+  const ink = getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '38,40,44';
+  g.colors = { land: '#f4f4f4', explored: '#dcdcdc', country: 'rgba(' + ink + ',0.40)', state: 'rgba(' + ink + ',0.26)' };
 }
 
 /* ---- build the continents, countries and states once the shapes have arrived ---- */
@@ -2202,7 +2202,7 @@ function paintUS(c, S, ox, oy, d, w, h) {
   c.fillStyle = col.land; c.fill(g.usAll);
   c.fillStyle = col.explored;
   g.states.forEach(st => { if (st.events && !st.terr) c.fill(st.ins ? st.ins.tpath : st.path); });
-  c.lineJoin = 'round'; c.strokeStyle = 'rgba(241,239,234,0.38)'; c.lineWidth = lw(0.9);
+  c.lineJoin = 'round'; c.strokeStyle = 'rgba(38, 40, 44,0.38)'; c.lineWidth = lw(0.9);
   g.states.forEach(st => { if (!st.terr) c.stroke(st.ins ? st.ins.tpath : st.path); });
 }
 function ensureUS() {
@@ -3384,7 +3384,7 @@ requestAnimationFrame(frame);
    into a tiled image. The graph-paper grid is a second tiled image that
    slowly slides across behind the page. */
 (function paperTexture() {
-  const ink = (getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '241,239,234');
+  const ink = (getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '38,40,44');
   let seed = 20261109;
   const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
@@ -3399,14 +3399,14 @@ requestAnimationFrame(frame);
       const x = rnd() * S, y = rnd() * S, r = 60 + rnd() * 170;
       const dark = rnd() < 0.55;
       const gr = c.createRadialGradient(x, y, 0, x, y, r);
-      gr.addColorStop(0, dark ? 'rgba(0,0,0,0.10)' : 'rgba(' + ink + ',0.028)');
+      gr.addColorStop(0, dark ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.16)');   // keeps the page from ever going darker than gainsboro
       gr.addColorStop(1, 'rgba(0,0,0,0)');
       c.fillStyle = gr;
       for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) { c.save(); c.translate(ox, oy); c.fillRect(x - r, y - r, r * 2, r * 2); c.restore(); }
     }
     for (let i = 0; i < 2600; i++) {
       const x = rnd() * S, y = rnd() * S;
-      c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(0,0,0,' + (0.05 + rnd() * 0.10).toFixed(3) + ')';
+      c.fillStyle = rnd() < 0.5 ? 'rgba(' + ink + ',' + (0.03 + rnd() * 0.06).toFixed(3) + ')' : 'rgba(0,0,0,' + (0.02 + rnd() * 0.05).toFixed(3) + ')';
       const r = 0.3 + rnd() * 0.6; c.fillRect(x, y, r, r);
     }
     for (let i = 0; i < 14; i++) {
