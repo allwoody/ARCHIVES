@@ -3557,7 +3557,7 @@ requestAnimationFrame(frame);
   const cmYear = c => "'" + cmParts(c)[0], cmMonth = c => cmParts(c)[1];
   /* pick the cover's colour from its photo so the banner and corner box match it */
   /* team colours: put  color: "#d4481f"  on an event in events.js to choose its cover colour, or add a team here */
-  const TEAM_COLORS = [[/woodpecker/i, [1, 94, 47]]];
+  const TEAM_COLORS = [[/woodpecker/i, [1, 94, 47]], [/grand teton/i, [155, 24, 33]]];   // Vol. II: a soft evergreen
   function tintCover(im, c) { tintCover0(im, c); const card = im.closest('.mg-card'), cv = im.closest('.mg-cover'); if (!card) return; const cs = getComputedStyle(cv), ac = cs.getPropertyValue('--ac').trim(), ad = cs.getPropertyValue('--ad').trim(); card.querySelectorAll('.edge').forEach(e => { e.style.setProperty('--ac', ac); e.style.setProperty('--ad', ad); e.style.setProperty('--acg', ac.startsWith('linear-gradient') ? ac : `linear-gradient(${ac}, ${ac})`); }); }   // the spine is the cover's colour carried round the edge
   function tintCover0(im, c) {
     const cover = im.closest('.mg-cover'); if (cover.classList.contains('foil')) return;
