@@ -15,7 +15,7 @@
 <!-- Inter: a free typeface that closely matches the look of NB International, the font A24 uses -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Sedgwick+Ave+Display&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Oswald:wght@400;500;600&family=Roboto+Slab:wght@700;800&family=Sedgwick+Ave+Display&display=swap">
 <!--
   index.html is the CODE of the site. Your content (events, photos, About,
   Contact) lives in events.js, so you can replace this file with a newer
@@ -510,7 +510,7 @@
     grid-template-columns: 1.6fr 1fr 1.2fr 56px;
     gap: 16px;
     align-items: baseline;
-    padding: 16px 0;
+    padding: 16px 0 16px 8px;
     border-bottom: 1px solid var(--line);
     text-decoration: none;
     text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;
@@ -839,14 +839,20 @@
   .mg-card { --T: calc(var(--cw) * 0.06); }
   .edge { position: absolute; top: 0; height: 100%; width: var(--T); backface-visibility: hidden; -webkit-backface-visibility: hidden; pointer-events: none; transition: filter 0.5s ease; }
   .edge.er { left: calc(100% - var(--T) / 2); transform: translateZ(calc(var(--T) / -2)) rotateY(90deg);
-    background: linear-gradient(90deg, rgba(0,0,0,0.22), transparent 45%, rgba(0,0,0,0.12)), repeating-linear-gradient(90deg, #f7f5ee 0 1px, #d9d4c5 1px 2px); }
-  .edge.el { left: calc(var(--T) / -2); transform: translateZ(calc(var(--T) / -2)) rotateY(-90deg); background: var(--ac, #2c5d9a); background-size: 320% 320%;
-    display: flex; align-items: center; gap: calc(var(--T) * 0.5); writing-mode: vertical-rl; padding: calc(var(--ch) * 0.05) 0; box-sizing: border-box; overflow: hidden;
-    font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: 0.1em; font-size: calc(var(--T) * 0.46); line-height: 1; color: #fff4d8; white-space: nowrap; }
-  .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.04) 45%, rgba(0,0,0,0.2)); pointer-events: none; }
-  .edge.el b { font-weight: 600; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
-  .edge.el.foil { color: #1b2130; animation: foilMove 8s ease-in-out infinite alternate; }
-  .mg-card.side .edge { filter: brightness(0.72); }
+    background-image: linear-gradient(90deg, transparent 30%, rgba(0,0,0,0.22)), var(--acg, linear-gradient(#2c5d9a, #2c5d9a)), var(--acg, linear-gradient(#2c5d9a, #2c5d9a)), repeating-linear-gradient(90deg, #f7f5ee 0 1px, #d9d4c5 1px 2px);
+    background-size: 100% 100%, 16% 100%, 8% 100%, auto; background-position: 0 0, 100% 0, 0 0, 0 0; background-repeat: no-repeat, no-repeat, no-repeat, repeat; }   /* the pages, held between a front and a back board in the cover's colour */
+  .edge.el { --u: calc(var(--cw) * 0.0033); left: calc(var(--T) / -2); transform: translateZ(calc(var(--T) / -2)) rotateY(-90deg); background: var(--ac, #2c5d9a); background-size: 320% 320%;
+    display: flex; align-items: center; gap: calc(var(--T) * 0.32); writing-mode: vertical-rl; padding: calc(var(--ch) * 0.05) 0; box-sizing: border-box; overflow: hidden;
+    font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: 0.08em; font-size: calc(var(--T) * 0.5); line-height: 1; color: #fff4d8; white-space: nowrap;
+    text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad, #0d1b2e), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad, #0d1b2e), calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--ad, #0d1b2e); }
+  .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.05) 65%, transparent); pointer-events: none; }   /* darker at the back, fading to nothing where it meets the cover */
+  .edge.el b { font-weight: 600; flex: none; } .edge.el i { font-style: normal; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; } .edge.el em { font-style: normal; flex: none; font-weight: 500; }
+  .edge.el.foil { color: #1b2130; animation: foilMove 8s ease-in-out infinite alternate; text-shadow: none; }
+  .mg-card.side .edge { filter: brightness(0.62); }
+  /* the cards fade through their contents, never as a whole: a faded card is flattened, which made the thickness vanish and then pop back in */
+  .mg-card > .mg-cover, .mg-card > .edge { opacity: var(--o, 1); }
+  .mg-card > .mg-cover { transition: opacity var(--ot, 0.45s) ease; }
+  .mg-card > .edge { transition: filter 0.5s ease, opacity var(--ot, 0.45s) ease; }
   /* comic-book cover: a title banner across the top (so nothing sits on the action), a corner box top-left, the logo as a watermark top-right */
   .mg-cover { --ac: #2c5d9a; --ad: #0d1b2e; --pt: none; --sc: none; position: absolute; inset: 0; display: block; border-radius: 3px; overflow: hidden; background: var(--ac); padding: 5px;
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
@@ -869,7 +875,7 @@
   .mg-banner .vol i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.04); letter-spacing: 0.16em; margin: 0 0 calc(var(--cw) * 0.008) 0.16em; }
   .mg-banner .vol b.star { font-size: calc(var(--cw) * 0.125); text-shadow: none; background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
     filter: url(#starDeboss); animation: goldFoil 4.5s ease-in-out infinite alternate; }
-  .mg-banner .vol b:not(.star) { padding: calc(var(--cw) * 0.008) calc(var(--cw) * 0.012); border-top: calc(var(--u) * 2.5) solid currentColor; border-bottom: calc(var(--u) * 2.5) solid currentColor; }   /* lines above and below the numeral */
+  .mg-banner .vol b:not(.star) { font-family: "Roboto Slab", "Rockwell", "Georgia", serif; font-weight: 800; }   /* Roman numerals with their feet and tops (slab serifs) */
   .mg-banner .vol b { font-weight: 500; font-size: calc(var(--cw) * 0.115); letter-spacing: 0; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad); }
   .mg-banner.hasmark { padding-right: calc(var(--cw) * 0.25); }
   .pg.endcover { background: #202226; }
@@ -957,9 +963,9 @@
   .pg.back { transform: rotateY(180deg); border-radius: 5px 0 0 5px; }
   .pg.pgx { transform: none; backface-visibility: visible; -webkit-backface-visibility: visible; }
   .pg.front::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
-    background: linear-gradient(to right, rgba(0,0,0,0.42), rgba(0,0,0,0.24) 2.5%, rgba(0,0,0,0.11) 6%, rgba(0,0,0,0.035) 11%, transparent 17%, rgba(255,255,255,0.06) 23%, transparent 31%); }
+    background: linear-gradient(to right, rgba(0,0,0,0.62), rgba(0,0,0,0.42) 2.5%, rgba(0,0,0,0.24) 6%, rgba(0,0,0,0.11) 11%, rgba(0,0,0,0.04) 17%, transparent 24%, rgba(255,255,255,0.09) 28%, transparent 38%); }
   .pg.back::before { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
-    background: linear-gradient(to left, rgba(0,0,0,0.42), rgba(0,0,0,0.24) 2.5%, rgba(0,0,0,0.11) 6%, rgba(0,0,0,0.035) 11%, transparent 17%, rgba(255,255,255,0.06) 23%, transparent 31%); }   /* the paper (and the photo printed on it) curves down into the spine */
+    background: linear-gradient(to left, rgba(0,0,0,0.62), rgba(0,0,0,0.42) 2.5%, rgba(0,0,0,0.24) 6%, rgba(0,0,0,0.11) 11%, rgba(0,0,0,0.04) 17%, transparent 24%, rgba(255,255,255,0.09) 28%, transparent 38%); }   /* the paper (and the photo printed on it) curves down into the spine */
   .pg::after { content: ""; position: absolute; inset: 0; z-index: 4; pointer-events: none;
     background: linear-gradient(160deg, rgba(255,255,255,0.13), transparent 40%, rgba(0,0,0,0.07)); }
   /* the turning page is cut into strips so it can bend */
@@ -970,7 +976,7 @@
   .piece .pgc { position: absolute; top: 0; }
   .piece .shd { position: absolute; inset: 0; z-index: 9; background: #000; opacity: 0; pointer-events: none; }
   .pg-photo { flex: 1; min-height: 0; margin: 20px 20px 0; display: flex; align-items: center; justify-content: center; }
-  .pg-photo img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; box-shadow: 0 1px 3px rgba(0,0,0,0.28); user-select: none; -webkit-user-drag: none; }
+  .pg-photo img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; user-select: none; -webkit-user-drag: none; }
   .pg.full .pg-photo { margin: 0; position: absolute; inset: 0; }
   .pg.full .pg-photo img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; box-shadow: none; }
   .pg-cap { padding: 10px 22px 28px; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #55575c; line-height: 1.5; }
@@ -1056,6 +1062,7 @@
 
   /* ---------- explore pages: a proper heading ---------- */
   #view-globe .ch-title, #view-index .ch-title { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
+  #view-index .ch-title.chalk { text-transform: uppercase; }
   #view-globe .ch-meta, #view-index .ch-meta { font-size: 12px; margin-top: 22px; position: relative; z-index: 3; }
   .mag-head { display: block; margin: 0 0 14px; }
   .mag-head > span { display: block; margin-top: 8px; }
@@ -1137,7 +1144,7 @@
     .ch-tag:hover, .i-tag:hover, .sx-chip:not(.zero):hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28); }
     .sx-mode button:hover { transform: translateY(-1px); }
     a.ix-row { transition: padding-left 0.2s ease, background-color 0.2s ease; }
-    a.ix-row:hover { padding-left: 8px; background: rgba(241, 239, 234, 0.05); }
+    a.ix-row:hover { padding-left: 16px; background: rgba(241, 239, 234, 0.05); }
     .tile { transition: filter 0.25s ease; }
     .tile:hover { filter: brightness(1.07); }
   }
@@ -1145,7 +1152,7 @@
   .sx-chip[aria-pressed="true"] { box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); }
   @media (prefers-reduced-motion: reduce) {
     .tg-bar .tg-track { animation: none !important; }
-    .ch-tag:hover, .i-tag:hover, .sx-chip:hover, a.ix-row:hover { transform: none; padding-left: 0; }
+    .ch-tag:hover, .i-tag:hover, .sx-chip:hover, a.ix-row:hover { transform: none; padding-left: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .pin::after { animation: none; opacity: 0; }
@@ -3438,7 +3445,7 @@ requestAnimationFrame(frame);
   /* pick the cover's colour from its photo so the banner and corner box match it */
   /* team colours: put  color: "#d4481f"  on an event in events.js to choose its cover colour, or add a team here */
   const TEAM_COLORS = [[/woodpecker/i, [1, 94, 47]]];
-  function tintCover(im, c) { tintCover0(im, c); const card = im.closest('.mg-card'), cv = im.closest('.mg-cover'), sp = card && card.querySelector('.edge.el'); if (sp) { const cs = getComputedStyle(cv); sp.style.setProperty('--ac', cs.getPropertyValue('--ac')); sp.style.setProperty('--ad', cs.getPropertyValue('--ad')); } }   // the spine is the cover's colour carried round the edge
+  function tintCover(im, c) { tintCover0(im, c); const card = im.closest('.mg-card'), cv = im.closest('.mg-cover'); if (!card) return; const cs = getComputedStyle(cv), ac = cs.getPropertyValue('--ac').trim(), ad = cs.getPropertyValue('--ad').trim(); card.querySelectorAll('.edge').forEach(e => { e.style.setProperty('--ac', ac); e.style.setProperty('--ad', ad); e.style.setProperty('--acg', ac.startsWith('linear-gradient') ? ac : `linear-gradient(${ac}, ${ac})`); }); }   // the spine is the cover's colour carried round the edge
   function tintCover0(im, c) {
     const cover = im.closest('.mg-cover'); if (cover.classList.contains('foil')) return;
     const set = (h, sat, l) => { cover.style.setProperty('--ac', `hsl(${h}, ${sat}%, ${l}%)`); cover.style.setProperty('--ad', `hsl(${h}, ${Math.min(80, sat)}%, 12%)`); };
@@ -3519,7 +3526,7 @@ requestAnimationFrame(frame);
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
     eventsWithPhotos.forEach((c, i) => { if (!papers[i]) papers[i] = paperFor(i); });
     stage.innerHTML = eventsWithPhotos.map((c, i) =>
-      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><span>${esc(c.title)}</span></span><span class="dim"></span></div>`).join('');
+      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><i>&middot;</i><span>${esc(c.title)}</span>${c.special ? '' : `<em>${cmMonth(c)} ${cmYear(c)}</em>`}</span><span class="dim"></span></div>`).join('');
     stage.querySelectorAll('.mg-card').forEach(card => { const im = card.querySelector('.mg-art img'), c = eventsWithPhotos[+card.dataset.i]; const go = () => tintCover(im, c); im.complete ? go() : im.addEventListener('load', go, { once: true }); });
     layoutFlow();
   }
@@ -3530,13 +3537,13 @@ requestAnimationFrame(frame);
       el.style.scale = o === 0 ? '1.07' : '1';                         // only the centred magazine is enlarged
       if (mode === 'gather') {                                         // everything draws in towards the chosen magazine
         el.style.transform = o === 0 ? 'translate3d(0, -8px, 90px) scale(1.08)' : `translate3d(0, 0, -120px) scale(0.7)`;
-        el.style.opacity = o === 0 ? '1' : '0'; el.style.pointerEvents = 'none';
+        el.style.setProperty('--o', o === 0 ? '1' : '0'); el.style.pointerEvents = 'none';
         continue;
       }
       const x = o === 0 ? 0 : sg * (0.74 + (a - 1) * 0.15) * 100, z = o === 0 ? 0 : -70 - a * 12, ry = o === 0 ? 0 : -sg * 62;
       el.style.transform = `translate3d(calc(var(--cw) * ${(x / 100).toFixed(3)}), 0, ${z}px) rotateY(${ry}deg) scale(${o === 0 ? 1 : 0.94})`;
       el.style.zIndex = String(100 - a);
-      el.style.opacity = a > 7 ? '0' : '1';
+      el.style.setProperty('--o', a > 7 ? '0' : '1');
       el.style.pointerEvents = a > 7 ? 'none' : 'auto';
       el.classList.toggle('side', o !== 0);
       el.tabIndex = a > 7 ? -1 : 0;
@@ -3627,13 +3634,13 @@ requestAnimationFrame(frame);
   }
   const coverTf = (R, T) => `translate(${T.left - R.left}px, ${T.top - R.top}px) scale(${T.width / R.width})`;
   const ZOOM = 'transform 0.9s cubic-bezier(0.62, 0, 0.22, 1)';
-  function resetCards() { [...stage.children].forEach(el => { el.style.visibility = ''; el.style.transition = ''; }); }
+  function resetCards() { [...stage.children].forEach(el => { el.style.visibility = ''; el.style.transition = ''; el.style.removeProperty('--ot'); }); }
 
   async function enterMagazine(c) {
     if (moving || !c) return; moving = true;
     const card = stage.children[act];
     grid.classList.add('going'); card.style.scale = '1';
-    [...stage.children].forEach(el => { if (el !== card) { el.style.transition = 'opacity 0.35s ease'; el.style.opacity = '0'; el.style.pointerEvents = 'none'; } });
+    [...stage.children].forEach(el => { if (el !== card) { el.style.setProperty('--ot', '0.35s'); el.style.setProperty('--o', '0'); el.style.pointerEvents = 'none'; } });
     await wait(380);
     window.scrollTo(0, 0);
     const R = card.getBoundingClientRect();
@@ -3670,7 +3677,7 @@ requestAnimationFrame(frame);
     grid.hidden = false; const mh = $('magHead'); mh.style.transition = 'none'; mh.style.opacity = '0'; mh.hidden = false; grid.classList.add('going');
     const card = stage.children[act];
     card.style.scale = '1'; card.style.visibility = 'hidden';
-    [...stage.children].forEach(el => { if (el !== card) { el.style.transition = 'none'; el.style.opacity = '0'; } });
+    [...stage.children].forEach(el => { if (el !== card) { el.style.setProperty('--ot', '0s'); el.style.setProperty('--o', '0'); } });
     const R = card.getBoundingClientRect();
     const fl = makeFlyer(card, R);
     const fcv = fl.querySelector('.mg-cover'); fcv.style.boxShadow = 'none';
