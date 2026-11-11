@@ -333,11 +333,11 @@
     cursor: default;
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .grail { position: absolute; top: 0; right: 9px; z-index: 2; width: 20px; height: 29px; pointer-events: none; display: block;
-    background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
-  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
-  .grail.big { position: absolute; width: 34px; height: 50px; right: auto; z-index: 3; }
-  .grail.big i { top: 8px; font-size: 22px; filter: url(#starDeboss); }
+  .grail { position: absolute; top: 0; right: 14px; z-index: 2; width: 40px; height: 58px; pointer-events: none; display: block;
+    background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 3px 5px rgba(0,0,0,0.45)); }
+  .grail i { position: absolute; left: 0; right: 0; top: 5px; text-align: center; font-style: normal; font-size: 42px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
+  .grail.big { position: absolute; width: 54px; height: 78px; right: auto; z-index: 3; }
+  .grail.big i { top: 7px; font-size: 62px; }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
   @keyframes tileGlow { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); }
     22% { box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 46px 14px rgba(255,255,255,0.6); filter: brightness(1.14); }
@@ -1199,16 +1199,16 @@
   <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="dome"/>
   <feSpecularLighting in="dome" surfaceScale="4" specularConstant="1.2" specularExponent="30" lighting-color="#fffbe2" result="spec"><feDistantLight azimuth="235" elevation="46"/></feSpecularLighting>
   <feComposite in="spec" in2="SourceAlpha" operator="in" result="gloss"/>
-  <feOffset in="SourceAlpha" dx="1.1" dy="1.1" result="o1"/>
+  <feOffset in="SourceAlpha" dx="0.7" dy="0.7" result="o1"/>
   <feComposite in="SourceAlpha" in2="o1" operator="out" result="edgeTL"/>
   <feGaussianBlur in="edgeTL" stdDeviation="0.3" result="edgeTLb"/>
-  <feFlood flood-color="#1c1000" flood-opacity="0.88"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
-  <feOffset in="SourceAlpha" dx="-0.4" dy="-0.4" result="o2"/>
+  <feFlood flood-color="#1c1000" flood-opacity="0.5"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
+  <feOffset in="SourceAlpha" dx="-0.3" dy="-0.3" result="o2"/>
   <feComposite in="SourceAlpha" in2="o2" operator="out" result="edgeBR"/>
-  <feFlood flood-color="#fff2b8" flood-opacity="0.3"/><feComposite in2="edgeBR" operator="in" result="lit"/>
+  <feFlood flood-color="#fff2b8" flood-opacity="0.18"/><feComposite in2="edgeBR" operator="in" result="lit"/>
   <feOffset in="SourceAlpha" dx="0.4" dy="0.4" result="o3"/>
   <feComposite in="o3" in2="SourceAlpha" operator="out" result="rimBR"/>
-  <feFlood flood-color="#ffffff" flood-opacity="0.55"/><feComposite in2="rimBR" operator="in" result="rim"/>
+  <feFlood flood-color="#ffffff" flood-opacity="0.3"/><feComposite in2="rimBR" operator="in" result="rim"/>
   <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="gloss"/><feMergeNode in="lit"/><feMergeNode in="shade"/><feMergeNode in="rim"/></feMerge>
 </filter></svg>
 <div class="music" id="music">
@@ -2671,7 +2671,7 @@ function showPeek(c, p, idx) {
     if (mi && mi.naturalHeight > mi.naturalWidth * 1.02) mi.classList.add('tall');
     if (mi && grailInfo(p.src)) {                                    // the star stays on the enlarged picture, at its top right corner
       const r = mi.getBoundingClientRect(), pr = peek.getBoundingClientRect(), g = document.createElement('span');
-      g.innerHTML = GRAIL_RIBBON; const gr = g.firstChild; gr.style.cssText = `left:${r.right - pr.left - 46}px;top:${r.top - pr.top}px;`; gr.classList.add('big'); peekStage.appendChild(gr);
+      g.innerHTML = GRAIL_RIBBON; const gr = g.firstChild; gr.style.cssText = `left:${r.right - pr.left - 70}px;top:${r.top - pr.top}px;`; gr.classList.add('big'); peekStage.appendChild(gr);
     }
     requestAnimationFrame(() => { if (seq === peekSeq) peek.classList.add('on'); });
   });
