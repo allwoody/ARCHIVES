@@ -908,32 +908,46 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Showcase book: silver foil that is always glinting. The cover, banner, stamp and volume tab each shimmer on their own clock, so no two are ever in step. */
-  .mg-cover.foil { --ac: linear-gradient(115deg, #a8acb3 0%, #d6d8dd 9%, #9da1a9 19%, #cdd0d5 29%, #b6bac1 38%, #c4cdd6 45%, #e5e7eb 53%, #a5a9b0 61%, #d8d1d9 67%, #b3b7be 75%, #d3d5db 85%, #a8acb3 100%); --ad: rgba(255, 255, 255, 0.85); }
-  .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
-  .mg-cover.foil { animation-duration: 13s; animation-delay: -6s; }
-  .mg-cover.foil .mg-banner { animation-duration: 11s; animation-delay: -3.5s; }
-  .mg-cover.foil .vol { animation-duration: 9.3s; animation-delay: -7.2s; }
-  .mg-cover.foil .stp { animation-duration: 10.7s; animation-delay: -1.6s; }
+  /* the Showcase book: a reverse-holo foil, mostly silver with rainbow flashes, a crinkled grain, and tiny sparkles. The cover, banner, stamp and volume tab each shimmer on their own clock, so no two are ever in step. */
+  .mg-cover.foil { --ac: linear-gradient(115deg, #a8acb3 0%, #cfd2d8 6%, #f3b9d6 11%, #c8c1f2 15%, #9ed9ef 20%, #b7bcc3 26%, #9da1a9 35%, #ffd49c 41%, #f6a9c9 46%, #b9a8ef 51%, #85d3eb 56%, #d2d5db 63%, #a5a9b0 72%, #cfd1d6 80%, #ead0a8 85%, #b9a8e8 91%, #a8acb3 100%); --ad: rgba(255, 255, 255, 0.85);
+    --tx1: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.4 -1.05'/></filter><rect width='100%25' height='100%25' filter='url(%23g)' opacity='0.55'/></svg>"); --tx2: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='a'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.075' numOctaves='3' seed='9'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 3 -1.35'/></filter><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.022' numOctaves='3' seed='21'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 -1.5'/></filter><rect width='100%25' height='100%25' filter='url(%23a)' opacity='0.4'/><rect width='100%25' height='100%25' filter='url(%23b)' opacity='0.17'/></svg>"); }
+  .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 6s ease-in-out infinite alternate; }
+  .mg-cover.foil { animation-duration: 7.7s; animation-delay: -4s; }
+  .mg-cover.foil .mg-banner { animation-duration: 6.1s; animation-delay: -2.5s; }
+  .mg-cover.foil .vol { animation-duration: 5.3s; animation-delay: -4.2s; }
+  .mg-cover.foil .stp { animation-duration: 6.9s; animation-delay: -1.1s; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
   .mg-cover.foil .stp { border-color: rgba(27, 33, 48, 0.7); } .mg-cover.foil .stp u { border-top-color: rgba(27, 33, 48, 0.7); }
   /* the title sits in the middle of the space between the stamp and the volume tab */
   .mg-cover.foil .mg-banner { padding-left: calc(var(--cw) * 0.26); padding-right: calc(var(--cw) * 0.235); }
   .mg-cover.foil .ttl { text-align: center; }
-  /* a steady, soft gloss that drifts across each piece without ever stopping */
-  .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after {
+  /* texture (fine grain and crinkles) plus a soft gloss that drifts across each piece without ever stopping */
+  .mg-cover.foil .mg-banner::before, .mg-cover.foil .vol::before, .mg-cover.foil .stp::before {
     content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
-    background-image: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.36) 22%, rgba(255,255,255,0) 44%, rgba(255,255,255,0.2) 70%, rgba(255,255,255,0) 100%);
-    background-repeat: repeat-x; background-size: var(--gt) 100%; animation: foilGloss var(--gd) linear infinite; animation-delay: var(--gp); }
-  .mg-cover.foil .mg-banner::after { --gt: calc(var(--cw) * 0.9); --gd: 9s; --gp: 0s; }
-  .mg-cover.foil .vol::after { --gt: calc(var(--cw) * 0.5); --gd: 7s; --gp: -3.1s; }
-  .mg-cover.foil .stp::after { --gt: calc(var(--cw) * 0.55); --gd: 8s; --gp: -5.4s; }
-  .mg-cover.foil .mg-art::after { --gt: calc(var(--cw) * 1.4); --gd: 12s; --gp: -8s; opacity: 0.4; }   /* only a faint gloss over the photo */
+    background-image: var(--tx1), var(--tx2), linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 22%, rgba(255,255,255,0) 44%, rgba(255,255,255,0.18) 70%, rgba(255,255,255,0) 100%);
+    background-repeat: repeat, repeat, repeat-x; background-size: 120px 120px, 260px 260px, var(--gt) 100%; animation: foilGloss var(--gd) linear infinite; animation-delay: var(--gp); }
+  /* sparkles: tiny points of light that only catch where the light passes */
+  .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background-image: radial-gradient(circle at 14% 22%, #fff 0, #fff calc(var(--u) * 0.5), rgba(255,255,255,0) calc(var(--u) * 1.60)), radial-gradient(circle at 63% 12%, #fff3fa 0, #fff3fa calc(var(--u) * 0.7), rgba(255,255,255,0) calc(var(--u) * 2.24)), radial-gradient(circle at 37% 58%, #fff 0, #fff calc(var(--u) * 0.45), rgba(255,255,255,0) calc(var(--u) * 1.44)), radial-gradient(circle at 82% 47%, #eef9ff 0, #eef9ff calc(var(--u) * 0.8), rgba(255,255,255,0) calc(var(--u) * 2.56)), radial-gradient(circle at 22% 86%, #fff 0, #fff calc(var(--u) * 0.6), rgba(255,255,255,0) calc(var(--u) * 1.92)), radial-gradient(circle at 71% 79%, #fff7ea 0, #fff7ea calc(var(--u) * 0.5), rgba(255,255,255,0) calc(var(--u) * 1.60)), radial-gradient(circle at 50% 35%, #fff 0, #fff calc(var(--u) * 0.4), rgba(255,255,255,0) calc(var(--u) * 1.28)), radial-gradient(circle at 91% 8%, #fff 0, #fff calc(var(--u) * 0.55), rgba(255,255,255,0) calc(var(--u) * 1.76)); background-size: calc(var(--cw) * 0.34) calc(var(--cw) * 0.34);
+    -webkit-mask-image: linear-gradient(100deg, transparent 0%, #000 20%, transparent 40%, transparent 100%); mask-image: linear-gradient(100deg, transparent 0%, #000 20%, transparent 40%, transparent 100%);
+    -webkit-mask-size: var(--gs) 100%; mask-size: var(--gs) 100%; -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x; animation: foilGlint var(--sd) linear infinite; animation-delay: var(--sp); }
+  .mg-cover.foil .mg-banner::before { --gt: calc(var(--cw) * 0.9); --gd: 6.5s; --gp: 0s; }
+  .mg-cover.foil .vol::before { --gt: calc(var(--cw) * 0.5); --gd: 5s; --gp: -2.2s; }
+  .mg-cover.foil .stp::before { --gt: calc(var(--cw) * 0.55); --gd: 5.8s; --gp: -3.9s; }
+  .mg-cover.foil .mg-banner::after { --gs: calc(var(--cw) * 0.7); --sd: 3.6s; --sp: -1s; }
+  .mg-cover.foil .vol::after { --gs: calc(var(--cw) * 0.4); --sd: 3.1s; --sp: -2.4s; }
+  .mg-cover.foil .stp::after { --gs: calc(var(--cw) * 0.45); --sd: 4.1s; --sp: -0.3s; }
+  /* over the photo only a very faint, wide, feathered wash of light */
+  .mg-cover.foil .mg-art::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; --gt: calc(var(--cw) * 1.6);
+    background-image: linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.012) 12%, rgba(255,255,255,0.035) 24%, rgba(255,255,255,0.06) 36%, rgba(255,255,255,0.035) 48%, rgba(255,255,255,0.012) 60%, rgba(255,255,255,0) 72%, rgba(255,255,255,0) 100%);
+    background-repeat: repeat-x; background-size: var(--gt) 100%; animation: foilGloss 11s linear infinite; animation-delay: -7s; }
   @keyframes foilMove { from { background-position: 0% 25%; } to { background-position: 100% 75%; } }
-  @keyframes foilGloss { from { background-position: 0 0; } to { background-position: var(--gt) 0; } }
-  @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after { animation: none; } }
-  /* the Showcase stamp is just big enough for its words, and tucked up into the corner */
-  .mg-corner.solo { height: calc(var(--cw) * 0.2); top: calc(var(--cw) * 0.012); left: calc(var(--cw) * 0.022); }
+  @keyframes foilGloss { from { background-position: 0 0, 0 0, 0 0; } to { background-position: 0 0, 0 0, var(--gt) 0; } }
+  @keyframes foilGlint { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--gs) 0; mask-position: var(--gs) 0; } }
+  @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::before, .mg-cover.foil .vol::before, .mg-cover.foil .stp::before, .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after { animation: none; } }
+  /* the Showcase stamp is just big enough for its words, and sits across the line between the header and the photo */
+  .mg-corner.solo { height: calc(var(--cw) * 0.2); top: calc(var(--bn) - var(--cw) * 0.1); left: calc(var(--cw) * 0.022); }
   .pg-head { width: 0; min-width: 100%; padding: 0 0 8px; text-align: left; font-size: 11px; line-height: 1.45; letter-spacing: 0.06em; text-transform: uppercase; color: #55575c; }
   .pg-head b { display: block; color: #1d1e20; font-weight: 700; font-size: 12px; }
   .pg-head span { display: block; font-size: 10px; color: #6a6d73; }
