@@ -3670,9 +3670,11 @@ requestAnimationFrame(frame);
   }
   const roman = n => ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'][n] || String(n);
   const vsz = r => r.length >= 5 ? 0.05 : r.length === 4 ? 0.062 : r.length === 3 ? 0.08 : r.length === 2 ? 0.1 : 0.115;
+  /* the look books use their own cover photos (the home screen keeps each event's own cover) */
+  const BOOK_COVERS = { 'woodpeckers': 'images/lookbook-covers/woodpeckers.jpg', 'wyoming': 'images/lookbook-covers/wyoming.jpg', 'dukesep': 'images/lookbook-covers/dukesep.jpg', 'unc-oct-2026': 'images/lookbook-covers/unc-oct-2026.jpg' };
   function comicCover(c, i, paper) {
     const ft = fitTitle(c.title);
-    return `<span class="mg-cover${c.special ? ' foil' : ''}" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
+    return `<span class="mg-cover${c.special ? ' foil' : ''}" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(BOOK_COVERS[c.id] || coverOf(c))}" alt="" draggable="false"></span>` +
       `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol"><i>Vol</i>${i === 0 ? '<b class="star">★</b>' : `<b style="font-size:calc(var(--cw) * ${vsz(roman(i))})">${roman(i)}</b>`}</span></span>` +
       `<span class="mg-corner${c.special ? ' solo' : ''}"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i>${c.special ? '' : `<u><s>${cmMonth(c)}</s><em>${cmYear(c)}</em></u>`}</span></span>` +
       `<img class="mg-mark" src="${esc(SITE.logo || 'images/logo.png')}" alt="" draggable="false"></span>`;
