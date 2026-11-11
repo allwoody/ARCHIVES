@@ -890,7 +890,7 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Selects book: shiny silver foil, with a slow shimmer */
+  /* the Showcase book: shiny silver foil, with a slow shimmer */
   .mg-cover.foil { --ac: linear-gradient(115deg, #aeb4c0 0%, #f3c9dc 9%, #dfe3ea 18%, #b9aee0 27%, #c9ced8 36%, #a6d8ea 45%, #f4f6f9 54%, #f0bfd6 63%, #bfc5d0 72%, #c7b6e8 81%, #e1e5ec 90%, #aeb4c0 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
@@ -2820,7 +2820,7 @@ function goToTag(k) {
 }
 
 /* ---------- hover preview on a photo tile (desktop only) ---------- */
-const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Selects, and which one
+const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Showcase, and which one
 const GRAIL_RIBBON = '<span class="grail" aria-label="Portfolio highlight" title="Portfolio highlight"><i>★</i></span>';
 function attachPeek(b, c, p, idx) {
   if (!canHover) return;
@@ -3132,7 +3132,7 @@ function infoHTML(c, p) {
   h += `</div>`;
 
   const gr = p.src ? grailInfo(p.src) : null;
-  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Selects look book</span></div>`;
+  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Showcase look book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3394,7 +3394,7 @@ requestAnimationFrame(frame);
 (function magazines() {
   const grid = $('magGrid'), viewer = $('magViewer'), mag = $('mag'), book = $('magBook'), prev = $('magPrev'), next = $('magNext');
   const SEGS = 26, BEND = 34, FLIP_MS = 1150;
-  /* Vol. 0, "Selects": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
+  /* Vol. 0, "Showcase": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
      until you do, it is 15 photos picked at random each time the site opens. */
   const allPics = []; BY_DATE.forEach(c => c.photos.forEach(p => { if (p.src) allPics.push({ c, p }); }));
   const spreadOut = groups => {                                        // mixes the events at random, never the same event twice in a row (when it can be helped)
@@ -3409,7 +3409,7 @@ requestAnimationFrame(frame);
   };
   const FAV_PER = 4, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : spreadOut(BY_DATE.map(c => shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER)));   // 4 random photos from each event, grouped by event
-  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Selects', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
+  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Showcase', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
   window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
@@ -3552,9 +3552,9 @@ requestAnimationFrame(frame);
   let cur = 0, L = 0, pages = [], leaves = [], busy = false, evt = null;
   const gearHTML = (c, p) => { const h = condensedGear(c, p); return h ? `<div class="gear">${h}</div>` : ''; };
   const photoPage = (c, p) => {
-    const ev = c.special && p._ev ? p._ev : c;                         // in Selects every photo names its own event, and the name is a link to it
+    const ev = c.special && p._ev ? p._ev : c;                         // in Showcase every photo names its own event, and the name is a link to it
     const name = c.special && p._ev ? `<a href="#${esc(ev.id)}?photo=${encodeURIComponent(p.src)}" title="Open this event and find the photo">${esc(ev.title)}</a>` : esc(c.title);
-    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Selects pages carry the name, date and score
+    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Showcase pages carry the name, date and score
     const idLine = sp ? `<b>${name}</b><span class="c">${[ev.date, ev.score].filter(Boolean).map(esc).join(' · ')}</span>` : '';
     const head = sp ? `<div class="pg-head"><b>${name}</b>${ev.date ? `<span>${esc(ev.date)}</span>` : ''}${ev.score ? `<span>${esc(ev.score)}</span>` : ''}</div>` : '';
     const photo = `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || ev.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>`;
