@@ -102,7 +102,7 @@
     body.nav-hidden .sidebar:not(.navpeek):not(.exp) .nav { clip-path: inset(var(--navclip) 0 0 0); visibility: hidden; transition: clip-path 0.6s cubic-bezier(0.3, 0.7, 0.2, 1), visibility 0s 0.6s; }
   }
   .logo {
-    display: block;
+    display: block; width: fit-content;
     font-size: 20px; line-height: 1.1; letter-spacing: 0.02em;
     color: var(--muted);
     text-decoration: none;
@@ -633,11 +633,12 @@
   .peek.on { opacity: 1; visibility: visible; }
   /* the same photo, enlarged behind it with a hard S-curve (bright stays bright, dark stays dark) and a soft blur */
   .peek .peek-bg { position: absolute; left: -200px; top: -200px; width: calc(100% + 400px); height: calc(100% + 400px); max-width: none; max-height: none; object-fit: cover;
-    filter: contrast(2.7) brightness(0.62) saturate(1.25) blur(22px); transform: scale(1.1); z-index: 0; }
+    filter: contrast(2.7) brightness(0.6) saturate(0.55) blur(22px); transform: scale(1.1); z-index: 0; }
+  .peek::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(0,0,0,0.5) 100%); }
   .peek .peek-main { max-width: min(100%, 62vw); max-height: 66vh; box-shadow: 0 24px 70px rgba(0,0,0,0.55); }
-  #peekStage { position: relative; z-index: 1; }
+  #peekStage { position: relative; z-index: 2; }
   .peek .peek-main, .peek .ph-big { position: relative; z-index: 1; }
-  .peek-info { z-index: 2; }
+  .peek-info { z-index: 3; }
   .peek img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
   .peek .ph-big {
     width: min(100%, 1100px); aspect-ratio: 16 / 9;
@@ -786,7 +787,7 @@
   @keyframes mvOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(10px) scale(0.92); } }
     .mag-viewer.pre { visibility: hidden; }
   @keyframes mvFade { from { opacity: 0; } to { opacity: 1; } }
-  .mag-viewer.fadein { animation: mvFade 0.3s ease both; }
+  .mag-viewer.fadein .mg-top, .mag-viewer.fadein .mag-foot, .mag-viewer.fadein .mag-arrow { animation: mvFade 0.3s ease both; }
   .pg .shd { position: absolute; inset: 0; z-index: 9; background: #000; opacity: 0; pointer-events: none; }
   .mag-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 18px; }
   .mag-head h1 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -801,14 +802,16 @@
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
   .mg-art { position: absolute; left: 5px; right: 5px; top: 5px; bottom: 5px; overflow: hidden; background: #1b1c1f; }
   .mg-art img { position: absolute; left: 0; top: calc(var(--bn) - 5px); width: 100%; height: calc(100% - var(--bn) + 5px); object-fit: cover; }
-  .mg-cover { --bn: calc(var(--ch) * 0.17); }
-  .pg.cover { padding: 0; } .pg.cover .mg-cover { --cw: var(--pw); --ch: var(--ph); box-shadow: none; border-radius: 0 5px 5px 0; }
+  .mg-cover { --bn: calc(var(--ch) * var(--bnr, 0.17)); }
+  .pg.cover { padding: 0; } .pg.cover .mg-cover { --cw: var(--pw); --ch: var(--ph); box-shadow: none; border-radius: 3px; }
+  .pg.cover::before, .pg.cover::after { display: none; }
   .mg-banner { position: absolute; left: 0; right: 0; top: 0; height: var(--bn); z-index: 2; background: var(--ac); border-bottom: 3px solid #fff;
     display: flex; align-items: flex-start; gap: 8px; padding: calc(var(--bn) * 0.14) calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.29); }
   .mg-banner .ttl { flex: 1 1 auto; min-width: 0; font-family: "Oswald", "Arial Narrow", "Franklin Gothic Medium", sans-serif; font-weight: 500; text-transform: uppercase;
-    font-size: clamp(14px, calc(var(--cw) * 0.066), 25px); line-height: 1.05; letter-spacing: 0.035em; color: #fff4d8; overflow-wrap: break-word; hyphens: none;
+    font-size: calc(var(--cw) * var(--fs, 0.06)); line-height: 1.05; letter-spacing: 0.035em; color: #fff4d8; overflow-wrap: break-word; hyphens: none;
     text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad), 3px 3px 0 var(--ad), 3px 1px 0 var(--ad), 1px 3px 0 var(--ad), -1px -1px 0 var(--ad);
     display: block; overflow: visible; }
+  .mg-banner .ln { display: block; white-space: nowrap; }
   .mg-banner .vol { position: absolute; right: calc(var(--cw) * 0.035); bottom: calc(var(--bn) * 0.1); font-family: "Oswald", "Arial Narrow", sans-serif; font-weight: 500; font-size: clamp(9px, calc(var(--cw) * 0.032), 13px); letter-spacing: 0.14em; color: #fff4d8; text-transform: uppercase; white-space: nowrap;
     text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad), 2px 0 0 var(--ad), 0 2px 0 var(--ad); }
   .mg-banner.hasmark { padding-right: calc(var(--cw) * 0.25); }
@@ -828,8 +831,8 @@
   .mg-corner u { text-decoration: none; display: block; width: 72%; border-top: 1.5px solid rgba(255,244,216,0.8); padding-top: 3px; font-weight: 500; font-size: clamp(7px, calc(var(--cw) * 0.024), 11px); letter-spacing: 0.12em; }
   .mg-mark { position: absolute; right: calc(var(--cw) * 0.035); top: calc(var(--bn) * 0.1); z-index: 3; width: calc(var(--cw) * 0.2); max-height: calc(var(--bn) * 0.8); object-fit: contain; opacity: 0.8; pointer-events: none; }
   .mg-cover::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none;
-    background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(60,45,25,0.26) 100%), linear-gradient(160deg, rgba(255,255,255,0.12), transparent 42%, rgba(0,0,0,0.08)), var(--pt);
-    mix-blend-mode: multiply; opacity: 0.8; }
+    background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(60,45,25,0.22) 100%), linear-gradient(160deg, rgba(255,255,255,0.12), transparent 42%, rgba(0,0,0,0.08)), var(--pt);
+    background-size: auto, auto, calc(var(--cw) * 0.8) calc(var(--cw) * 0.8); mix-blend-mode: multiply; opacity: var(--po, 0.5); }
   /* scratches, creases and faded patches: different on every cover (built in the script) */
   .mg-cover::before { content: ""; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: var(--sc); mix-blend-mode: screen; opacity: 0.9; }
   .mg-card .dim { position: absolute; inset: 0; z-index: 5; background: #000; opacity: 0; border-radius: 3px; transition: opacity 0.5s ease; pointer-events: none; }
@@ -848,7 +851,7 @@
   .mv-bar span { color: var(--ink); }
   .mag-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
   .mag {
-    --ph: clamp(280px, min(calc(100vh - 250px), calc((100vw - var(--sidebar-open, 240px) - 190px) / 1.5)), 760px);
+    --ph: clamp(300px, min(calc(100vh - 380px), calc((100vw - var(--sidebar-open, 240px) - 190px) / 1.5)), 580px);   /* the same size as a comic on the shelf, so opening one changes nothing */
     --pw: calc(var(--ph) * 0.74);
     position: relative; width: calc(var(--pw) * 2); height: var(--ph); flex: none;
     perspective: 2400px; perspective-origin: 50% 40%;
@@ -1455,9 +1458,12 @@ function measureSidebar() {
 }
 /* after you pick a page the sidebar tucks away at once so you can see it;
    move the mouse off and back on to open it again */
+let closedLink = null;
 nav.addEventListener('click', e => {
   const a = e.target.closest('a');
   if (!a) return;
+  closedLink = a; clearTimeout(peekTimer2);
+  sidebar.classList.remove('exp', 'navpeek');                         // straight back to the condensed headings, with no waiting
   sidebar.classList.add('closed');
   a.blur();                                  // so keyboard focus doesn't hold the sidebar open
 });
@@ -1479,21 +1485,22 @@ let navOutTimer = 0;
 document.addEventListener('pointermove', e => {
   if (!window.matchMedia('(hover: hover) and (min-width: 721px)').matches) return;
   const open = parseFloat(getComputedStyle(sidebar).width) || 250;
-  const lr = $('logo').getBoundingClientRect(), inStrip = e.clientX >= lr.left - 6 && e.clientX <= lr.right + 6 && e.clientY >= lr.top - 6 && e.clientY <= lr.bottom + 6, inOpen = e.clientX < Math.min(open, 330);
+  if (closedLink && sidebar.classList.contains('closed') && !(e.target.closest && e.target.closest('.nav a') === closedLink)) { sidebar.classList.remove('closed'); closedLink = null; }   // off the chosen topic: headings can open the menu again
+  const lr = $('logoImg').getBoundingClientRect(), inStrip = e.clientX >= lr.left - 6 && e.clientX <= lr.right + 6 && e.clientY >= lr.top - 6 && e.clientY <= lr.bottom + 6, inOpen = e.clientX < Math.min(open, 330);
   if (inStrip && !document.body.classList.contains('is-landing')) {
     clearTimeout(navOutTimer); navOutTimer = 0; clearTimeout(peekTimer2);
     if (document.body.classList.contains('nav-hidden')) sidebar.classList.add('navpeek');
   } else if (!inOpen) {
     sidebar.classList.remove('closed', 'exp');                          // the cursor has really left, so the next visit opens it
-    if (sidebar.classList.contains('navpeek') && !navOutTimer) navOutTimer = setTimeout(() => { navOutTimer = 0; sidebar.classList.remove('navpeek'); armNavHide(2700); }, 350);
+    if (sidebar.classList.contains('navpeek')) { sidebar.classList.remove('navpeek'); armNavHide(2700); }
   }
 }, { passive: true });
 /* the menu opens out only when the cursor is on a label (not on the empty space around them) */
 sidebar.addEventListener('mouseover', e => { if (e.target.closest('.nav a, .nav .head')) sidebar.classList.add('exp'); });
 sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('exp'));
-$('logo').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('navpeek'); });
+$('logoImg').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('navpeek'); });   // only the logo picture itself, not the empty space round it
 sidebar.addEventListener('mouseenter', () => clearTimeout(peekTimer2));
-sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); peekTimer2 = setTimeout(() => { sidebar.classList.remove('navpeek'); armNavHide(2700); }, 350); });
+sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); sidebar.classList.remove('navpeek'); armNavHide(2700); });
 window.addEventListener('hashchange', () => armNavHide(4500));
 armNavHide(4500);
 /* Home page menu on touch screens: tap a heading to open its list */
@@ -3111,7 +3118,7 @@ requestAnimationFrame(frame);
   const cmYear = c => "'" + cmParts(c)[0], cmMonth = c => cmParts(c)[1];
   /* pick the cover's colour from its photo so the banner and corner box match it */
   /* team colours: put  color: "#d4481f"  on an event in events.js to choose its cover colour, or add a team here */
-  const TEAM_COLORS = [[/woodpecker/i, [4, 80, 41]]];
+  const TEAM_COLORS = [[/woodpecker/i, [1, 94, 47]]];
   function tintCover(im, c) {
     const cover = im.closest('.mg-cover'), set = (h, sat, l) => { cover.style.setProperty('--ac', `hsl(${h}, ${sat}%, ${l}%)`); cover.style.setProperty('--ad', `hsl(${h}, ${Math.min(80, sat)}%, 12%)`); };
     if (c && c.color) { cover.style.setProperty('--ac', c.color); cover.style.setProperty('--ad', 'rgba(0,0,0,0.78)'); return; }
@@ -3130,21 +3137,62 @@ requestAnimationFrame(frame);
   /* every cover gets its own paper: grain, stains, scratches and creases are generated per comic */
   const rnd = (() => { let x = 7; return () => (x = (x * 16807) % 2147483647) / 2147483647; })();
   function paperFor(i) {
-    const seed = 3 + i * 11, f1 = (0.7 + rnd() * 0.5).toFixed(2), f2 = (1.4 + rnd() * 1.0).toFixed(2), f3 = (0.008 + rnd() * 0.014).toFixed(3), tint = [[0.35,0.3,0.22],[0.4,0.3,0.2],[0.3,0.3,0.3],[0.42,0.34,0.24]][i % 4];
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='a'><feTurbulence type='fractalNoise' baseFrequency='${f1}' numOctaves='3' seed='${seed}'/><feColorMatrix values='0 0 0 0 ${tint[0]} 0 0 0 0 ${tint[1]} 0 0 0 0 ${tint[2]} 0 0 0 0.9 -0.18'/></filter><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='${f2}' numOctaves='2' seed='${seed + 5}'/><feColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 1.1 -0.45'/></filter><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='${f3} ${(f3 * 1.7).toFixed(3)}' numOctaves='3' seed='${seed + 9}'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.38 0 0 0 0 0.26 0 0 0 1.6 -0.55'/></filter><rect width='320' height='320' filter='url(#a)'/><rect width='320' height='320' filter='url(#b)'/><rect width='320' height='320' filter='url(#c)' opacity='0.8'/></svg>`;
-    const lines = [];
-    for (let k = 0; k < 7; k++) { const a = Math.round(15 + rnd() * 150), pos = 4 + rnd() * 92, w = 0.1 + rnd() * 0.25; lines.push(`linear-gradient(${a}deg, transparent ${pos.toFixed(1)}%, rgba(255,255,255,${(0.04 + rnd() * 0.09).toFixed(2)}) ${(pos + w).toFixed(2)}%, transparent ${(pos + w * 2.2).toFixed(2)}%)`); }
-    const cr = 30 + rnd() * 40; lines.push(`linear-gradient(${rnd() < 0.5 ? 90 : 0}deg, transparent ${cr.toFixed(1)}%, rgba(0,0,0,0.08) ${(cr + 0.35).toFixed(2)}%, rgba(255,255,255,0.07) ${(cr + 0.7).toFixed(2)}%, transparent ${(cr + 1.3).toFixed(2)}%)`);
-    [[8, 92], [94, 6], [92, 90], [6, 8]].forEach(([x, y]) => { if (rnd() < 0.7) lines.push(`radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,${(0.1 + rnd() * 0.14).toFixed(2)}), transparent ${(14 + rnd() * 14).toFixed(0)}%)`); });
-    return { pt: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg).replace(/'/g, '%27')}")`, sc: lines.join(', ') };
+    const v = i % 4, seed = 3 + i * 11, f1 = (0.65 + rnd() * 0.4).toFixed(2), f2 = (1.3 + rnd() * 0.9).toFixed(2), f3 = (0.008 + rnd() * 0.016).toFixed(3);
+    const tint = [[0.35,0.3,0.22],[0.46,0.36,0.2],[0.3,0.32,0.34],[0.4,0.3,0.26]][v];           // warm, yellowed, cool, rosy
+    const grain = [0.7, 0.45, 0.85, 0.55][v], stain = [0.35, 1.0, 0.7, 0.5][v];
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='a'><feTurbulence type='fractalNoise' baseFrequency='${f1}' numOctaves='3' seed='${seed}'/><feColorMatrix values='0 0 0 0 ${tint[0]} 0 0 0 0 ${tint[1]} 0 0 0 0 ${tint[2]} 0 0 0 ${(0.9 * grain).toFixed(2)} -0.18'/></filter><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='${f2}' numOctaves='2' seed='${seed + 5}'/><feColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.17 0 0 0 0 0.12 0 0 0 ${(1.1 * grain).toFixed(2)} -0.5'/></filter><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='${f3} ${(f3 * 1.7).toFixed(3)}' numOctaves='3' seed='${seed + 9}'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.38 0 0 0 0 0.26 0 0 0 1.6 -0.55'/></filter><rect width='320' height='320' filter='url(#a)'/><rect width='320' height='320' filter='url(#b)'/><rect width='320' height='320' filter='url(#c)' opacity='${stain}'/></svg>`;
+    const L = [];
+    const nScratch = [4, 2, 6, 9][v];
+    for (let k = 0; k < nScratch; k++) { const a = Math.round(10 + rnd() * 160), pos = 4 + rnd() * 92, w = 0.1 + rnd() * 0.25; L.push(`linear-gradient(${a}deg, transparent ${pos.toFixed(1)}%, rgba(255,255,255,${(0.03 + rnd() * 0.07).toFixed(2)}) ${(pos + w).toFixed(2)}%, transparent ${(pos + w * 2.2).toFixed(2)}%)`); }
+    if (v === 1 || v === 3) { const cr = 28 + rnd() * 44, dir = v === 1 ? 90 : 0; L.push(`linear-gradient(${dir}deg, transparent ${cr.toFixed(1)}%, rgba(0,0,0,0.09) ${(cr + 0.4).toFixed(2)}%, rgba(255,255,255,0.09) ${(cr + 0.9).toFixed(2)}%, transparent ${(cr + 1.6).toFixed(2)}%)`); }
+    if (v === 1) { const cr2 = 30 + rnd() * 40; L.push(`linear-gradient(0deg, transparent ${cr2.toFixed(1)}%, rgba(0,0,0,0.07) ${(cr2 + 0.4).toFixed(2)}%, rgba(255,255,255,0.08) ${(cr2 + 0.9).toFixed(2)}%, transparent ${(cr2 + 1.5).toFixed(2)}%)`); }
+    const corners = [[8, 92], [94, 6], [92, 90], [6, 8]];
+    corners.forEach(([x, y], k) => { if (rnd() < [0.5, 0.9, 0.7, 0.4][v]) L.push(`radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,${(0.08 + rnd() * 0.14).toFixed(2)}), transparent ${(12 + rnd() * 18).toFixed(0)}%)`); });
+    if (v === 2) for (let k = 0; k < 3; k++) L.push(`radial-gradient(circle at ${(10 + rnd() * 80).toFixed(0)}% ${(10 + rnd() * 80).toFixed(0)}%, rgba(255,240,200,${(0.05 + rnd() * 0.06).toFixed(2)}), transparent ${(6 + rnd() * 9).toFixed(0)}%)`);   // faded patches
+    if (v === 3) L.push(`radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1.4px) 0 0 / 7px 7px`);                                                                                       // faint halftone wear
+    return { pt: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg).replace(/'/g, '%27')}")`, sc: L.join(', '), po: [0.5, 0.42, 0.55, 0.46][v] };
+  }
+  /* ---- title: split it like "UNC VS. / NOTRE DAME", and size it to fit the banner (the banner grows a little if it must) ---- */
+  const mctx = document.createElement('canvas').getContext('2d');
+  const emWidth = t => { mctx.font = '500 100px Oswald, "Arial Narrow", "Franklin Gothic Medium", sans-serif'; if ('letterSpacing' in mctx) mctx.letterSpacing = '3.5px'; const w = mctx.measureText(t).width; return ('letterSpacing' in mctx ? w : w + 3.5 * t.length) / 100; };
+  function titleLines(title) {
+    const t = String(title || '').trim().toUpperCase().replace(/\s+/g, ' ');
+    const m = t.match(/^(.+?)\s+VS\.?\s+(.+)$/);
+    if (m) return [m[1] + ' VS.', m[2]];
+    const w = t.split(' '); if (w.length < 2) return [t];
+    let best = null;
+    const tryParts = parts => { const lines = parts.map(p => p.join(' ')), mx = Math.max(...lines.map(emWidth)); return { lines, mx }; };
+    const cands = [{ lines: [t], mx: emWidth(t) }];
+    for (let i = 1; i < w.length; i++) cands.push(tryParts([w.slice(0, i), w.slice(i)]));
+    for (let i = 1; i < w.length - 1; i++) for (let j = i + 1; j < w.length; j++) cands.push(tryParts([w.slice(0, i), w.slice(i, j), w.slice(j)]));
+    // prefer the fewest lines that still read at a good size
+    const GOOD = 0.058, AV = 0.455;
+    const ok = cands.filter(c => AV / c.mx >= GOOD).sort((a, b) => a.lines.length - b.lines.length || a.mx - b.mx);
+    return (ok[0] || cands.sort((a, b) => a.mx - b.mx)[0]).lines;
+  }
+  function fitTitle(title) {
+    const lines = titleLines(title), mx = Math.max(...lines.map(emWidth)), n = lines.length;
+    let fs = Math.min(0.072, 0.455 / mx);                              // width: the space between the stamp and the logo
+    const bnr0 = 0.17, need = n * 1.05 * fs;                           // in units of the cover width
+    const avail = bnr0 * 0.74 * 0.8;                                   // the banner's usable height, in the same units
+    let bnr = bnr0;
+    if (need > avail) { bnr = Math.min(0.26, need / (0.74 * 0.8)); if (need / (0.74 * 0.8) > 0.26) fs = (0.26 * 0.74 * 0.8) / (n * 1.05); }
+    return { lines, fs: +fs.toFixed(4), bnr: +bnr.toFixed(4) };
   }
   function comicCover(c, i, paper) {
-    return `<span class="mg-cover" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
-      `<span class="mg-banner hasmark"><span class="ttl">${esc(c.title)}</span><span class="vol">Vol. ${i + 1}</span></span>` +
+    const ft = fitTitle(c.title);
+    return `<span class="mg-cover" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
+      `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol">Vol. ${i + 1}</span></span>` +
       `<span class="mg-corner"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i><u>${cmYear(c)}<br>${cmMonth(c)}</u></span></span>` +
       `<img class="mg-mark" src="${esc(SITE.logo || 'images/logo.png')}" alt="" draggable="false"></span>`;
   }
   const papers = [];
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
+    stage.querySelectorAll('.mg-card').forEach(card => {
+      const c = eventsWithPhotos[+card.dataset.i], ft = fitTitle(c.title), cv = card.querySelector('.mg-cover');
+      card.querySelector('.ttl').innerHTML = ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join(''); cv.style.setProperty('--fs', ft.fs); cv.style.setProperty('--bnr', ft.bnr);
+    });
+  });
   function drawGrid() {
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
     eventsWithPhotos.forEach((c, i) => { if (!papers[i]) papers[i] = paperFor(i); });
@@ -3189,7 +3237,7 @@ requestAnimationFrame(frame);
     const picks = picksFor(c);
     const ci = Math.max(0, eventsWithPhotos.indexOf(c)), sc = stage.children[ci] && stage.children[ci].querySelector('.mg-cover');
     const cov = document.createElement('div'); cov.innerHTML = comicCover(c, ci, papers[ci] || (papers[ci] = paperFor(ci)));
-    const mc = cov.firstChild; if (sc) { ['--ac', '--ad'].forEach(k => { const v = sc.style.getPropertyValue(k); if (v) mc.style.setProperty(k, v); }); }   // the same colours as on the shelf
+    const mc = cov.firstChild; if (sc) { ['--ac', '--ad', '--fs', '--bnr'].forEach(k => { const v = sc.style.getPropertyValue(k); if (v) mc.style.setProperty(k, v); }); }   // the same colours as on the shelf
     const list = [{ cls: 'cover', html: mc.outerHTML }];
     picks.forEach(p => list.push({ cls: '', html: photoPage(c, p) }));
     if ((list.length + 1) % 2) list.push({ cls: 'note', html: 'More favorites coming soon' });
@@ -3243,12 +3291,12 @@ requestAnimationFrame(frame);
     openMagazine(c);                                                  // built out of sight, at the spot it will end up
     viewer.classList.add('pre');
     const T = leaves[0].getBoundingClientRect();                      // where its cover lands
+    const fcv = fl.querySelector('.mg-cover'); fcv.style.transition = 'box-shadow 0.9s ease'; fcv.style.boxShadow = 'none';   // its shadow eases away as it lands
     void fl.offsetWidth; fl.style.transition = ZOOM; fl.style.transform = coverTf(R, T);
-    await wait(900);
-    viewer.classList.remove('pre'); viewer.classList.add('fadein');
-    fl.style.transition = 'opacity 0.3s ease'; fl.style.opacity = '0';
+    await wait(920);
+    viewer.classList.remove('pre'); viewer.classList.add('fadein'); fl.remove();      // same picture, same size: swapped in one frame, nothing fades
     await wait(320);
-    fl.remove(); viewer.classList.remove('fadein'); grid.classList.remove('going');
+    viewer.classList.remove('fadein'); grid.classList.remove('going');
     moving = false;
   }
   function hardClose() {
@@ -3274,11 +3322,13 @@ requestAnimationFrame(frame);
     [...stage.children].forEach(el => { if (el !== card) { el.style.transition = 'none'; el.style.opacity = '0'; } });
     const R = card.getBoundingClientRect();
     const fl = makeFlyer(card, R);
-    fl.style.transform = coverTf(R, T); fl.style.opacity = '0'; void fl.offsetWidth;
-    fl.style.transition = 'opacity 0.28s ease'; fl.style.opacity = '1';
+    const fcv = fl.querySelector('.mg-cover'); fcv.style.boxShadow = 'none';
+    fl.style.transform = coverTf(R, T); void fl.offsetWidth;
+    book.style.visibility = 'hidden';                                 // the cover is handed to the flyer in one frame
     viewer.style.transition = 'opacity 0.28s ease'; viewer.style.opacity = '0';
     await wait(300);
     viewer.hidden = true; viewer.style.cssText = ''; book.innerHTML = ''; evt = null;
+    book.style.visibility = ''; fcv.style.transition = 'box-shadow 0.9s ease'; fcv.style.boxShadow = '';
     void fl.offsetWidth; fl.style.transition = ZOOM; fl.style.transform = 'none';
     await wait(900);
     card.style.visibility = ''; fl.remove();
@@ -3337,6 +3387,14 @@ requestAnimationFrame(frame);
     e.preventDefault();
     const now = performance.now(); if (now - wheelAt < 280) return; wheelAt = now;
     goFlow(d > 0 ? 1 : -1);
+  }, { passive: false });
+  let pageWheel = 0;
+  viewer.addEventListener('wheel', e => {                              // the wheel turns pages; it never scrolls the page
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (Math.abs(d) < 6 || busy || moving) return;
+    const now = performance.now(); if (now - pageWheel < 420) return; pageWheel = now;
+    flip(d > 0 ? 1 : -1);
   }, { passive: false });
   $('magBack').addEventListener('click', () => closeMagazine());
   $('mgEnter').addEventListener('click', () => enterMagazine(eventsWithPhotos[act]));
