@@ -919,7 +919,7 @@
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
   .mg-cover.foil .stp { border-color: rgba(27, 33, 48, 0.7); } .mg-cover.foil .stp u { border-top-color: rgba(27, 33, 48, 0.7); }
   /* the title sits in the middle of the space between the stamp and the volume tab */
-  .mg-cover.foil .mg-banner { padding-left: calc(var(--cw) * 0.26); padding-right: calc(var(--cw) * 0.235); }
+  .mg-cover.foil .mg-banner { padding-left: calc(var(--cw) * 0.25); padding-right: calc(var(--cw) * 0.24); }
   .mg-cover.foil .ttl { text-align: center; }
   /* texture (fine grain and crinkles) plus a soft gloss that drifts across each piece without ever stopping */
   .mg-cover.foil .mg-banner::before, .mg-cover.foil .vol::before, .mg-cover.foil .stp::before {
@@ -947,7 +947,10 @@
   @keyframes foilGlint { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: var(--gs) 0; mask-position: var(--gs) 0; } }
   @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::before, .mg-cover.foil .vol::before, .mg-cover.foil .stp::before, .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after { animation: none; } }
   /* the Showcase stamp is just big enough for its words, and sits across the line between the header and the photo */
-  .mg-corner.solo { height: calc(var(--cw) * 0.2); top: calc(var(--bn) - var(--cw) * 0.1); left: calc(var(--cw) * 0.022); }
+  .mg-corner.solo { width: calc(var(--cw) * 0.19); height: calc(var(--cw) * 0.205); top: calc(var(--bn) - var(--cw) * 0.1); left: calc(var(--cw) * 0.035); padding: calc(var(--u) * 4); transform: rotate(-2deg); }   /* the same width as the volume tab on the right, so the two balance */
+  .mg-corner.solo .stp { inset: calc(var(--u) * 4); }
+  .mg-corner.solo b { font-size: calc(var(--cw) * 0.088); }
+  .mg-corner.solo i { font-size: calc(var(--cw) * 0.022); letter-spacing: 0.12em; margin: calc(var(--cw) * 0.004) 0 0 0.12em; }
   .pg-head { width: 0; min-width: 100%; padding: 0 0 8px; text-align: left; font-size: 11px; line-height: 1.45; letter-spacing: 0.06em; text-transform: uppercase; color: #55575c; }
   .pg-head b { display: block; color: #1d1e20; font-weight: 700; font-size: 12px; }
   .pg-head span { display: block; font-size: 10px; color: #6a6d73; }
