@@ -32,7 +32,7 @@
     --line: #4a80e6;
     --panel: #2f6ae0;     /* info window, popups, map land: the raised surface */
     --rgb-ink: 241, 239, 234;
-    --rgb-grid: 220, 220, 220;   /* gainsboro: the graph-paper lines */
+    --rgb-grid: 246, 246, 244;   /* chalk white: the graph-paper lines */
     --rgb-bg: 31, 91, 209;
     --sidebar: 250px;
     /* typeface. NB International is A24's font (paid). If you own it and upload the font
@@ -103,6 +103,8 @@
     .sidebar .nav { --navclip: max(0px, calc(50vh - 36px - var(--logo-half, 34px) - 44px)); clip-path: inset(0 0 0 0); transition: clip-path 0.6s cubic-bezier(0.3, 0.7, 0.2, 1), visibility 0s; }
         body.nav-hidden .sidebar .logo { pointer-events: auto; }
     .logo { transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.2, 1); }
+    body.is-home .sidebar .logo { transform: none !important; }
+    body.is-home .sidebar .nav { clip-path: inset(0 0 0 0) !important; visibility: visible !important; }
     body.nav-hidden .sidebar:not(.navpeek):not(.exp) .logo { transform: translateY(calc(50vh - 36px - var(--logo-half, 34px))); }
     body.nav-hidden .sidebar:not(.navpeek):not(.exp) .nav { clip-path: inset(var(--navclip) 0 0 0); visibility: hidden; transition: clip-path 0.6s cubic-bezier(0.3, 0.7, 0.2, 1), visibility 0s 0.6s; }
   }
@@ -1696,6 +1698,7 @@ function armNavHide(delay) {
   document.body.classList.remove('nav-hidden');
   if (!navCanHide()) return;
   navTimer = setTimeout(() => {
+    if (!navCanHide()) return;                                          // never on the home page
     if (sidebar.matches(':hover') || sidebar.matches(':focus-within')) armNavHide(1500);
     else document.body.classList.add('nav-hidden');
   }, delay || 5250);
@@ -1769,6 +1772,8 @@ function showView(name) {
   views.forEach(v => { if (v === 'landing' && entering && name !== 'landing') return; $('view-' + v).classList.toggle('on', v === name); });   // the live photo wall stays up until it has been painted over
   if (name === 'home' && !document.body.classList.contains('is-home')) { hoverArmed = false; hovering = false; }   // arriving with the cursor already on the row: it keeps moving until the cursor leaves and comes back
   document.body.classList.toggle('is-home', name === 'home');
+  if (name === 'home') { clearTimeout(navTimer); document.body.classList.remove('nav-hidden'); }   // the home page menu stays put and open
+  else if (name !== 'landing') armNavHide(5250);                  // other pages: the menu tucks away again a few seconds after the page opens
   document.body.classList.toggle('is-landing', name === 'landing');
 }
 
@@ -3429,20 +3434,24 @@ requestAnimationFrame(frame);
     const STEP = 24, N = 40, T = STEP * N, dpr = Math.min(2, window.devicePixelRatio || 1);
     const cv = document.createElement('canvas'); cv.width = cv.height = T * dpr;
     const c = cv.getContext('2d'); c.scale(dpr, dpr); c.lineCap = 'round';
-    const col = a => 'rgba(' + (getComputedStyle(document.documentElement).getPropertyValue('--rgb-grid').trim() || '220,220,220') + ',' + a.toFixed(3) + ')';
+    const col = a => 'rgba(' + (getComputedStyle(document.documentElement).getPropertyValue('--rgb-grid').trim() || '246,246,244') + ',' + a.toFixed(3) + ')';
     /* one pen stroke from (x0,y0) to (x1,y1): horizontal when h is true. It may fade out at the far end and may be pressed harder over a short stretch. */
     const stroke = (x0, y0, x1, y1, w, a, fade, h) => {
       const len = Math.hypot(x1 - x0, y1 - y0);
-      c.lineWidth = w;
-      if (fade > 0 && len > fade) {
-        const g = c.createLinearGradient(x0, y0, x1, y1), k = 1 - fade / len;
-        g.addColorStop(0, col(a)); g.addColorStop(k, col(a)); g.addColorStop(1, col(0));
-        c.strokeStyle = g;
-      } else c.strokeStyle = col(a);
-      c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+      const paint = (ww, aa) => {
+        c.lineWidth = ww;
+        if (fade > 0 && len > fade) {
+          const g = c.createLinearGradient(x0, y0, x1, y1), k = 1 - fade / len;
+          g.addColorStop(0, col(aa)); g.addColorStop(k, col(aa)); g.addColorStop(1, col(0));
+          c.strokeStyle = g;
+        } else c.strokeStyle = col(aa);
+        c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+      };
+      paint(w * 2.6, a * 0.28);                                        // chalk dust spread wide round the stroke
+      paint(w, a);                                                     // the pressed core
     };
     const lineRun = (pos, major, h) => {
-      const base = major ? 0.85 : 0.55, alpha = major ? 0.17 : 0.10;
+      const base = major ? 1.5 : 1.05, alpha = major ? 0.36 : 0.23;
       let t = rnd() * 70;                                              // where the first stroke begins
       while (t < T) {
         if (rnd() < 0.2) { t += 8 + rnd() * 70; continue; }              // the pen lifted: a gap
@@ -3468,6 +3477,15 @@ requestAnimationFrame(frame);
       lineRun(i * STEP + STEP / 2 + (rnd() - 0.5) * 1.6, major, true);   // across
       lineRun(i * STEP + STEP / 2 + (rnd() - 0.5) * 1.6, major, false);  // down
     }
+    /* chalk grain: tiny holes are rubbed out of every stroke, so the lines look dragged across rough paper instead of drawn with ink */
+    const grain = (size, density, seedShift) => {
+      const g = document.createElement('canvas'); g.width = g.height = size; const gx = g.getContext('2d'), id = gx.createImageData(size, size);
+      for (let i = 0; i < size * size; i++) { const r = rnd(); id.data[i * 4 + 3] = r < density ? Math.floor(120 + rnd() * 135) : 0; }
+      gx.putImageData(id, 0, 0);
+      c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'destination-out';
+      c.fillStyle = c.createPattern(g, 'repeat'); c.fillRect(0, 0, cv.width, cv.height); c.restore();
+    };
+    grain(191, 0.34, 0); grain(113, 0.22, 1);
     const url = cv.toDataURL('image/png');
     const st = document.createElement('style');
     st.textContent = '#dotWrap{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}' +
