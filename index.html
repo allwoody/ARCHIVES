@@ -84,7 +84,7 @@
     :root { --sidebar: 160px; }
     /* keep the logo inside the narrow resting sidebar, centred on it, so its edge isn't cut off */
     .logo img { width: min(var(--logo-width), calc(var(--sidebar) - 12px)); margin-left: calc((var(--sidebar) - min(var(--logo-width), var(--sidebar) - 12px)) / 2 - 28px); }
-    .sidebar { width: min(var(--sidebar-open, 250px), 70vw); clip-path: inset(0 calc(100% - var(--sidebar)) 0 0); transition: clip-path 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease; }
+    .sidebar { width: min(var(--sidebar-open, 250px), 70vw); clip-path: inset(0 calc(100% - var(--sidebar)) 0 0); transition: clip-path 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease; }
     .sidebar.exp:not(.closed),
     .sidebar.navpeek:not(.closed),
     .sidebar:not(.closed):focus-within {
@@ -272,7 +272,8 @@
   #collTitle + .ch-meta { font-size: 12px; }
   /* event titles: a readable graffiti hand, written on letter by letter, then the whole word ripples like a turbulent-displace effect */
   #collTitle.chalk { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.02em; color: #f6f3ea;
-    filter: url(#titleWobble); position: relative; z-index: 2; font-size: clamp(30px, 4.6vw, 64px); text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(158,161,166), 0.039em 0.012em 0.012em rgb(158,161,166), 0.039em 0.018em 0.012em rgb(158,161,166), 0.038em 0.024em 0.012em rgb(158,161,166), 0.034em 0.030em 0.012em rgb(158,161,166), 0.030em 0.034em 0.012em rgb(158,161,166), 0.024em 0.038em 0.012em rgb(158,161,166), 0.018em 0.039em 0.012em rgb(158,161,166), 0.012em 0.039em 0.012em rgb(158,161,166), 0.006em 0.038em 0.012em rgb(158,161,166), 0.001em 0.035em 0.012em rgb(158,161,166), -0.003em 0.031em 0.012em rgb(158,161,166), -0.006em 0.026em 0.012em rgb(158,161,166), -0.007em 0.022em 0.012em rgb(158,161,166), -0.008em 0.017em 0.012em rgb(158,161,166), -0.007em 0.014em 0.012em rgb(158,161,166), -0.006em 0.010em 0.012em rgb(158,161,166), -0.005em 0.008em 0.012em rgb(158,161,166), -0.003em 0.006em 0.012em rgb(158,161,166), -0.002em 0.005em 0.012em rgb(158,161,166), -0.000em 0.004em 0.012em rgb(158,161,166), 0.000em 0.003em 0.012em rgb(158,161,166), 0.001em 0.002em 0.012em rgb(158,161,166), 0.002em 0.001em 0.012em rgb(158,161,166), 0.003em 0.000em 0.012em rgb(158,161,166), 0.004em -0.000em 0.012em rgb(158,161,166), 0.005em -0.002em 0.012em rgb(158,161,166), 0.006em -0.003em 0.012em rgb(158,161,166), 0.008em -0.005em 0.012em rgb(158,161,166), 0.010em -0.006em 0.012em rgb(158,161,166), 0.014em -0.007em 0.012em rgb(158,161,166), 0.017em -0.008em 0.012em rgb(158,161,166), 0.022em -0.007em 0.012em rgb(158,161,166), 0.026em -0.006em 0.012em rgb(158,161,166), 0.031em -0.003em 0.012em rgb(158,161,166), 0.035em 0.001em 0.012em rgb(158,161,166), 0.056em 0.009em 0.012em rgb(136,139,144), 0.059em 0.018em 0.012em rgb(136,139,144), 0.059em 0.027em 0.012em rgb(136,139,144), 0.056em 0.036em 0.012em rgb(136,139,144), 0.052em 0.045em 0.012em rgb(136,139,144), 0.045em 0.052em 0.012em rgb(136,139,144), 0.036em 0.056em 0.012em rgb(136,139,144), 0.027em 0.059em 0.012em rgb(136,139,144), 0.018em 0.059em 0.012em rgb(136,139,144), 0.009em 0.056em 0.012em rgb(136,139,144), 0.001em 0.052em 0.012em rgb(136,139,144), -0.005em 0.046em 0.012em rgb(136,139,144), -0.009em 0.040em 0.012em rgb(136,139,144), -0.011em 0.033em 0.012em rgb(136,139,144), -0.011em 0.026em 0.012em rgb(136,139,144), -0.011em 0.020em 0.012em rgb(136,139,144), -0.009em 0.016em 0.012em rgb(136,139,144), -0.007em 0.012em 0.012em rgb(136,139,144), -0.005em 0.009em 0.012em rgb(136,139,144), -0.002em 0.007em 0.012em rgb(136,139,144), -0.001em 0.005em 0.012em rgb(136,139,144), 0.001em 0.004em 0.012em rgb(136,139,144), 0.002em 0.003em 0.012em rgb(136,139,144), 0.003em 0.002em 0.012em rgb(136,139,144), 0.004em 0.001em 0.012em rgb(136,139,144), 0.005em -0.001em 0.012em rgb(136,139,144), 0.007em -0.002em 0.012em rgb(136,139,144), 0.009em -0.005em 0.012em rgb(136,139,144), 0.012em -0.007em 0.012em rgb(136,139,144), 0.016em -0.009em 0.012em rgb(136,139,144), 0.020em -0.011em 0.012em rgb(136,139,144), 0.026em -0.011em 0.012em rgb(136,139,144), 0.033em -0.011em 0.012em rgb(136,139,144), 0.040em -0.009em 0.012em rgb(136,139,144), 0.046em -0.005em 0.012em rgb(136,139,144), 0.052em 0.001em 0.012em rgb(136,139,144), 0.075em 0.012em 0.012em rgb(114,117,123), 0.078em 0.024em 0.012em rgb(114,117,123), 0.079em 0.036em 0.012em rgb(114,117,123), 0.075em 0.049em 0.012em rgb(114,117,123), 0.069em 0.060em 0.012em rgb(114,117,123), 0.060em 0.069em 0.012em rgb(114,117,123), 0.049em 0.075em 0.012em rgb(114,117,123), 0.036em 0.079em 0.012em rgb(114,117,123), 0.024em 0.078em 0.012em rgb(114,117,123), 0.012em 0.075em 0.012em rgb(114,117,123), 0.002em 0.069em 0.012em rgb(114,117,123), -0.006em 0.062em 0.012em rgb(114,117,123), -0.012em 0.053em 0.012em rgb(114,117,123), -0.015em 0.044em 0.012em rgb(114,117,123), -0.015em 0.035em 0.012em rgb(114,117,123), -0.014em 0.027em 0.012em rgb(114,117,123), -0.012em 0.021em 0.012em rgb(114,117,123), -0.009em 0.016em 0.012em rgb(114,117,123), -0.006em 0.012em 0.012em rgb(114,117,123), -0.003em 0.009em 0.012em rgb(114,117,123), -0.001em 0.007em 0.012em rgb(114,117,123), 0.001em 0.006em 0.012em rgb(114,117,123), 0.002em 0.004em 0.012em rgb(114,117,123), 0.004em 0.002em 0.012em rgb(114,117,123), 0.006em 0.001em 0.012em rgb(114,117,123), 0.007em -0.001em 0.012em rgb(114,117,123), 0.009em -0.003em 0.012em rgb(114,117,123), 0.012em -0.006em 0.012em rgb(114,117,123), 0.016em -0.009em 0.012em rgb(114,117,123), 0.021em -0.012em 0.012em rgb(114,117,123), 0.027em -0.014em 0.012em rgb(114,117,123), 0.035em -0.015em 0.012em rgb(114,117,123), 0.044em -0.015em 0.012em rgb(114,117,123), 0.053em -0.012em 0.012em rgb(114,117,123), 0.062em -0.006em 0.012em rgb(114,117,123), 0.069em 0.002em 0.012em rgb(114,117,123), 0.094em 0.015em 0.012em rgb(90,93,99), 0.098em 0.030em 0.012em rgb(90,93,99), 0.098em 0.045em 0.012em rgb(90,93,99), 0.094em 0.061em 0.012em rgb(90,93,99), 0.086em 0.075em 0.012em rgb(90,93,99), 0.075em 0.086em 0.012em rgb(90,93,99), 0.061em 0.094em 0.012em rgb(90,93,99), 0.045em 0.098em 0.012em rgb(90,93,99), 0.030em 0.098em 0.012em rgb(90,93,99), 0.015em 0.094em 0.012em rgb(90,93,99), 0.002em 0.087em 0.012em rgb(90,93,99), -0.008em 0.077em 0.012em rgb(90,93,99), -0.014em 0.066em 0.012em rgb(90,93,99), -0.018em 0.055em 0.012em rgb(90,93,99), -0.019em 0.044em 0.012em rgb(90,93,99), -0.018em 0.034em 0.012em rgb(90,93,99), -0.015em 0.026em 0.012em rgb(90,93,99), -0.011em 0.020em 0.012em rgb(90,93,99), -0.008em 0.015em 0.012em rgb(90,93,99), -0.004em 0.012em 0.012em rgb(90,93,99), -0.001em 0.009em 0.012em rgb(90,93,99), 0.001em 0.007em 0.012em rgb(90,93,99), 0.003em 0.005em 0.012em rgb(90,93,99), 0.005em 0.003em 0.012em rgb(90,93,99), 0.007em 0.001em 0.012em rgb(90,93,99), 0.009em -0.001em 0.012em rgb(90,93,99), 0.012em -0.004em 0.012em rgb(90,93,99), 0.015em -0.008em 0.012em rgb(90,93,99), 0.020em -0.011em 0.012em rgb(90,93,99), 0.026em -0.015em 0.012em rgb(90,93,99), 0.034em -0.018em 0.012em rgb(90,93,99), 0.044em -0.019em 0.012em rgb(90,93,99), 0.055em -0.018em 0.012em rgb(90,93,99), 0.066em -0.014em 0.012em rgb(90,93,99), 0.077em -0.008em 0.012em rgb(90,93,99), 0.087em 0.002em 0.012em rgb(90,93,99), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }   /* the same graduated stroke as the home heading, so every letter (descenders too) stands off the line below it */
+    filter: url(#titleWobble); position: relative; z-index: 2; padding: 0.2em 0.3em 0; margin: -0.2em -0.3em 4px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 0.24em), transparent calc(100% - 0.02em)); mask-image: linear-gradient(to bottom, #000 calc(100% - 0.24em), transparent calc(100% - 0.02em)); font-size: clamp(30px, 4.6vw, 64px); text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(158,161,166), 0.039em 0.012em 0.012em rgb(158,161,166), 0.039em 0.018em 0.012em rgb(158,161,166), 0.038em 0.024em 0.012em rgb(158,161,166), 0.034em 0.030em 0.012em rgb(158,161,166), 0.030em 0.034em 0.012em rgb(158,161,166), 0.024em 0.038em 0.012em rgb(158,161,166), 0.018em 0.039em 0.012em rgb(158,161,166), 0.012em 0.039em 0.012em rgb(158,161,166), 0.006em 0.038em 0.012em rgb(158,161,166), 0.001em 0.035em 0.012em rgb(158,161,166), -0.003em 0.031em 0.012em rgb(158,161,166), -0.006em 0.026em 0.012em rgb(158,161,166), -0.007em 0.022em 0.012em rgb(158,161,166), -0.008em 0.017em 0.012em rgb(158,161,166), -0.007em 0.014em 0.012em rgb(158,161,166), -0.006em 0.010em 0.012em rgb(158,161,166), -0.005em 0.008em 0.012em rgb(158,161,166), -0.003em 0.006em 0.012em rgb(158,161,166), -0.002em 0.005em 0.012em rgb(158,161,166), -0.000em 0.004em 0.012em rgb(158,161,166), 0.000em 0.003em 0.012em rgb(158,161,166), 0.001em 0.002em 0.012em rgb(158,161,166), 0.002em 0.001em 0.012em rgb(158,161,166), 0.003em 0.000em 0.012em rgb(158,161,166), 0.004em -0.000em 0.012em rgb(158,161,166), 0.005em -0.002em 0.012em rgb(158,161,166), 0.006em -0.003em 0.012em rgb(158,161,166), 0.008em -0.005em 0.012em rgb(158,161,166), 0.010em -0.006em 0.012em rgb(158,161,166), 0.014em -0.007em 0.012em rgb(158,161,166), 0.017em -0.008em 0.012em rgb(158,161,166), 0.022em -0.007em 0.012em rgb(158,161,166), 0.026em -0.006em 0.012em rgb(158,161,166), 0.031em -0.003em 0.012em rgb(158,161,166), 0.035em 0.001em 0.012em rgb(158,161,166), 0.056em 0.009em 0.012em rgb(136,139,144), 0.059em 0.018em 0.012em rgb(136,139,144), 0.059em 0.027em 0.012em rgb(136,139,144), 0.056em 0.036em 0.012em rgb(136,139,144), 0.052em 0.045em 0.012em rgb(136,139,144), 0.045em 0.052em 0.012em rgb(136,139,144), 0.036em 0.056em 0.012em rgb(136,139,144), 0.027em 0.059em 0.012em rgb(136,139,144), 0.018em 0.059em 0.012em rgb(136,139,144), 0.009em 0.056em 0.012em rgb(136,139,144), 0.001em 0.052em 0.012em rgb(136,139,144), -0.005em 0.046em 0.012em rgb(136,139,144), -0.009em 0.040em 0.012em rgb(136,139,144), -0.011em 0.033em 0.012em rgb(136,139,144), -0.011em 0.026em 0.012em rgb(136,139,144), -0.011em 0.020em 0.012em rgb(136,139,144), -0.009em 0.016em 0.012em rgb(136,139,144), -0.007em 0.012em 0.012em rgb(136,139,144), -0.005em 0.009em 0.012em rgb(136,139,144), -0.002em 0.007em 0.012em rgb(136,139,144), -0.001em 0.005em 0.012em rgb(136,139,144), 0.001em 0.004em 0.012em rgb(136,139,144), 0.002em 0.003em 0.012em rgb(136,139,144), 0.003em 0.002em 0.012em rgb(136,139,144), 0.004em 0.001em 0.012em rgb(136,139,144), 0.005em -0.001em 0.012em rgb(136,139,144), 0.007em -0.002em 0.012em rgb(136,139,144), 0.009em -0.005em 0.012em rgb(136,139,144), 0.012em -0.007em 0.012em rgb(136,139,144), 0.016em -0.009em 0.012em rgb(136,139,144), 0.020em -0.011em 0.012em rgb(136,139,144), 0.026em -0.011em 0.012em rgb(136,139,144), 0.033em -0.011em 0.012em rgb(136,139,144), 0.040em -0.009em 0.012em rgb(136,139,144), 0.046em -0.005em 0.012em rgb(136,139,144), 0.052em 0.001em 0.012em rgb(136,139,144), 0.075em 0.012em 0.012em rgb(114,117,123), 0.078em 0.024em 0.012em rgb(114,117,123), 0.079em 0.036em 0.012em rgb(114,117,123), 0.075em 0.049em 0.012em rgb(114,117,123), 0.069em 0.060em 0.012em rgb(114,117,123), 0.060em 0.069em 0.012em rgb(114,117,123), 0.049em 0.075em 0.012em rgb(114,117,123), 0.036em 0.079em 0.012em rgb(114,117,123), 0.024em 0.078em 0.012em rgb(114,117,123), 0.012em 0.075em 0.012em rgb(114,117,123), 0.002em 0.069em 0.012em rgb(114,117,123), -0.006em 0.062em 0.012em rgb(114,117,123), -0.012em 0.053em 0.012em rgb(114,117,123), -0.015em 0.044em 0.012em rgb(114,117,123), -0.015em 0.035em 0.012em rgb(114,117,123), -0.014em 0.027em 0.012em rgb(114,117,123), -0.012em 0.021em 0.012em rgb(114,117,123), -0.009em 0.016em 0.012em rgb(114,117,123), -0.006em 0.012em 0.012em rgb(114,117,123), -0.003em 0.009em 0.012em rgb(114,117,123), -0.001em 0.007em 0.012em rgb(114,117,123), 0.001em 0.006em 0.012em rgb(114,117,123), 0.002em 0.004em 0.012em rgb(114,117,123), 0.004em 0.002em 0.012em rgb(114,117,123), 0.006em 0.001em 0.012em rgb(114,117,123), 0.007em -0.001em 0.012em rgb(114,117,123), 0.009em -0.003em 0.012em rgb(114,117,123), 0.012em -0.006em 0.012em rgb(114,117,123), 0.016em -0.009em 0.012em rgb(114,117,123), 0.021em -0.012em 0.012em rgb(114,117,123), 0.027em -0.014em 0.012em rgb(114,117,123), 0.035em -0.015em 0.012em rgb(114,117,123), 0.044em -0.015em 0.012em rgb(114,117,123), 0.053em -0.012em 0.012em rgb(114,117,123), 0.062em -0.006em 0.012em rgb(114,117,123), 0.069em 0.002em 0.012em rgb(114,117,123), 0.094em 0.015em 0.012em rgb(90,93,99), 0.098em 0.030em 0.012em rgb(90,93,99), 0.098em 0.045em 0.012em rgb(90,93,99), 0.094em 0.061em 0.012em rgb(90,93,99), 0.086em 0.075em 0.012em rgb(90,93,99), 0.075em 0.086em 0.012em rgb(90,93,99), 0.061em 0.094em 0.012em rgb(90,93,99), 0.045em 0.098em 0.012em rgb(90,93,99), 0.030em 0.098em 0.012em rgb(90,93,99), 0.015em 0.094em 0.012em rgb(90,93,99), 0.002em 0.087em 0.012em rgb(90,93,99), -0.008em 0.077em 0.012em rgb(90,93,99), -0.014em 0.066em 0.012em rgb(90,93,99), -0.018em 0.055em 0.012em rgb(90,93,99), -0.019em 0.044em 0.012em rgb(90,93,99), -0.018em 0.034em 0.012em rgb(90,93,99), -0.015em 0.026em 0.012em rgb(90,93,99), -0.011em 0.020em 0.012em rgb(90,93,99), -0.008em 0.015em 0.012em rgb(90,93,99), -0.004em 0.012em 0.012em rgb(90,93,99), -0.001em 0.009em 0.012em rgb(90,93,99), 0.001em 0.007em 0.012em rgb(90,93,99), 0.003em 0.005em 0.012em rgb(90,93,99), 0.005em 0.003em 0.012em rgb(90,93,99), 0.007em 0.001em 0.012em rgb(90,93,99), 0.009em -0.001em 0.012em rgb(90,93,99), 0.012em -0.004em 0.012em rgb(90,93,99), 0.015em -0.008em 0.012em rgb(90,93,99), 0.020em -0.011em 0.012em rgb(90,93,99), 0.026em -0.015em 0.012em rgb(90,93,99), 0.034em -0.018em 0.012em rgb(90,93,99), 0.044em -0.019em 0.012em rgb(90,93,99), 0.055em -0.018em 0.012em rgb(90,93,99), 0.066em -0.014em 0.012em rgb(90,93,99), 0.077em -0.008em 0.012em rgb(90,93,99), 0.087em 0.002em 0.012em rgb(90,93,99), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }   /* the same graduated stroke as the home heading, so every letter (descenders too) stands off the line below it */
   #collTitle .cw { display: inline-block; white-space: pre; }
   @property --wp { syntax: '<percentage>'; inherits: false; initial-value: -40%; }
   /* each letter is completely invisible until its turn, then draws itself in with a quick diagonal stroke */
@@ -782,6 +783,9 @@
   .pill { display: inline-flex; align-items: center; gap: 9px; min-height: 36px; padding: 0 20px; border: 1px solid var(--line); border-radius: 999px;
     background: rgba(71, 74, 79, 0.9); color: var(--muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
     transition: border-color 0.2s, color 0.2s, transform 0.18s ease, background 0.2s; }
+  #magBack { position: relative; padding: 0; justify-content: center; overflow: hidden; transition: width 0.38s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, color 0.2s, transform 0.18s ease, background 0.2s; }
+  #magBack .bk { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; transition: opacity 0.3s ease; }
+  #magBack .b, #magBack.is-back .a { opacity: 0; } #magBack.is-back .b { opacity: 1; }
   .pill:hover, .pill:focus-visible { border-color: var(--muted); color: var(--ink); outline: none; }
   .pill:active { transform: scale(0.96); }
   .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
@@ -806,42 +810,42 @@
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
   .mg-art { position: absolute; left: 5px; right: 5px; top: 5px; bottom: 5px; overflow: hidden; background: #1b1c1f; }
   .mg-art img { position: absolute; left: 0; top: calc(var(--bn) - 5px); width: 100%; height: calc(100% - var(--bn) + 5px); object-fit: cover; }
-  .mg-cover { --bn: calc(var(--ch) * var(--bnr, 0.17)); }
+  .mg-cover { --bn: calc(var(--ch) * var(--bnr, 0.17)); --u: calc(var(--cw) * 0.0033); }   /* one 'pixel' that grows with the cover, so lines and shadows keep their proportions from the shelf to the page */
   .pg.cover { padding: 0; } .pg.cover .mg-cover { --cw: var(--pw); --ch: var(--ph); box-shadow: none; border-radius: 3px; }
   .pg.cover::before, .pg.cover::after { display: none; }
-  .mg-banner { position: absolute; left: 0; right: 0; top: 0; height: var(--bn); z-index: 2; background: var(--ac); border-bottom: 3px solid #fff;
+  .mg-banner { position: absolute; left: 0; right: 0; top: 0; height: var(--bn); z-index: 2; background: var(--ac); border-bottom: calc(var(--u) * 3) solid #fff;
     display: flex; align-items: center; gap: 8px; padding: 0 calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.29); }
   .mg-banner .ttl { flex: 1 1 auto; min-width: 0; font-family: "Oswald", "Arial Narrow", "Franklin Gothic Medium", sans-serif; font-weight: 500; text-transform: uppercase;
     font-size: calc(var(--cw) * var(--fs, 0.06)); line-height: 1.05; letter-spacing: 0.035em; color: #fff4d8; overflow-wrap: break-word; hyphens: none;
-    text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad), 3px 3px 0 var(--ad), 3px 1px 0 var(--ad), 1px 3px 0 var(--ad), -1px -1px 0 var(--ad);
+    text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 1) calc(var(--u) * 3) 0 var(--ad), calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--ad);
     display: block; overflow: visible; }
   .mg-banner .ln { display: block; white-space: nowrap; }
   /* the volume sits in a tab hanging down from the top right of the banner */
   .mg-banner .vol { position: absolute; right: calc(var(--cw) * 0.035); top: 0; width: calc(var(--cw) * 0.19); height: calc(var(--bn) + var(--cw) * 0.07); z-index: 3; box-sizing: border-box;
-    background: var(--ac); border: 3px solid #fff; border-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff4d8;
+    background: var(--ac); border: calc(var(--u) * 3) solid #fff; border-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff4d8;
     font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
   .mg-banner .vol i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.03); letter-spacing: 0.16em; margin: 0 0 calc(var(--cw) * 0.008) 0.16em; }
-  .mg-banner .vol b { font-weight: 500; font-size: calc(var(--cw) * 0.115); letter-spacing: 0; text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad), 3px 3px 0 var(--ad); }
+  .mg-banner .vol b { font-weight: 500; font-size: calc(var(--cw) * 0.115); letter-spacing: 0; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad); }
   .mg-banner.hasmark { padding-right: calc(var(--cw) * 0.25); }
   .pg.endcover { background: #202226; }
-  .pg.endcover .bcode { position: absolute; right: 8%; bottom: 6%; width: 30%; line-height: 0; opacity: 0.92; }
+  .pg.endcover .bcode { position: absolute; right: 8%; bottom: 6%; width: 21%; line-height: 0; opacity: 0.92; }
   .pg.endcover .bcode svg { width: 100%; height: auto; display: block; }
   .pg.endcover img { width: 58%; max-height: 40%; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
   /* the corner box is a postage stamp: cream paper with a perforated edge and the coloured panel inside */
-  .mg-corner { --r: 3px; --st: 10px; position: absolute; left: calc(var(--cw) * 0.025); top: calc(var(--cw) * 0.025); z-index: 4; width: calc(var(--cw) * 0.225); height: calc(var(--bn) + var(--cw) * 0.1);
-    background: #f4ecd6; padding: 6px; transform: rotate(-3deg); transform-origin: 30% 30%; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.45));
+  .mg-corner { --r: calc(var(--u) * 3); --st: calc(var(--u) * 10); position: absolute; left: calc(var(--cw) * 0.025); top: calc(var(--cw) * 0.025); z-index: 4; width: calc(var(--cw) * 0.225); height: calc(var(--bn) + var(--cw) * 0.1);
+    background: #f4ecd6; padding: calc(var(--u) * 6); transform: rotate(-3deg); transform-origin: 30% 30%; filter: drop-shadow(0 calc(var(--u) * 2) calc(var(--u) * 2) rgba(0,0,0,0.45));
     -webkit-mask-image: radial-gradient(circle at 50% 0, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 50% 100%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 0 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 100% 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px));
     -webkit-mask-size: var(--st) 100%, var(--st) 100%, 100% var(--st), 100% var(--st); -webkit-mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y; -webkit-mask-position: center, center, center, center;
     -webkit-mask-composite: source-in; mask-composite: intersect; mask-image: radial-gradient(circle at 50% 0, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 50% 100%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 0 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 100% 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px));
     mask-size: var(--st) 100%, var(--st) 100%, 100% var(--st), 100% var(--st); mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y; mask-position: center; }
-  .mg-corner .stp { position: absolute; inset: 6px; background: var(--ac); border: 1.5px solid rgba(255,244,216,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff4d8; line-height: 1;
+  .mg-corner .stp { position: absolute; inset: calc(var(--u) * 6); background: var(--ac); border: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff4d8; line-height: 1;
     font-family: "Oswald", "Arial Narrow", sans-serif; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
-  .mg-corner b { font-weight: 500; font-size: calc(var(--cw) * 0.082); letter-spacing: 0.02em; text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad); }
+  .mg-corner b { font-weight: 500; font-size: calc(var(--cw) * 0.082); letter-spacing: 0.02em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.024); letter-spacing: 0.18em; margin: calc(var(--cw) * 0.006) 0 calc(var(--cw) * 0.012) 0.18em; }
-  .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: 1.5px solid rgba(255,244,216,0.8); padding-top: 3px; font-weight: 500; }
-  .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad); }
+  .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
+  .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  .mg-mark { position: absolute; left: calc(var(--cw) * 0.04); bottom: calc(var(--cw) * 0.04); z-index: 3; width: calc(var(--cw) * 0.24); max-height: calc(var(--ch) * 0.1); object-fit: contain; object-position: left bottom; opacity: 0.85; pointer-events: none; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+  .mg-mark { position: absolute; left: calc(var(--cw) * 0.04); bottom: calc(var(--cw) * 0.04); z-index: 3; width: calc(var(--cw) * 0.24); max-height: calc(var(--ch) * 0.1); object-fit: contain; object-position: left bottom; opacity: 0.85; pointer-events: none; filter: drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 3) rgba(0,0,0,0.6)); }
   .mg-cover::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none;
     background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(60,45,25,0.22) 100%), linear-gradient(160deg, rgba(255,255,255,0.12), transparent 42%, rgba(0,0,0,0.08)), var(--pt);
     background-size: auto, auto, calc(var(--cw) * 0.8) calc(var(--cw) * 0.8); mix-blend-mode: multiply; opacity: var(--po, 0.5); }
@@ -863,7 +867,7 @@
   .mv-bar span { color: var(--ink); }
   .mag-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
   .mag {
-    --ph: clamp(300px, min(calc(100vh - 250px), calc((100vw - var(--sidebar-open, 240px) - 150px) / 1.5)), 800px);   /* opened comics fill most of the page */
+    --ph: clamp(300px, min(calc(100vh - 250px), calc((100vw - var(--sidebar-max, 240px) - 150px) / 1.5)), 800px);   /* opened comics fill most of the page */
     --pw: calc(var(--ph) * 0.74);
     position: relative; width: calc(var(--pw) * 2); height: var(--ph); flex: none;
     perspective: 2400px; perspective-origin: 50% 40%;
@@ -984,6 +988,7 @@
   .mag-head span { display: block; margin-top: 8px; }
   .mag-head[hidden] { display: none; }
   .mag-desc { margin: 16px 0 0; max-width: 520px; font-size: 13px; line-height: 1.55; letter-spacing: 0.02em; color: #fff; }
+  #view-globe .ch-title, #view-index .ch-title, .mag-head h1 { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.45); }
   .mag-head h1 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
   .mag-head span { font-size: 12px; }
 
@@ -1224,7 +1229,7 @@
       <div class="mg-info" id="mgInfo"></div>
     </div>
     <div class="mag-viewer" id="magViewer" hidden>
-      <div class="mg-top"><button type="button" class="pill" id="magBack">Leave</button><span class="mv-title" id="mvTitle"></span></div>
+      <div class="mg-top"><button type="button" class="pill" id="magBack"><span class="bk a">Leave</span><span class="bk b">Back to start</span></button><span class="mv-title" id="mvTitle"></span></div>
       <div class="mag-stage">
         <button class="mag-arrow" id="magPrev" aria-label="Previous page">&#8592;</button>
         <div class="mag" id="mag" aria-roledescription="magazine"><div class="mag-book" id="magBook"></div></div>
@@ -1463,14 +1468,24 @@ function buildNav() {
    widens to fit the longest name (and the page behind it blurs), so nothing
    is ever cut off. */
 const sidebar = document.querySelector('.sidebar');
-function measureSidebar() {
+function measureSidebar() {                                          // the widest the menu can ever be (the longest event name), used to leave room on other pages
   const cs = getComputedStyle(sidebar);
   const padding = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
   let widest = 0;
   nav.querySelectorAll('a').forEach(a => { widest = Math.max(widest, a.scrollWidth); });
-  const needed = Math.ceil(widest * 1.1) + padding + 8;   // +10% for the hover zoom
-  document.documentElement.style.setProperty('--sidebar-open', Math.max(240, needed) + 'px');
+  document.documentElement.style.setProperty('--sidebar-max', Math.max(240, Math.ceil(widest * 1.1) + padding + 8) + 'px');
+  fitSidebar();
 }
+/* the menu is only as wide as what is showing: the headings alone, or the longest name in the one list that is open (it grows and shrinks with it) */
+function fitSidebar() {
+  const cs = getComputedStyle(sidebar);
+  const padding = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+  let w = 0;
+  nav.querySelectorAll('.head').forEach(h => { w = Math.max(w, h.scrollWidth); });
+  if (sidebar.classList.contains('exp')) nav.querySelectorAll('.sec.open a, .sec:focus-within a').forEach(a => { w = Math.max(w, a.scrollWidth * 1.1); });
+  document.documentElement.style.setProperty('--sidebar-open', Math.max(160, Math.ceil(w) + padding + 8) + 'px');
+}
+new MutationObserver(fitSidebar).observe(sidebar, { attributes: true, attributeFilter: ['class'], subtree: true });
 /* after you pick a page the sidebar tucks away at once so you can see it;
    move the mouse off and back on to open it again */
 let closedLink = null;
@@ -1494,7 +1509,7 @@ function armNavHide(delay) {
   navTimer = setTimeout(() => {
     if (sidebar.matches(':hover') || sidebar.matches(':focus-within')) armNavHide(1500);
     else document.body.classList.add('nav-hidden');
-  }, delay || 4500);
+  }, delay || 5250);
 }
 /* Hover events can be missed (after a drag, or when the menu changes under a resting cursor), so the cursor's position also decides it. */
 let navOutTimer = 0, logoMask = null;
@@ -1528,7 +1543,7 @@ document.addEventListener('pointermove', e => {
     if (document.body.classList.contains('nav-hidden')) sidebar.classList.add('navpeek');
   } else if (!inOpen) {
     sidebar.classList.remove('closed', 'exp'); sidebar.querySelectorAll('.sec.open').forEach(x => x.classList.remove('open'));   // the cursor has really left, so the next visit opens it
-    if (sidebar.classList.contains('navpeek')) { sidebar.classList.remove('navpeek'); armNavHide(2700); }
+    if (sidebar.classList.contains('navpeek')) { sidebar.classList.remove('navpeek'); armNavHide(3450); }
   }
 }, { passive: true });
 /* the menu opens out only when the cursor is on a label (not on the empty space around them) */
@@ -1541,9 +1556,9 @@ sidebar.addEventListener('mouseover', e => {
 });
 sidebar.addEventListener('mouseleave', () => { sidebar.classList.remove('exp'); sidebar.querySelectorAll('.sec.open').forEach(x => x.classList.remove('open')); });
 sidebar.addEventListener('mouseenter', () => clearTimeout(peekTimer2));
-sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); sidebar.classList.remove('navpeek'); armNavHide(2700); });
-window.addEventListener('hashchange', () => armNavHide(4500));
-armNavHide(4500);
+sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); sidebar.classList.remove('navpeek'); armNavHide(3450); });
+window.addEventListener('hashchange', () => armNavHide(5250));
+armNavHide(5250);
 /* Home page menu on touch screens: tap a heading to open its list */
 $('homeNav').addEventListener('click', e => {
   const head = e.target.closest('.hn-head.has-subs');
@@ -1563,6 +1578,7 @@ document.body.appendChild($('navHint'));            // directly under the page, 
 document.body.appendChild($('view-landing'));        // outside <main>, so blurring the page underneath can never shift the photo wall
 function showView(name) {
   views.forEach(v => { if (v === 'landing' && entering && name !== 'landing') return; $('view-' + v).classList.toggle('on', v === name); });   // the live photo wall stays up until it has been painted over
+  if (name === 'home' && !document.body.classList.contains('is-home')) { hoverArmed = false; hovering = false; }   // arriving with the cursor already on the row: it keeps moving until the cursor leaves and comes back
   document.body.classList.toggle('is-home', name === 'home');
   document.body.classList.toggle('is-landing', name === 'landing');
 }
@@ -1573,7 +1589,7 @@ function showView(name) {
    you let go. The row is built twice back to back and wraps around,
    so there is never a visible seam. */
 let groupW = 0, offset = 0, vel = 0;
-let dragging = false, moved = false, hovering = false, suppressClick = false;
+let dragging = false, moved = false, hovering = false, suppressClick = false, hoverArmed = false;   // hoverArmed: the pointer has been off the row since the page opened, so resting on it no longer stops it
 let startX = 0, startOffset = 0, lastX = 0, lastT = 0, lastFrame = performance.now();
 
 function makeItem(c, isCopy) {
@@ -1670,8 +1686,8 @@ function endDrag() {
 }
 marquee.addEventListener('pointerup', endDrag);
 marquee.addEventListener('pointercancel', endDrag);
-marquee.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') hovering = true; });
-marquee.addEventListener('pointerleave', () => { hovering = false; });
+marquee.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && hoverArmed) hovering = true; });
+marquee.addEventListener('pointerleave', () => { hovering = false; hoverArmed = true; });
 marquee.addEventListener('click', e => {                              // a drag should not count as a click
   if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
 }, true);
@@ -3331,17 +3347,27 @@ requestAnimationFrame(frame);
     list.push({ cls: 'endcover', html: `<span class="bcode">${barcode(c)}</span><img src="${esc(SITE.logo || 'images/logo.png')}" alt="${esc(SITE.name || 'Allwood Archives')}" draggable="false">` });
     return list;
   }
-  /* a made-up barcode, where a shop would scan the back of the book */
+  /* a made-up EAN-13 barcode, where a shop would scan the back of the book: guard bars run down between the two groups of numbers */
   function barcode(c) {
     let h = 7; String(c.id || c.title || 'x').split('').forEach(ch => { h = (h * 31 + ch.charCodeAt(0)) >>> 0; });
     const rn = () => { h = (h * 1664525 + 1013904223) >>> 0; return h / 4294967296; };
-    let x = 6, bars = ''; const guard = [1, 1, 1];
-    const put = w => { bars += `<rect x="${x}" y="4" width="${w}" height="46"/>`; x += w; };
-    guard.forEach((w, k) => { if (k % 2 === 0) put(w); else x += w; });
-    for (let k = 0; k < 28; k++) { const w = 1 + Math.floor(rn() * 3); if (k % 2 === 0) put(w); else x += w; }
-    [1, 1, 1].forEach((w, k) => { if (k % 2 === 0) put(w); else x += w; });
-    const digits = Array.from({ length: 12 }, () => Math.floor(rn() * 10)).join('');
-    return `<svg viewBox="0 0 ${x + 6} 66" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="${x + 6}" height="66" fill="#f4f1e8"/><g fill="#111">${bars}</g><text x="${(x + 6) / 2}" y="62" text-anchor="middle" font-family="Courier New, monospace" font-size="9" letter-spacing="1.5" fill="#111">${digits.slice(0, 1)} ${digits.slice(1, 7)} ${digits.slice(7)}</text></svg>`;
+    const d = Array.from({ length: 12 }, () => Math.floor(rn() * 10));
+    d.push((10 - d.reduce((a, v, k) => a + v * (k % 2 ? 3 : 1), 0) % 10) % 10);
+    const Lc = ['0001101', '0011001', '0010011', '0111101', '0100011', '0110001', '0101111', '0111011', '0110111', '0001011'];
+    const Rc = Lc.map(x => x.replace(/[01]/g, q => q === '1' ? '0' : '1')), Gc = Rc.map(x => x.split('').reverse().join(''));
+    const par = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG', 'LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL'][d[0]];
+    let bits = '101'; const guards = [[0, 3], [45, 50], [92, 95]];
+    for (let k = 0; k < 6; k++) bits += (par[k] === 'L' ? Lc : Gc)[d[k + 1]];
+    bits += '01010';
+    for (let k = 0; k < 6; k++) bits += Rc[d[k + 7]];
+    bits += '101';
+    const X = 11, bars = []; let k = 0;
+    while (k < 95) {
+      if (bits[k] === '1') { let e = k; while (e < 95 && bits[e] === '1') e++; const g = guards.some(([a, b]) => k >= a && e <= b); bars.push(`<rect x="${X + k}" y="3" width="${e - k}" height="${g ? 56 : 51}"/>`); k = e; } else k++;
+    }
+    const t = (x, str, len) => `<text x="${x}" y="64"${len ? ` textLength="${len}" lengthAdjust="spacing"` : ' text-anchor="middle"'}>${str}</text>`;
+    return `<svg viewBox="0 0 ${X + 95 + 9} 68" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="${X + 95 + 9}" height="68" fill="#f4f1e8"/><g fill="#111">${bars.join('')}</g>` +
+      `<g fill="#111" font-family="Courier New, monospace" font-size="8.5" font-weight="700">${t(5, d[0])}${t(X + 4, d.slice(1, 7).join(''), 40)}${t(X + 51, d.slice(7).join(''), 40)}</g></svg>`;
   }
   const faceEl = (pg, side, extra) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}<div class="shd"></div></div>`;
 
@@ -3436,10 +3462,18 @@ requestAnimationFrame(frame);
     moving = false;
   }
   const settle = () => leaves.forEach((el, i) => { el.style.zIndex = i < cur ? i + 1 : L - i; el.classList.toggle('flipped', i < cur); el.style.willChange = (i === cur - 1 || i === cur) ? 'transform' : ''; });   // the two leaves next to be turned are kept ready
+  const bkCtx = document.createElement('canvas').getContext('2d');
+  function setBackLabel() {                                            // the words cross-fade and the pill widens or narrows in one motion, the moment the turn begins
+    const b = $('magBack'), back = cur > 0, cs = getComputedStyle(b), txt = back ? 'Back to start' : 'Leave';
+    bkCtx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const t = cs.textTransform === 'uppercase' ? txt.toUpperCase() : txt;
+    b.classList.toggle('is-back', back); b.setAttribute('aria-label', txt);
+    b.style.width = Math.ceil(bkCtx.measureText(t).width + (parseFloat(cs.letterSpacing) || 0) * t.length + 46) + 'px';
+  }
   function show() {
     mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = cur === 0; next.disabled = cur === L;
-    $('magBack').textContent = cur === 0 ? 'Leave' : 'Back to start';
+    setBackLabel();
     $('magFoot').textContent = cur === 0 ? 'Cover' : cur === L ? 'Back cover' : `Pages ${cur * 2} – ${cur * 2 + 1} of ${pages.length}`;
   }
 
@@ -3460,7 +3494,7 @@ requestAnimationFrame(frame);
       sk.push({ offset: p, opacity: +(0.5 * (1 - Math.abs(Math.cos(th * Math.PI / 180)))).toFixed(3) });
     }
     leaf.style.zIndex = 500;
-    cur = to; mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
+    cur = to; mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none'; setBackLabel();
     prev.disabled = true; next.disabled = true;
     const opts = { duration: dur, easing: 'linear', fill: 'forwards' };
     const anims = [leaf.animate(lk, opts), fs.animate(sk, opts), bs.animate(sk, opts)];
