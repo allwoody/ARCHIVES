@@ -266,17 +266,17 @@
   .collection-head { margin: 0 0 26px; }
   #view-collection { padding-bottom: 48px; }
   #collTitle { font-size: clamp(30px, 4.6vw, 64px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; margin-bottom: 4px; }
-  .ch-score { margin: 2px 0 8px; font-size: clamp(14px, 1.5vw, 20px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ch-score { position: relative; z-index: 1; margin: 8px 0 8px; font-size: clamp(14px, 1.5vw, 20px); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
   .ch-score:empty { display: none; }
   .ch-score + .ch-meta { font-size: 12px; }
   #collTitle + .ch-meta { font-size: 12px; }
   /* event titles: a readable graffiti hand, written on letter by letter, then the whole word ripples like a turbulent-displace effect */
   #collTitle.chalk { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-weight: 400; letter-spacing: 0.02em; color: #f6f3ea;
-    filter: url(#titleWobble); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+    filter: url(#titleWobble); position: relative; z-index: 2; font-size: clamp(30px, 4.6vw, 64px); text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(158,161,166), 0.039em 0.012em 0.012em rgb(158,161,166), 0.039em 0.018em 0.012em rgb(158,161,166), 0.038em 0.024em 0.012em rgb(158,161,166), 0.034em 0.030em 0.012em rgb(158,161,166), 0.030em 0.034em 0.012em rgb(158,161,166), 0.024em 0.038em 0.012em rgb(158,161,166), 0.018em 0.039em 0.012em rgb(158,161,166), 0.012em 0.039em 0.012em rgb(158,161,166), 0.006em 0.038em 0.012em rgb(158,161,166), 0.001em 0.035em 0.012em rgb(158,161,166), -0.003em 0.031em 0.012em rgb(158,161,166), -0.006em 0.026em 0.012em rgb(158,161,166), -0.007em 0.022em 0.012em rgb(158,161,166), -0.008em 0.017em 0.012em rgb(158,161,166), -0.007em 0.014em 0.012em rgb(158,161,166), -0.006em 0.010em 0.012em rgb(158,161,166), -0.005em 0.008em 0.012em rgb(158,161,166), -0.003em 0.006em 0.012em rgb(158,161,166), -0.002em 0.005em 0.012em rgb(158,161,166), -0.000em 0.004em 0.012em rgb(158,161,166), 0.000em 0.003em 0.012em rgb(158,161,166), 0.001em 0.002em 0.012em rgb(158,161,166), 0.002em 0.001em 0.012em rgb(158,161,166), 0.003em 0.000em 0.012em rgb(158,161,166), 0.004em -0.000em 0.012em rgb(158,161,166), 0.005em -0.002em 0.012em rgb(158,161,166), 0.006em -0.003em 0.012em rgb(158,161,166), 0.008em -0.005em 0.012em rgb(158,161,166), 0.010em -0.006em 0.012em rgb(158,161,166), 0.014em -0.007em 0.012em rgb(158,161,166), 0.017em -0.008em 0.012em rgb(158,161,166), 0.022em -0.007em 0.012em rgb(158,161,166), 0.026em -0.006em 0.012em rgb(158,161,166), 0.031em -0.003em 0.012em rgb(158,161,166), 0.035em 0.001em 0.012em rgb(158,161,166), 0.056em 0.009em 0.012em rgb(136,139,144), 0.059em 0.018em 0.012em rgb(136,139,144), 0.059em 0.027em 0.012em rgb(136,139,144), 0.056em 0.036em 0.012em rgb(136,139,144), 0.052em 0.045em 0.012em rgb(136,139,144), 0.045em 0.052em 0.012em rgb(136,139,144), 0.036em 0.056em 0.012em rgb(136,139,144), 0.027em 0.059em 0.012em rgb(136,139,144), 0.018em 0.059em 0.012em rgb(136,139,144), 0.009em 0.056em 0.012em rgb(136,139,144), 0.001em 0.052em 0.012em rgb(136,139,144), -0.005em 0.046em 0.012em rgb(136,139,144), -0.009em 0.040em 0.012em rgb(136,139,144), -0.011em 0.033em 0.012em rgb(136,139,144), -0.011em 0.026em 0.012em rgb(136,139,144), -0.011em 0.020em 0.012em rgb(136,139,144), -0.009em 0.016em 0.012em rgb(136,139,144), -0.007em 0.012em 0.012em rgb(136,139,144), -0.005em 0.009em 0.012em rgb(136,139,144), -0.002em 0.007em 0.012em rgb(136,139,144), -0.001em 0.005em 0.012em rgb(136,139,144), 0.001em 0.004em 0.012em rgb(136,139,144), 0.002em 0.003em 0.012em rgb(136,139,144), 0.003em 0.002em 0.012em rgb(136,139,144), 0.004em 0.001em 0.012em rgb(136,139,144), 0.005em -0.001em 0.012em rgb(136,139,144), 0.007em -0.002em 0.012em rgb(136,139,144), 0.009em -0.005em 0.012em rgb(136,139,144), 0.012em -0.007em 0.012em rgb(136,139,144), 0.016em -0.009em 0.012em rgb(136,139,144), 0.020em -0.011em 0.012em rgb(136,139,144), 0.026em -0.011em 0.012em rgb(136,139,144), 0.033em -0.011em 0.012em rgb(136,139,144), 0.040em -0.009em 0.012em rgb(136,139,144), 0.046em -0.005em 0.012em rgb(136,139,144), 0.052em 0.001em 0.012em rgb(136,139,144), 0.075em 0.012em 0.012em rgb(114,117,123), 0.078em 0.024em 0.012em rgb(114,117,123), 0.079em 0.036em 0.012em rgb(114,117,123), 0.075em 0.049em 0.012em rgb(114,117,123), 0.069em 0.060em 0.012em rgb(114,117,123), 0.060em 0.069em 0.012em rgb(114,117,123), 0.049em 0.075em 0.012em rgb(114,117,123), 0.036em 0.079em 0.012em rgb(114,117,123), 0.024em 0.078em 0.012em rgb(114,117,123), 0.012em 0.075em 0.012em rgb(114,117,123), 0.002em 0.069em 0.012em rgb(114,117,123), -0.006em 0.062em 0.012em rgb(114,117,123), -0.012em 0.053em 0.012em rgb(114,117,123), -0.015em 0.044em 0.012em rgb(114,117,123), -0.015em 0.035em 0.012em rgb(114,117,123), -0.014em 0.027em 0.012em rgb(114,117,123), -0.012em 0.021em 0.012em rgb(114,117,123), -0.009em 0.016em 0.012em rgb(114,117,123), -0.006em 0.012em 0.012em rgb(114,117,123), -0.003em 0.009em 0.012em rgb(114,117,123), -0.001em 0.007em 0.012em rgb(114,117,123), 0.001em 0.006em 0.012em rgb(114,117,123), 0.002em 0.004em 0.012em rgb(114,117,123), 0.004em 0.002em 0.012em rgb(114,117,123), 0.006em 0.001em 0.012em rgb(114,117,123), 0.007em -0.001em 0.012em rgb(114,117,123), 0.009em -0.003em 0.012em rgb(114,117,123), 0.012em -0.006em 0.012em rgb(114,117,123), 0.016em -0.009em 0.012em rgb(114,117,123), 0.021em -0.012em 0.012em rgb(114,117,123), 0.027em -0.014em 0.012em rgb(114,117,123), 0.035em -0.015em 0.012em rgb(114,117,123), 0.044em -0.015em 0.012em rgb(114,117,123), 0.053em -0.012em 0.012em rgb(114,117,123), 0.062em -0.006em 0.012em rgb(114,117,123), 0.069em 0.002em 0.012em rgb(114,117,123), 0.094em 0.015em 0.012em rgb(90,93,99), 0.098em 0.030em 0.012em rgb(90,93,99), 0.098em 0.045em 0.012em rgb(90,93,99), 0.094em 0.061em 0.012em rgb(90,93,99), 0.086em 0.075em 0.012em rgb(90,93,99), 0.075em 0.086em 0.012em rgb(90,93,99), 0.061em 0.094em 0.012em rgb(90,93,99), 0.045em 0.098em 0.012em rgb(90,93,99), 0.030em 0.098em 0.012em rgb(90,93,99), 0.015em 0.094em 0.012em rgb(90,93,99), 0.002em 0.087em 0.012em rgb(90,93,99), -0.008em 0.077em 0.012em rgb(90,93,99), -0.014em 0.066em 0.012em rgb(90,93,99), -0.018em 0.055em 0.012em rgb(90,93,99), -0.019em 0.044em 0.012em rgb(90,93,99), -0.018em 0.034em 0.012em rgb(90,93,99), -0.015em 0.026em 0.012em rgb(90,93,99), -0.011em 0.020em 0.012em rgb(90,93,99), -0.008em 0.015em 0.012em rgb(90,93,99), -0.004em 0.012em 0.012em rgb(90,93,99), -0.001em 0.009em 0.012em rgb(90,93,99), 0.001em 0.007em 0.012em rgb(90,93,99), 0.003em 0.005em 0.012em rgb(90,93,99), 0.005em 0.003em 0.012em rgb(90,93,99), 0.007em 0.001em 0.012em rgb(90,93,99), 0.009em -0.001em 0.012em rgb(90,93,99), 0.012em -0.004em 0.012em rgb(90,93,99), 0.015em -0.008em 0.012em rgb(90,93,99), 0.020em -0.011em 0.012em rgb(90,93,99), 0.026em -0.015em 0.012em rgb(90,93,99), 0.034em -0.018em 0.012em rgb(90,93,99), 0.044em -0.019em 0.012em rgb(90,93,99), 0.055em -0.018em 0.012em rgb(90,93,99), 0.066em -0.014em 0.012em rgb(90,93,99), 0.077em -0.008em 0.012em rgb(90,93,99), 0.087em 0.002em 0.012em rgb(90,93,99), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }   /* the same graduated stroke as the home heading, so every letter (descenders too) stands off the line below it */
   #collTitle .cw { display: inline-block; white-space: pre; }
   @property --wp { syntax: '<percentage>'; inherits: false; initial-value: -40%; }
   /* each letter is completely invisible until its turn, then draws itself in with a quick diagonal stroke */
-  #collTitle .cl { display: inline-block; padding: 0.08em 0.06em 0.34em; margin: -0.08em -0.06em -0.34em; opacity: 0; visibility: hidden; --wp: -40%;
+  #collTitle .cl { display: inline-block; padding: 0.2em 0.18em 0.46em; margin: -0.2em -0.18em -0.46em; opacity: 0; visibility: hidden; --wp: -40%;
     -webkit-mask-image: linear-gradient(120deg, #000 var(--wp), transparent calc(var(--wp) + 32%)); mask-image: linear-gradient(120deg, #000 var(--wp), transparent calc(var(--wp) + 32%)); }
   #collTitle.go .cl { animation: letterWrite 0.46s cubic-bezier(0.45, 0.1, 0.3, 1) both var(--d, 0s); }
   @keyframes letterWrite { 0% { --wp: -40%; opacity: 0; visibility: hidden; } 0.1% { visibility: visible; opacity: 1; } 100% { --wp: 112%; opacity: 1; visibility: visible; } }
@@ -796,7 +796,7 @@
   .mag-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 18px; }
   .mag-head h1 { margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
   .mag-head span { color: var(--muted); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
-  .mg-wrap { --ch: clamp(300px, calc(100vh - 380px), 580px); --cw: calc(var(--ch) * 0.74); position: relative; width: 100%; max-width: 1200px; margin: auto; padding: 0 36px; }
+  .mg-wrap { --ch: clamp(300px, calc(100vh - 465px), 580px); --cw: calc(var(--ch) * 0.74); position: relative; width: 100%; max-width: 1200px; margin: auto; padding: 0 36px; }
   .mg-wrap[hidden] { display: none; }
   .mg-stage { position: relative; height: calc(var(--ch) + 70px); perspective: 1500px; perspective-origin: 50% 40%; touch-action: pan-y; }
   .mg-card { position: absolute; left: 50%; top: 24px; width: var(--cw); height: var(--ch); margin-left: calc(var(--cw) / -2); display: block; text-align: left; color: var(--ink);
@@ -977,6 +977,7 @@
   .mag-head { display: block; margin: 0 0 14px; }
   .mag-head span { display: block; margin-top: 8px; }
   .mag-head[hidden] { display: none; }
+  .mag-desc { margin: 16px 0 0; max-width: 520px; font-size: 13px; line-height: 1.55; letter-spacing: 0.02em; color: #fff; }
   .mag-head h1 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
   .mag-head span { font-size: 12px; }
 
@@ -1208,7 +1209,7 @@
 
   <!-- favorites (page design to come) -->
   <section class="view" id="view-favorites">
-    <div class="mag-head" id="magHead"><h1>Favorites</h1><span id="magMeta"></span></div>
+    <div class="mag-head" id="magHead"><h1>Look Books</h1><span id="magMeta"></span><p class="mag-desc">Collections of my favorite photos from each event, consolidated into one look book.</p></div>
     <div class="mg-wrap" id="magGrid">
       <div class="mg-top"><button type="button" class="pill" id="mgEnter">Enter</button></div>
       <div class="mg-stage" id="mgStage"></div>
@@ -1429,7 +1430,7 @@ function buildNav() {
     `<li><a href="${href}" data-route="${route}"${title ? ` title="${esc(title)}"` : ''}>${label}</a></li>`;
 
   const explore = (latest ? link('#' + esc(latest.id), 'latest', 'Latest', latest.title) : '') +
-    link('#globe', 'globe', 'Map') + link('#index', 'index', 'Index') + link('#favorites', 'favorites', 'Favorites');
+    link('#globe', 'globe', 'Map') + link('#index', 'index', 'Index') + link('#favorites', 'favorites', 'Look Books');
   const projects = BY_DATE.map(c => link('#' + esc(c.id), esc(c.id), esc(c.title))).join('');
   const info = link('#about', 'about', 'About') + link('#contact', 'contact', 'Contact');
 
@@ -2722,10 +2723,37 @@ function setupTagBar(c) {
 }
 tagArrow.addEventListener('click', () => setTagsOpen(!tagBar.classList.contains('open')));
 
-function renderCollection(c) {
+/* the width:height of a photo, read from the first bytes of the file (or by loading it if that fails), so columns can be balanced before anything is drawn */
+const dimCache = new Map();
+function jpegRatio(buf) {
+  const v = new DataView(buf); if (v.getUint16(0) !== 0xFFD8) return 0;
+  let o = 2, orient = 1;
+  while (o + 9 < v.byteLength) {
+    if (v.getUint8(o) !== 0xFF) { o++; continue; }
+    const m = v.getUint8(o + 1); if (m === 0xFF) { o++; continue; }
+    if ((m >= 0xD0 && m <= 0xD9) || m === 0x01) { o += 2; continue; }
+    const len = v.getUint16(o + 2);
+    if (m === 0xE1 && v.getUint32(o + 4) === 0x45786966) {
+      const t = o + 10, le = v.getUint16(t) === 0x4949, g16 = q => v.getUint16(q, le), g32 = q => v.getUint32(q, le), ifd = t + g32(t + 4), n = g16(ifd);
+      for (let k = 0; k < n; k++) { const e = ifd + 2 + k * 12; if (g16(e) === 0x0112) { orient = g16(e + 8); break; } }
+    }
+    if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) { let h = v.getUint16(o + 5), w = v.getUint16(o + 7); if (orient >= 5) [w, h] = [h, w]; return w && h ? w / h : 0; }
+    o += 2 + len;
+  }
+  return 0;
+}
+async function photoRatio(src) {
+  if (dimCache.has(src)) return dimCache.get(src);
+  let r = 0;
+  try { const res = await fetch(src, { headers: { Range: 'bytes=0-65535' } }); r = jpegRatio((await res.arrayBuffer()).slice(0, 65536)); } catch (e) {}
+  if (!r) r = await new Promise(ok => { const im = new Image(); im.onload = () => ok(im.naturalWidth / im.naturalHeight || 1.5); im.onerror = () => ok(1.5); im.src = src; });
+  dimCache.set(src, r); return r;
+}
+const shuffled = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+let renderToken = 0;
+async function renderCollection(c) {
   currentColl = c;
-  const ordered = c.photos.map((p, idx) => ({ c, p, idx })).sort((a, b) => viewsOf(b.p) - viewsOf(a.p) || a.idx - b.idx);   // most viewed first
-  lbList = ordered;
+  const token = ++renderToken;
   hidePeek();
   chalkTitle($('collTitle'), c.title);
   $('collMeta').textContent = [c.date, c.location, c.photos.length + (c.photos.length === 1 ? ' photo' : ' photos')]
@@ -2738,21 +2766,42 @@ function renderCollection(c) {
   const layout = ['grid', 'square', 'wide', 'masonry'].includes(c.layout) ? c.layout : 'grid';
   grid.className = 'grid layout-' + layout;
   grid.innerHTML = '';
-
+  const items = c.photos.map((p, idx) => ({ c, p, idx, ratio: 1.5 }));
   const cols = layout === 'masonry' ? (window.innerWidth <= 734 ? 2 : 3) : 0;
+  if (cols) {
+    await Promise.race([Promise.all(items.map(async it => { if (it.p.src) it.ratio = await photoRatio(it.p.src); else it.ratio = [3 / 2, 2 / 3, 1, 4 / 5][it.idx % 4]; })), new Promise(r => setTimeout(r, 3000))]);
+    if (token !== renderToken) return;
+  }
+  /* a new random order every visit; for the masonry the best of many shuffles is kept, the one whose columns end at the most even height */
+  let order = shuffled(items), place = null;
+  if (cols) {
+    let best = Infinity;
+    for (let t = 0; t < 80; t++) {
+      const o = shuffled(items), h = new Array(cols).fill(0), asg = [];
+      o.forEach(it => { let k = 0; for (let q = 1; q < cols; q++) if (h[q] < h[k] - 1e-9) k = q; asg.push(k); h[k] += 1 / it.ratio + 0.03; });
+      const spread = Math.max(...h) - Math.min(...h);
+      if (spread < best) { best = spread; order = o; place = asg; }
+    }
+  }
+  const tops = [], h = new Array(cols || 1).fill(0);
+  order.forEach((it, i) => { const k = place ? place[i] : 0; tops.push(h[k]); h[k] += 1 / it.ratio + 0.03; });
+  const reading = cols ? order.map((it, i) => ({ it, i, top: tops[i], k: place[i] })).sort((a, b) => a.top - b.top || a.k - b.k).map(x => x.it) : order;   // the lightbox follows what the eye sees, top to bottom
+  lbList = reading;
+  const posOf = new Map(reading.map((it, i) => [it, i]));
   const colEls = [];
   for (let k = 0; k < cols; k++) { const d = document.createElement('div'); d.className = 'mcol'; grid.appendChild(d); colEls.push(d); }
-  ordered.forEach((e, pos) => {                                      // placed left to right, then the next row down
-    const p = e.p, idx = e.idx;
+  order.forEach((e, i) => {
+    const p = e.p, idx = e.idx, pos = posOf.get(e);
     const b = document.createElement('button');
-    b.className = 'tile' + (layout === 'masonry' && !p.src ? ' r' + (idx % 4) : '');
+    b.className = 'tile';
+    if (cols) b.style.aspectRatio = String(e.ratio);
     b.setAttribute('aria-label', `View photo ${pos + 1} of ${c.title}`);
     b.innerHTML = p.src
       ? `<img src="${esc(p.src)}" alt="${esc(p.caption || c.title + ' photo ' + (idx + 1))}" loading="lazy">`
       : `<span class="ph">${pad(idx + 1)}</span>`;
     b.addEventListener('click', () => openLb(pos));
     attachPeek(b, c, p, idx);
-    (cols ? colEls[pos % cols] : grid).appendChild(b);
+    (cols ? colEls[place[i]] : grid).appendChild(b);
   });
 }
 
