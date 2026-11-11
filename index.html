@@ -908,15 +908,32 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Showcase book: shiny silver foil, with a slow shimmer */
-  .mg-cover.foil { --ac: linear-gradient(115deg, #aeb4c0 0%, #f3c9dc 9%, #dfe3ea 18%, #b9aee0 27%, #c9ced8 36%, #a6d8ea 45%, #f4f6f9 54%, #f0bfd6 63%, #bfc5d0 72%, #c7b6e8 81%, #e1e5ec 90%, #aeb4c0 100%); --ad: rgba(255, 255, 255, 0.85); }
+  /* the Showcase book: silver foil that is always glinting. The cover, banner, stamp and volume tab each shimmer on their own clock, so no two are ever in step. */
+  .mg-cover.foil { --ac: linear-gradient(115deg, #a8acb3 0%, #d6d8dd 9%, #9da1a9 19%, #cdd0d5 29%, #b6bac1 38%, #c4cdd6 45%, #e5e7eb 53%, #a5a9b0 61%, #d8d1d9 67%, #b3b7be 75%, #d3d5db 85%, #a8acb3 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
+  .mg-cover.foil { animation-duration: 13s; animation-delay: -6s; }
+  .mg-cover.foil .mg-banner { animation-duration: 11s; animation-delay: -3.5s; }
+  .mg-cover.foil .vol { animation-duration: 9.3s; animation-delay: -7.2s; }
+  .mg-cover.foil .stp { animation-duration: 10.7s; animation-delay: -1.6s; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
   .mg-cover.foil .stp { border-color: rgba(27, 33, 48, 0.7); } .mg-cover.foil .stp u { border-top-color: rgba(27, 33, 48, 0.7); }
-  .mg-cover.foil .mg-banner::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 36%, rgba(255,255,255,0.7) 48%, transparent 60%); background-size: 260% 100%; animation: foilSweep 5.5s ease-in-out infinite; }
+  /* the title sits in the middle of the space between the stamp and the volume tab */
+  .mg-cover.foil .mg-banner { padding-left: calc(var(--cw) * 0.26); padding-right: calc(var(--cw) * 0.235); }
+  .mg-cover.foil .ttl { text-align: center; }
+  /* a steady, soft gloss that drifts across each piece without ever stopping */
+  .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background-image: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.36) 22%, rgba(255,255,255,0) 44%, rgba(255,255,255,0.2) 70%, rgba(255,255,255,0) 100%);
+    background-repeat: repeat-x; background-size: var(--gt) 100%; animation: foilGloss var(--gd) linear infinite; animation-delay: var(--gp); }
+  .mg-cover.foil .mg-banner::after { --gt: calc(var(--cw) * 0.9); --gd: 9s; --gp: 0s; }
+  .mg-cover.foil .vol::after { --gt: calc(var(--cw) * 0.5); --gd: 7s; --gp: -3.1s; }
+  .mg-cover.foil .stp::after { --gt: calc(var(--cw) * 0.55); --gd: 8s; --gp: -5.4s; }
+  .mg-cover.foil .mg-art::after { --gt: calc(var(--cw) * 1.4); --gd: 12s; --gp: -8s; opacity: 0.4; }   /* only a faint gloss over the photo */
   @keyframes foilMove { from { background-position: 0% 25%; } to { background-position: 100% 75%; } }
-  @keyframes foilSweep { 0% { background-position: 160% 0; } 60%, 100% { background-position: -60% 0; } }
-  @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::after { animation: none; } }
+  @keyframes foilGloss { from { background-position: 0 0; } to { background-position: var(--gt) 0; } }
+  @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::after, .mg-cover.foil .vol::after, .mg-cover.foil .stp::after, .mg-cover.foil .mg-art::after { animation: none; } }
+  /* the Showcase stamp is just big enough for its words, and tucked up into the corner */
+  .mg-corner.solo { height: calc(var(--cw) * 0.2); top: calc(var(--cw) * 0.012); left: calc(var(--cw) * 0.022); }
   .pg-head { width: 0; min-width: 100%; padding: 0 0 8px; text-align: left; font-size: 11px; line-height: 1.45; letter-spacing: 0.06em; text-transform: uppercase; color: #55575c; }
   .pg-head b { display: block; color: #1d1e20; font-weight: 700; font-size: 12px; }
   .pg-head span { display: block; font-size: 10px; color: #6a6d73; }
@@ -954,7 +971,7 @@
   .mv-bar button { color: var(--muted); display: inline-flex; align-items: center; gap: 8px; padding: 4px 0; transition: color 0.15s, transform 0.15s; }
   .mv-bar button:hover { color: var(--ink); transform: translateX(-2px); }
   .mv-bar span { color: var(--ink); }
-  .mag-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
+  .mag-stage { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
   .mag {
     --ph: clamp(300px, min(calc(100vh - 236px), calc((100vw - 340px) / 1.5)), 940px);   /* opened comics fill most of the page */
     --pw: calc(var(--ph) * 0.74);
@@ -1011,7 +1028,7 @@
   .mag-arrow:hover:not(:disabled) { border-color: var(--muted); transform: scale(1.07); background: var(--panel); }
   .mag-arrow:active:not(:disabled) { transform: scale(0.94); }
   .mag-arrow:disabled { opacity: 0.25; cursor: default; }
-  .mag-foot { margin: 12px 0 0; display: flex; justify-content: center; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .mag-foot { position: relative; z-index: 1; margin: 12px 0 0; display: flex; justify-content: center; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   @media (max-width: 720px) { .mag-arrow { width: 38px; height: 38px; } .mag-stage { gap: 6px; } .mag { --ph: clamp(240px, min(calc(100vh - 260px), calc((100vw - 120px) / 1.5)), 500px); } .pg-photo { margin: 12px 12px 0; }  }
 
   /* ---------- landing page: five columns of photos drifting up and down, the logo, then Enter ---------- */
@@ -3227,7 +3244,7 @@ function infoHTML(c, p) {
   h += `</div>`;
 
   const gr = p.src ? grailInfo(p.src) : null;
-  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Showcase look book</span></div>`;
+  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Showcase Look Book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3255,7 +3272,7 @@ function drawLb() {
   zoomReset(true);
   $('lbZoom').hidden = !e.p.src;
 }
-/* ---- zoom: up to 200%, inside the photo frame; drag, wheel or arrow keys move the photo; the photo click-to-close is off while zoomed ---- */
+/* ---- zoom: up to 400%, inside the photo frame; drag, wheel or arrow keys move the photo; the photo click-to-close is off while zoomed ---- */
 let lbZ = 1, lbX = 0, lbY = 0, panDrag = null, quickT = 0;
 const lbImg = () => lbStage.querySelector('img');
 function zoomApply(quick) {
@@ -3266,10 +3283,10 @@ function zoomApply(quick) {
   im.style.transform = lbZ === 1 && !lbX && !lbY ? '' : `translate(${lbX.toFixed(1)}px, ${lbY.toFixed(1)}px) scale(${lbZ})`;
   lbStage.classList.toggle('zoomed', lbZ > 1);
   $('lbZPct').textContent = Math.round(lbZ * 100) + '%';
-  $('lbZIn').disabled = lbZ >= 2; $('lbZOut').disabled = lbZ <= 1; $('lbZReset').disabled = lbZ <= 1;
+  $('lbZIn').disabled = lbZ >= 4; $('lbZOut').disabled = lbZ <= 1; $('lbZReset').disabled = lbZ <= 1;
 }
 function zoomTo(z) {
-  z = Math.max(1, Math.min(2, z));
+  z = Math.max(1, Math.min(4, z));
   if (z === lbZ) return;
   const k = z / lbZ; lbX *= k; lbY *= k; lbZ = z;
   if (z === 1) { lbX = 0; lbY = 0; }
@@ -3336,6 +3353,19 @@ lbStage.addEventListener('pointermove', e => {
 });
 const endPan = () => { if (!panDrag) return; lbStage.classList.remove('panning'); const d = panDrag; setTimeout(() => { if (panDrag === d) panDrag = null; }, 0); };
 lbStage.addEventListener('pointerup', endPan); lbStage.addEventListener('pointercancel', endPan);
+/* hold CTRL and turn the wheel (or pinch on a trackpad) to zoom in and out, centred on the cursor */
+lb.addEventListener('wheel', e => {
+  if (!lb.classList.contains('on') || !e.ctrlKey) return;
+  e.preventDefault();
+  if (!lbImg()) return;
+  const r = lbStage.getBoundingClientRect(), px = e.clientX - (r.left + r.width / 2), py = e.clientY - (r.top + r.height / 2);
+  const z = Math.max(1, Math.min(4, lbZ * Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0022))));
+  if (z === lbZ) return;
+  const k = z / lbZ; lbX = px - (px - lbX) * k; lbY = py - (py - lbY) * k; lbZ = z;
+  if (z === 1) { lbX = 0; lbY = 0; }
+  zoomApply(true);
+}, { passive: false });
+lbStage.addEventListener('dblclick', e => { if (lbZ > 1) { e.preventDefault(); zoomReset(false); } });   // double-click a zoomed photo to go back to 100%
 lbMainWheel();
 function lbMainWheel() {
   $('lbMain').addEventListener('wheel', e => {
@@ -3625,7 +3655,7 @@ requestAnimationFrame(frame);
     const ft = fitTitle(c.title);
     return `<span class="mg-cover${c.special ? ' foil' : ''}" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
       `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol"><i>Vol</i>${i === 0 ? '<b class="star">★</b>' : `<b style="font-size:calc(var(--cw) * ${vsz(roman(i))})">${roman(i)}</b>`}</span></span>` +
-      `<span class="mg-corner"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i>${c.special ? '' : `<u><s>${cmMonth(c)}</s><em>${cmYear(c)}</em></u>`}</span></span>` +
+      `<span class="mg-corner${c.special ? ' solo' : ''}"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i>${c.special ? '' : `<u><s>${cmMonth(c)}</s><em>${cmYear(c)}</em></u>`}</span></span>` +
       `<img class="mg-mark" src="${esc(SITE.logo || 'images/logo.png')}" alt="" draggable="false"></span>`;
   }
   const papers = [];
