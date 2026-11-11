@@ -334,8 +334,8 @@
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .grail { position: absolute; top: 0; right: 9px; z-index: 2; width: 20px; height: 29px; pointer-events: none; display: block;
-    background: linear-gradient(180deg, #2b2e33, #1c1e22); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
-  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; color: #f0c94c; text-shadow: 0 0 5px rgba(240, 201, 76, 0.7); }
+    background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; color: #f2bf2b; text-shadow: 1px 1px 0 #7a5608, 2px 2px 0 #4f3704, 3px 3px 0 rgba(40, 28, 2, 0.55); }   /* sharp, deeper towards the bottom right: it reads as a cut-in star */
   .grail.big { position: absolute; width: 34px; height: 50px; right: auto; z-index: 3; }
   .grail.big i { top: 8px; font-size: 22px; }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
@@ -813,7 +813,7 @@
   #magBack .b, #magBack.is-back .a { opacity: 0; } #magBack.is-back .b { opacity: 1; }
   .pill:hover, .pill:focus-visible { border-color: var(--muted); color: var(--ink); outline: none; }
   .pill:active { transform: scale(0.96); }
-  .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; line-height: 1.2; }
+  .mv-title { color: var(--ink); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; line-height: 1.2; }
   .mv-title b { font-weight: 500; } .mv-title small { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); }
   .mg-info, .mg-stage { transition: opacity 0.35s ease; }
   .mg-wrap.going .mg-info, .mg-wrap.going .mg-nav, .mg-wrap.going .mg-top { opacity: 0; transition: opacity 0.25s ease; }
@@ -851,6 +851,8 @@
     background: var(--ac); border: calc(var(--u) * 3) solid #fff; border-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; color: #fff4d8;
     font-family: "Oswald", "Arial Narrow", sans-serif; text-transform: uppercase; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
   .mg-banner .vol i { font-style: normal; font-weight: 600; font-size: calc(var(--cw) * 0.03); letter-spacing: 0.16em; margin: 0 0 calc(var(--cw) * 0.008) 0.16em; }
+  .mg-banner .vol b.star { font-size: calc(var(--cw) * 0.125); text-shadow: none; background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(calc(var(--u) * 1) calc(var(--u) * 1) 0 rgba(95, 62, 4, 0.9)) drop-shadow(calc(var(--u) * 2) calc(var(--u) * 2) 0 rgba(60, 38, 2, 0.6)); animation: goldFoil 4.5s ease-in-out infinite alternate; }
   .mg-banner .vol b { font-weight: 500; font-size: calc(var(--cw) * 0.115); letter-spacing: 0; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad); }
   .mg-banner.hasmark { padding-right: calc(var(--cw) * 0.25); }
   .pg.endcover { background: #202226; }
@@ -871,7 +873,7 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Holy Grails book: shiny silver foil, with a slow shimmer */
+  /* the The Keepers book: shiny silver foil, with a slow shimmer */
   .mg-cover.foil { --ac: linear-gradient(115deg, #8a86ae 0%, #ecd9ee 11%, #aab4d6 23%, #fdeaf1 35%, #e7b7d2 44%, #c3b0e4 52%, #a3d6ea 60%, #f6dfe9 71%, #9a93bf 85%, #dfd0ea 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
@@ -880,6 +882,8 @@
   @keyframes foilMove { from { background-position: 0% 25%; } to { background-position: 100% 75%; } }
   @keyframes foilSweep { 0% { background-position: 160% 0; } 60%, 100% { background-position: -60% 0; } }
   @media (prefers-reduced-motion: reduce) { .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp, .mg-cover.foil .mg-banner::after { animation: none; } }
+  .pg-num { position: absolute; bottom: 9px; z-index: 3; font-size: 10px; letter-spacing: 0.1em; color: #6a6c71; pointer-events: none; }
+  .pg.front .pg-num { right: 22px; } .pg.back .pg-num { left: 22px; }
   .pg-cap b a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,0.4); transition: text-decoration-color 0.2s; }
   .pg-cap b a:hover { text-decoration-color: currentColor; }
   .mg-mark { position: absolute; left: calc(var(--cw) * 0.04); bottom: calc(var(--cw) * 0.04); z-index: 3; width: calc(var(--cw) * 0.24); max-height: calc(var(--ch) * 0.1); object-fit: contain; object-position: left bottom; opacity: 0.85; pointer-events: none; filter: drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 3) rgba(0,0,0,0.6)); }
@@ -904,7 +908,7 @@
   .mv-bar span { color: var(--ink); }
   .mag-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
   .mag {
-    --ph: clamp(300px, min(calc(100vh - 250px), calc((100vw - var(--sidebar-max, 240px) - 150px) / 1.5)), 800px);   /* opened comics fill most of the page */
+    --ph: clamp(300px, min(calc(100vh - 282px), calc((100vw - var(--sidebar-max, 240px) - 150px) / 1.5)), 800px);   /* opened comics fill most of the page */
     --pw: calc(var(--ph) * 0.74);
     position: relative; width: calc(var(--pw) * 2); height: var(--ph); flex: none;
     perspective: 2400px; perspective-origin: 50% 40%;
@@ -938,7 +942,7 @@
   .pg-photo img { max-width: 100%; max-height: 100%; display: block; object-fit: contain; box-shadow: 0 6px 16px rgba(0,0,0,0.3); user-select: none; -webkit-user-drag: none; }
   .pg.full .pg-photo { margin: 0; position: absolute; inset: 0; }
   .pg.full .pg-photo img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; box-shadow: none; }
-  .pg-cap { padding: 10px 22px 14px; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #55575c; line-height: 1.5; }
+  .pg-cap { padding: 10px 22px 28px; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #55575c; line-height: 1.5; }
   .pg-cap b { display: block; color: #1d1e20; font-weight: 700; }
   .pg-cap .c { display: block; text-transform: none; letter-spacing: 0.01em; font-size: 11px; margin: 2px 0 4px; color: #33363a; }
   .pg-cap .gear .l1, .pg-cap .gear .l2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #6a6d73; font-size: 9.5px; }
@@ -958,7 +962,7 @@
   .mag-arrow:hover:not(:disabled) { border-color: var(--muted); transform: scale(1.07); background: var(--panel); }
   .mag-arrow:active:not(:disabled) { transform: scale(0.94); }
   .mag-arrow:disabled { opacity: 0.25; cursor: default; }
-  .mag-foot { margin: 16px 0 0; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .mag-foot { margin: 18px 0 0; display: flex; justify-content: center; text-align: center; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   @media (max-width: 720px) { .mag-arrow { width: 38px; height: 38px; } .mag-stage { gap: 6px; } .mag { --ph: clamp(240px, min(calc(100vh - 260px), calc((100vw - 120px) / 1.5)), 500px); } .pg-photo { margin: 12px 12px 0; }  }
 
   /* ---------- landing page: five columns of photos drifting up and down, the logo, then Enter ---------- */
@@ -1266,13 +1270,13 @@
       <div class="mg-info" id="mgInfo"></div>
     </div>
     <div class="mag-viewer" id="magViewer" hidden>
-      <div class="mg-top"><button type="button" class="pill" id="magBack"><span class="bk a">Leave</span><span class="bk b">Back to start</span></button><span class="mv-title" id="mvTitle"></span></div>
+      <div class="mg-top"><span class="mv-title" id="mvTitle"></span></div>
       <div class="mag-stage">
         <button class="mag-arrow" id="magPrev" aria-label="Previous page">&#8592;</button>
         <div class="mag" id="mag" aria-roledescription="magazine"><div class="mag-book" id="magBook"></div></div>
         <button class="mag-arrow" id="magNext" aria-label="Next page">&#8594;</button>
       </div>
-      <p class="mag-foot" id="magFoot"></p>
+      <div class="mag-foot"><button type="button" class="pill" id="magBack"><span class="bk a">Leave</span><span class="bk b">Back to start</span></button></div>
     </div>
   </section>
 
@@ -2751,7 +2755,7 @@ function goToTag(k) {
 }
 
 /* ---------- hover preview on a photo tile (desktop only) ---------- */
-const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Holy Grails, and which one
+const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the The Keepers, and which one
 const GRAIL_RIBBON = '<span class="grail" aria-label="One of my favorite photos" title="One of my favorite photos"><i>★</i></span>';
 function attachPeek(b, c, p, idx) {
   if (!canHover) return;
@@ -3062,7 +3066,7 @@ function infoHTML(c, p) {
   h += `</div>`;
 
   const gr = p.src ? grailInfo(p.src) : null;
-  if (gr) h += `<div class="i-grail"><b>★ One of my favorite photos</b><span>${gr.n}/${gr.total} in the Holy Grails look book</span></div>`;
+  if (gr) h += `<div class="i-grail"><b>★ One of my favorite photos</b><span>${gr.n}/${gr.total} in The Keepers look book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3324,12 +3328,12 @@ requestAnimationFrame(frame);
 (function magazines() {
   const grid = $('magGrid'), viewer = $('magViewer'), mag = $('mag'), book = $('magBook'), prev = $('magPrev'), next = $('magNext');
   const SEGS = 26, BEND = 34, FLIP_MS = 1150;
-  /* Vol. 0, "Holy Grails": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
+  /* Vol. 0, "The Keepers": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
      until you do, it is 15 photos picked at random each time the site opens. */
   const allPics = []; BY_DATE.forEach(c => c.photos.forEach(p => { if (p.src) allPics.push({ c, p }); }));
   const FAV_N = 15, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : shuffled(allPics).slice(0, FAV_N);
-  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Holy Grails', date: '', location: 'My all-time favorites', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
+  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'The Keepers', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
   window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
@@ -3418,10 +3422,12 @@ requestAnimationFrame(frame);
     const fs = Math.min(fsW, bnr / 0.74 * 0.8 / (n * 1.05));            // and the size is finally limited by the banner's own height
     return { lines, fs: +fs.toFixed(4), bnr: +bnr.toFixed(4) };
   }
+  const roman = n => ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX'][n] || String(n);
+  const vsz = r => r.length >= 5 ? 0.05 : r.length === 4 ? 0.062 : r.length === 3 ? 0.08 : r.length === 2 ? 0.1 : 0.115;
   function comicCover(c, i, paper) {
     const ft = fitTitle(c.title);
     return `<span class="mg-cover${c.special ? ' foil' : ''}" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
-      `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol"><i>Vol</i><b>${i}</b></span></span>` +
+      `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol"><i>Vol</i>${i === 0 ? '<b class="star">★</b>' : `<b style="font-size:calc(var(--cw) * ${vsz(roman(i))})">${roman(i)}</b>`}</span></span>` +
       `<span class="mg-corner"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i>${c.special ? '' : `<u><s>${cmMonth(c)}</s><em>${cmYear(c)}</em></u>`}</span></span>` +
       `<img class="mg-mark" src="${esc(SITE.logo || 'images/logo.png')}" alt="" draggable="false"></span>`;
   }
@@ -3469,9 +3475,9 @@ requestAnimationFrame(frame);
   let cur = 0, L = 0, pages = [], leaves = [], busy = false, evt = null;
   const gearHTML = (c, p) => { const h = condensedGear(c, p); return h ? `<div class="gear">${h}</div>` : ''; };
   const photoPage = (c, p) => {
-    const ev = c.special && p._ev ? p._ev : c;                         // in Holy Grails every photo names its own event, and the name is a link to it
+    const ev = c.special && p._ev ? p._ev : c;                         // in The Keepers every photo names its own event, and the name is a link to it
     const name = c.special && p._ev ? `<a href="#${esc(ev.id)}?photo=${encodeURIComponent(p.src)}" title="Open this event and find the photo">${esc(ev.title)}</a>` : esc(c.title);
-    const head = c.special && p._ev ? `<b>${name}</b>${ev.score ? `<span class="c">${esc(ev.score)}</span>` : ''}` : '';   // the event's own comic already names it at the top, so only Holy Grails captions carry the name (and its score)
+    const head = c.special && p._ev ? `<b>${name}</b>${ev.score ? `<span class="c">${esc(ev.score)}</span>` : ''}` : '';   // the event's own comic already names it at the top, so only The Keepers captions carry the name (and its score)
     return `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || ev.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>` +
       `<div class="pg-cap">${head}${gearHTML(ev, p)}</div>`;
   };
@@ -3483,7 +3489,7 @@ requestAnimationFrame(frame);
     const mc = cov.firstChild; if (sc) { ['--ac', '--ad', '--fs', '--bnr'].forEach(k => { const v = sc.style.getPropertyValue(k); if (v) mc.style.setProperty(k, v); }); }   // the same colours as on the shelf
     const list = [{ cls: 'cover', html: mc.outerHTML }];
     picks.forEach(p => list.push({ cls: '', html: photoPage(c, p) }));
-    if ((list.length + 1) % 2) list.push({ cls: 'note', html: c.special ? 'More grails on the way' : 'More favorites coming soon' });
+    if ((list.length + 1) % 2) list.push({ cls: 'note', html: c.special ? 'More keepers on the way' : 'More favorites coming soon' });
     list.push({ cls: 'endcover', html: `<span class="bcode">${barcode(c)}</span><img src="${esc(SITE.logo || 'images/logo.png')}" alt="${esc(SITE.name || 'Allwood Archives')}" draggable="false">` });
     return list;
   }
@@ -3509,7 +3515,7 @@ requestAnimationFrame(frame);
     return `<svg viewBox="0 0 ${X + 95 + 9} 68" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="${X + 95 + 9}" height="68" fill="#f4f1e8"/><g fill="#111">${bars.join('')}</g>` +
       `<g fill="#111" font-family="Courier New, monospace" font-size="8.5" font-weight="700">${t(5, d[0])}${t(X + 4, d.slice(1, 7).join(''), 40)}${t(X + 51, d.slice(7).join(''), 40)}</g></svg>`;
   }
-  const faceEl = (pg, side, extra) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}<div class="shd"></div></div>`;
+  const faceEl = (pg, side, extra, n) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}${pg.cls === 'cover' || pg.cls === 'endcover' ? '' : `<span class="pg-num">${n}</span>`}<div class="shd"></div></div>`;
 
   function openMagazine(c) {
     evt = c; pages = buildPages(c); L = pages.length / 2; cur = 0; busy = false;
@@ -3518,7 +3524,7 @@ requestAnimationFrame(frame);
     for (let i = 0; i < L; i++) {
       const el = document.createElement('div');
       el.className = 'leaf';
-      el.innerHTML = faceEl(pages[2 * i], 'front') + faceEl(pages[2 * i + 1], 'back');
+      el.innerHTML = faceEl(pages[2 * i], 'front', '', 2 * i) + faceEl(pages[2 * i + 1], 'back', '', 2 * i + 1);
       book.appendChild(el); leaves.push(el);
     }
     $('mvTitle').innerHTML = `<b>${esc(c.title)}</b>${!c.special && c.score ? `<small>${esc(c.score)}</small>` : ''}`;
@@ -3614,7 +3620,6 @@ requestAnimationFrame(frame);
     mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = cur === 0; next.disabled = cur === L;
     setBackLabel();
-    $('magFoot').textContent = cur === 0 ? 'Cover' : cur === L ? 'Back cover' : `Pages ${cur * 2} – ${cur * 2 + 1} of ${pages.length}`;
   }
 
   /* ---- the page turn: the real page swings over the spine, leaning and shading as it goes ---- */
