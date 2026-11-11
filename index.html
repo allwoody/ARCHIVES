@@ -54,6 +54,10 @@
   a { color: inherit; }
   input, textarea, select { font-family: inherit; }
   button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  /* the pointer never turns into the text I-beam over words: it stays the normal one everywhere (links and buttons keep their hand) */
+  :where(*) { cursor: default; }
+  :where(a[href], button, summary, select, label[for], input[type=range], input[type=button], [role=button]) { cursor: pointer; }
+  :where(input:not([type]), input[type=text], input[type=search], input[type=email], textarea) { cursor: text; }
 
   /* ---------- sidebar ---------- */
   .sidebar {
@@ -165,8 +169,8 @@
                   opacity 0.2s ease, visibility 0s linear 0.3s;
     }
     /* open: they drop down */
-    .sidebar.exp:not(.closed) .subs,
-    .sidebar:not(.closed):focus-within .subs {
+    .sidebar.exp:not(.closed) .sec.open .subs,
+    .sidebar:not(.closed) .sec:focus-within .subs {
       grid-template-rows: 1fr; opacity: 1; visibility: visible;
       transition: grid-template-rows 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.06s,
                   opacity 0.25s ease 0.1s, visibility 0s;
@@ -806,7 +810,7 @@
   .pg.cover { padding: 0; } .pg.cover .mg-cover { --cw: var(--pw); --ch: var(--ph); box-shadow: none; border-radius: 3px; }
   .pg.cover::before, .pg.cover::after { display: none; }
   .mg-banner { position: absolute; left: 0; right: 0; top: 0; height: var(--bn); z-index: 2; background: var(--ac); border-bottom: 3px solid #fff;
-    display: flex; align-items: flex-start; gap: 8px; padding: calc(var(--bn) * 0.14) calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.29); }
+    display: flex; align-items: center; gap: 8px; padding: 0 calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.29); }
   .mg-banner .ttl { flex: 1 1 auto; min-width: 0; font-family: "Oswald", "Arial Narrow", "Franklin Gothic Medium", sans-serif; font-weight: 500; text-transform: uppercase;
     font-size: calc(var(--cw) * var(--fs, 0.06)); line-height: 1.05; letter-spacing: 0.035em; color: #fff4d8; overflow-wrap: break-word; hyphens: none;
     text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad), 3px 3px 0 var(--ad), 3px 1px 0 var(--ad), 1px 3px 0 var(--ad), -1px -1px 0 var(--ad);
@@ -818,7 +822,7 @@
   .pg.endcover { background: #202226; }
   .pg.endcover img { width: 58%; max-height: 40%; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
   /* the corner box is a postage stamp: cream paper with a perforated edge and the coloured panel inside */
-  .mg-corner { --r: 3px; --st: 10px; position: absolute; left: calc(var(--cw) * 0.025); top: calc(var(--cw) * 0.025); z-index: 4; width: calc(var(--cw) * 0.225); height: calc(var(--bn) + var(--cw) * 0.07);
+  .mg-corner { --r: 3px; --st: 10px; position: absolute; left: calc(var(--cw) * 0.025); top: calc(var(--cw) * 0.025); z-index: 4; width: calc(var(--cw) * 0.225); height: calc(var(--bn) + var(--cw) * 0.1);
     background: #f4ecd6; padding: 6px; transform: rotate(-3deg); transform-origin: 30% 30%; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.45));
     -webkit-mask-image: radial-gradient(circle at 50% 0, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 50% 100%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 0 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px)), radial-gradient(circle at 100% 50%, #0000 var(--r), #000 calc(var(--r) + 0.6px));
     -webkit-mask-size: var(--st) 100%, var(--st) 100%, 100% var(--st), 100% var(--st); -webkit-mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y; -webkit-mask-position: center, center, center, center;
@@ -828,7 +832,9 @@
     font-family: "Oswald", "Arial Narrow", sans-serif; }
   .mg-corner b { font-weight: 500; font-size: clamp(17px, calc(var(--cw) * 0.082), 30px); letter-spacing: 0.02em; text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad); }
   .mg-corner i { font-style: normal; font-weight: 500; font-size: clamp(6px, calc(var(--cw) * 0.02), 9px); letter-spacing: 0.2em; margin: 2px 0 4px; }
-  .mg-corner u { text-decoration: none; display: block; width: 72%; border-top: 1.5px solid rgba(255,244,216,0.8); padding-top: 3px; font-weight: 500; font-size: clamp(7px, calc(var(--cw) * 0.024), 11px); letter-spacing: 0.12em; }
+  .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: 1.5px solid rgba(255,244,216,0.8); padding-top: 3px; font-weight: 500; }
+  .mg-corner u s { text-decoration: none; font-size: clamp(14px, calc(var(--cw) * 0.07), 26px); letter-spacing: 0.04em; text-shadow: 1px 1px 0 var(--ad), 2px 2px 0 var(--ad); }
+  .mg-corner u em { font-style: normal; font-size: clamp(8px, calc(var(--cw) * 0.033), 13px); letter-spacing: 0.14em; margin-top: 2px; }
   .mg-mark { position: absolute; right: calc(var(--cw) * 0.035); top: calc(var(--bn) * 0.1); z-index: 3; width: calc(var(--cw) * 0.2); max-height: calc(var(--bn) * 0.8); object-fit: contain; opacity: 0.8; pointer-events: none; }
   .mg-cover::after { content: ""; position: absolute; inset: 0; z-index: 6; pointer-events: none;
     background: radial-gradient(ellipse at 50% 50%, transparent 52%, rgba(60,45,25,0.22) 100%), linear-gradient(160deg, rgba(255,255,255,0.12), transparent 42%, rgba(0,0,0,0.08)), var(--pt);
@@ -851,7 +857,7 @@
   .mv-bar span { color: var(--ink); }
   .mag-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 0; }
   .mag {
-    --ph: clamp(300px, min(calc(100vh - 380px), calc((100vw - var(--sidebar-open, 240px) - 190px) / 1.5)), 580px);   /* the same size as a comic on the shelf, so opening one changes nothing */
+    --ph: clamp(300px, min(calc(100vh - 250px), calc((100vw - var(--sidebar-open, 240px) - 150px) / 1.5)), 800px);   /* opened comics fill most of the page */
     --pw: calc(var(--ph) * 0.74);
     position: relative; width: calc(var(--pw) * 2); height: var(--ph); flex: none;
     perspective: 2400px; perspective-origin: 50% 40%;
@@ -935,6 +941,7 @@
   .ld-enter:hover, .ld-enter:focus-visible { background: rgba(255, 255, 255, 0.16); border-color: #fff; outline: none; }
   @media (prefers-reduced-motion: reduce) { .ld-stack { animation: none; } }
 
+  @property --sp { syntax: '<number>'; inherits: false; initial-value: 0; }
   body.spraying #view-landing .home-logo { display: block; }
   body.spraying #view-landing { z-index: 30; }
   #view-landing.leaving .ld-logo, #view-landing.leaving .ld-enter { opacity: 0 !important; transition: opacity 0.55s ease !important; }
@@ -945,7 +952,7 @@
   /* ---------- home: "jump to a project" and "or browse the menu" ---------- */
   .jump { align-self: center; display: flex; align-items: flex-end; gap: 6px; margin: 30px 0 70px; padding: 8px 14px 4px; }
   .jump-txt { font-family: "Sedgwick Ave Display", "Segoe Print", "Bradley Hand", cursive; font-size: clamp(34px, 4.4vw, 58px); line-height: 1.1; color: #f6f3ea; padding: 0.1em 0.12em 0.34em; margin-bottom: -0.1em; letter-spacing: 0.02em;
-    text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(160,163,168), 0.039em 0.012em 0.012em rgb(160,163,168), 0.039em 0.018em 0.012em rgb(160,163,168), 0.038em 0.024em 0.012em rgb(160,163,168), 0.034em 0.030em 0.012em rgb(160,163,168), 0.030em 0.034em 0.012em rgb(160,163,168), 0.024em 0.038em 0.012em rgb(160,163,168), 0.018em 0.039em 0.012em rgb(160,163,168), 0.012em 0.039em 0.012em rgb(160,163,168), 0.006em 0.038em 0.012em rgb(160,163,168), 0.001em 0.035em 0.012em rgb(160,163,168), -0.003em 0.031em 0.012em rgb(160,163,168), -0.006em 0.026em 0.012em rgb(160,163,168), -0.007em 0.022em 0.012em rgb(160,163,168), -0.008em 0.017em 0.012em rgb(160,163,168), -0.007em 0.014em 0.012em rgb(160,163,168), -0.006em 0.010em 0.012em rgb(160,163,168), -0.005em 0.008em 0.012em rgb(160,163,168), -0.003em 0.006em 0.012em rgb(160,163,168), -0.002em 0.005em 0.012em rgb(160,163,168), -0.000em 0.004em 0.012em rgb(160,163,168), 0.000em 0.003em 0.012em rgb(160,163,168), 0.001em 0.002em 0.012em rgb(160,163,168), 0.002em 0.001em 0.012em rgb(160,163,168), 0.003em 0.000em 0.012em rgb(160,163,168), 0.004em -0.000em 0.012em rgb(160,163,168), 0.005em -0.002em 0.012em rgb(160,163,168), 0.006em -0.003em 0.012em rgb(160,163,168), 0.008em -0.005em 0.012em rgb(160,163,168), 0.010em -0.006em 0.012em rgb(160,163,168), 0.014em -0.007em 0.012em rgb(160,163,168), 0.017em -0.008em 0.012em rgb(160,163,168), 0.022em -0.007em 0.012em rgb(160,163,168), 0.026em -0.006em 0.012em rgb(160,163,168), 0.031em -0.003em 0.012em rgb(160,163,168), 0.035em 0.001em 0.012em rgb(160,163,168), 0.056em 0.009em 0.012em rgb(144,147,152), 0.059em 0.018em 0.012em rgb(144,147,152), 0.059em 0.027em 0.012em rgb(144,147,152), 0.056em 0.036em 0.012em rgb(144,147,152), 0.052em 0.045em 0.012em rgb(144,147,152), 0.045em 0.052em 0.012em rgb(144,147,152), 0.036em 0.056em 0.012em rgb(144,147,152), 0.027em 0.059em 0.012em rgb(144,147,152), 0.018em 0.059em 0.012em rgb(144,147,152), 0.009em 0.056em 0.012em rgb(144,147,152), 0.001em 0.052em 0.012em rgb(144,147,152), -0.005em 0.046em 0.012em rgb(144,147,152), -0.009em 0.040em 0.012em rgb(144,147,152), -0.011em 0.033em 0.012em rgb(144,147,152), -0.011em 0.026em 0.012em rgb(144,147,152), -0.011em 0.020em 0.012em rgb(144,147,152), -0.009em 0.016em 0.012em rgb(144,147,152), -0.007em 0.012em 0.012em rgb(144,147,152), -0.005em 0.009em 0.012em rgb(144,147,152), -0.002em 0.007em 0.012em rgb(144,147,152), -0.001em 0.005em 0.012em rgb(144,147,152), 0.001em 0.004em 0.012em rgb(144,147,152), 0.002em 0.003em 0.012em rgb(144,147,152), 0.003em 0.002em 0.012em rgb(144,147,152), 0.004em 0.001em 0.012em rgb(144,147,152), 0.005em -0.001em 0.012em rgb(144,147,152), 0.007em -0.002em 0.012em rgb(144,147,152), 0.009em -0.005em 0.012em rgb(144,147,152), 0.012em -0.007em 0.012em rgb(144,147,152), 0.016em -0.009em 0.012em rgb(144,147,152), 0.020em -0.011em 0.012em rgb(144,147,152), 0.026em -0.011em 0.012em rgb(144,147,152), 0.033em -0.011em 0.012em rgb(144,147,152), 0.040em -0.009em 0.012em rgb(144,147,152), 0.046em -0.005em 0.012em rgb(144,147,152), 0.052em 0.001em 0.012em rgb(144,147,152), 0.075em 0.012em 0.012em rgb(128,131,137), 0.078em 0.024em 0.012em rgb(128,131,137), 0.079em 0.036em 0.012em rgb(128,131,137), 0.075em 0.049em 0.012em rgb(128,131,137), 0.069em 0.060em 0.012em rgb(128,131,137), 0.060em 0.069em 0.012em rgb(128,131,137), 0.049em 0.075em 0.012em rgb(128,131,137), 0.036em 0.079em 0.012em rgb(128,131,137), 0.024em 0.078em 0.012em rgb(128,131,137), 0.012em 0.075em 0.012em rgb(128,131,137), 0.002em 0.069em 0.012em rgb(128,131,137), -0.006em 0.062em 0.012em rgb(128,131,137), -0.012em 0.053em 0.012em rgb(128,131,137), -0.015em 0.044em 0.012em rgb(128,131,137), -0.015em 0.035em 0.012em rgb(128,131,137), -0.014em 0.027em 0.012em rgb(128,131,137), -0.012em 0.021em 0.012em rgb(128,131,137), -0.009em 0.016em 0.012em rgb(128,131,137), -0.006em 0.012em 0.012em rgb(128,131,137), -0.003em 0.009em 0.012em rgb(128,131,137), -0.001em 0.007em 0.012em rgb(128,131,137), 0.001em 0.006em 0.012em rgb(128,131,137), 0.002em 0.004em 0.012em rgb(128,131,137), 0.004em 0.002em 0.012em rgb(128,131,137), 0.006em 0.001em 0.012em rgb(128,131,137), 0.007em -0.001em 0.012em rgb(128,131,137), 0.009em -0.003em 0.012em rgb(128,131,137), 0.012em -0.006em 0.012em rgb(128,131,137), 0.016em -0.009em 0.012em rgb(128,131,137), 0.021em -0.012em 0.012em rgb(128,131,137), 0.027em -0.014em 0.012em rgb(128,131,137), 0.035em -0.015em 0.012em rgb(128,131,137), 0.044em -0.015em 0.012em rgb(128,131,137), 0.053em -0.012em 0.012em rgb(128,131,137), 0.062em -0.006em 0.012em rgb(128,131,137), 0.069em 0.002em 0.012em rgb(128,131,137), 0.094em 0.015em 0.012em rgb(112,115,121), 0.098em 0.030em 0.012em rgb(112,115,121), 0.098em 0.045em 0.012em rgb(112,115,121), 0.094em 0.061em 0.012em rgb(112,115,121), 0.086em 0.075em 0.012em rgb(112,115,121), 0.075em 0.086em 0.012em rgb(112,115,121), 0.061em 0.094em 0.012em rgb(112,115,121), 0.045em 0.098em 0.012em rgb(112,115,121), 0.030em 0.098em 0.012em rgb(112,115,121), 0.015em 0.094em 0.012em rgb(112,115,121), 0.002em 0.087em 0.012em rgb(112,115,121), -0.008em 0.077em 0.012em rgb(112,115,121), -0.014em 0.066em 0.012em rgb(112,115,121), -0.018em 0.055em 0.012em rgb(112,115,121), -0.019em 0.044em 0.012em rgb(112,115,121), -0.018em 0.034em 0.012em rgb(112,115,121), -0.015em 0.026em 0.012em rgb(112,115,121), -0.011em 0.020em 0.012em rgb(112,115,121), -0.008em 0.015em 0.012em rgb(112,115,121), -0.004em 0.012em 0.012em rgb(112,115,121), -0.001em 0.009em 0.012em rgb(112,115,121), 0.001em 0.007em 0.012em rgb(112,115,121), 0.003em 0.005em 0.012em rgb(112,115,121), 0.005em 0.003em 0.012em rgb(112,115,121), 0.007em 0.001em 0.012em rgb(112,115,121), 0.009em -0.001em 0.012em rgb(112,115,121), 0.012em -0.004em 0.012em rgb(112,115,121), 0.015em -0.008em 0.012em rgb(112,115,121), 0.020em -0.011em 0.012em rgb(112,115,121), 0.026em -0.015em 0.012em rgb(112,115,121), 0.034em -0.018em 0.012em rgb(112,115,121), 0.044em -0.019em 0.012em rgb(112,115,121), 0.055em -0.018em 0.012em rgb(112,115,121), 0.066em -0.014em 0.012em rgb(112,115,121), 0.077em -0.008em 0.012em rgb(112,115,121), 0.087em 0.002em 0.012em rgb(112,115,121), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }
+    text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(158,161,166), 0.039em 0.012em 0.012em rgb(158,161,166), 0.039em 0.018em 0.012em rgb(158,161,166), 0.038em 0.024em 0.012em rgb(158,161,166), 0.034em 0.030em 0.012em rgb(158,161,166), 0.030em 0.034em 0.012em rgb(158,161,166), 0.024em 0.038em 0.012em rgb(158,161,166), 0.018em 0.039em 0.012em rgb(158,161,166), 0.012em 0.039em 0.012em rgb(158,161,166), 0.006em 0.038em 0.012em rgb(158,161,166), 0.001em 0.035em 0.012em rgb(158,161,166), -0.003em 0.031em 0.012em rgb(158,161,166), -0.006em 0.026em 0.012em rgb(158,161,166), -0.007em 0.022em 0.012em rgb(158,161,166), -0.008em 0.017em 0.012em rgb(158,161,166), -0.007em 0.014em 0.012em rgb(158,161,166), -0.006em 0.010em 0.012em rgb(158,161,166), -0.005em 0.008em 0.012em rgb(158,161,166), -0.003em 0.006em 0.012em rgb(158,161,166), -0.002em 0.005em 0.012em rgb(158,161,166), -0.000em 0.004em 0.012em rgb(158,161,166), 0.000em 0.003em 0.012em rgb(158,161,166), 0.001em 0.002em 0.012em rgb(158,161,166), 0.002em 0.001em 0.012em rgb(158,161,166), 0.003em 0.000em 0.012em rgb(158,161,166), 0.004em -0.000em 0.012em rgb(158,161,166), 0.005em -0.002em 0.012em rgb(158,161,166), 0.006em -0.003em 0.012em rgb(158,161,166), 0.008em -0.005em 0.012em rgb(158,161,166), 0.010em -0.006em 0.012em rgb(158,161,166), 0.014em -0.007em 0.012em rgb(158,161,166), 0.017em -0.008em 0.012em rgb(158,161,166), 0.022em -0.007em 0.012em rgb(158,161,166), 0.026em -0.006em 0.012em rgb(158,161,166), 0.031em -0.003em 0.012em rgb(158,161,166), 0.035em 0.001em 0.012em rgb(158,161,166), 0.056em 0.009em 0.012em rgb(136,139,144), 0.059em 0.018em 0.012em rgb(136,139,144), 0.059em 0.027em 0.012em rgb(136,139,144), 0.056em 0.036em 0.012em rgb(136,139,144), 0.052em 0.045em 0.012em rgb(136,139,144), 0.045em 0.052em 0.012em rgb(136,139,144), 0.036em 0.056em 0.012em rgb(136,139,144), 0.027em 0.059em 0.012em rgb(136,139,144), 0.018em 0.059em 0.012em rgb(136,139,144), 0.009em 0.056em 0.012em rgb(136,139,144), 0.001em 0.052em 0.012em rgb(136,139,144), -0.005em 0.046em 0.012em rgb(136,139,144), -0.009em 0.040em 0.012em rgb(136,139,144), -0.011em 0.033em 0.012em rgb(136,139,144), -0.011em 0.026em 0.012em rgb(136,139,144), -0.011em 0.020em 0.012em rgb(136,139,144), -0.009em 0.016em 0.012em rgb(136,139,144), -0.007em 0.012em 0.012em rgb(136,139,144), -0.005em 0.009em 0.012em rgb(136,139,144), -0.002em 0.007em 0.012em rgb(136,139,144), -0.001em 0.005em 0.012em rgb(136,139,144), 0.001em 0.004em 0.012em rgb(136,139,144), 0.002em 0.003em 0.012em rgb(136,139,144), 0.003em 0.002em 0.012em rgb(136,139,144), 0.004em 0.001em 0.012em rgb(136,139,144), 0.005em -0.001em 0.012em rgb(136,139,144), 0.007em -0.002em 0.012em rgb(136,139,144), 0.009em -0.005em 0.012em rgb(136,139,144), 0.012em -0.007em 0.012em rgb(136,139,144), 0.016em -0.009em 0.012em rgb(136,139,144), 0.020em -0.011em 0.012em rgb(136,139,144), 0.026em -0.011em 0.012em rgb(136,139,144), 0.033em -0.011em 0.012em rgb(136,139,144), 0.040em -0.009em 0.012em rgb(136,139,144), 0.046em -0.005em 0.012em rgb(136,139,144), 0.052em 0.001em 0.012em rgb(136,139,144), 0.075em 0.012em 0.012em rgb(114,117,123), 0.078em 0.024em 0.012em rgb(114,117,123), 0.079em 0.036em 0.012em rgb(114,117,123), 0.075em 0.049em 0.012em rgb(114,117,123), 0.069em 0.060em 0.012em rgb(114,117,123), 0.060em 0.069em 0.012em rgb(114,117,123), 0.049em 0.075em 0.012em rgb(114,117,123), 0.036em 0.079em 0.012em rgb(114,117,123), 0.024em 0.078em 0.012em rgb(114,117,123), 0.012em 0.075em 0.012em rgb(114,117,123), 0.002em 0.069em 0.012em rgb(114,117,123), -0.006em 0.062em 0.012em rgb(114,117,123), -0.012em 0.053em 0.012em rgb(114,117,123), -0.015em 0.044em 0.012em rgb(114,117,123), -0.015em 0.035em 0.012em rgb(114,117,123), -0.014em 0.027em 0.012em rgb(114,117,123), -0.012em 0.021em 0.012em rgb(114,117,123), -0.009em 0.016em 0.012em rgb(114,117,123), -0.006em 0.012em 0.012em rgb(114,117,123), -0.003em 0.009em 0.012em rgb(114,117,123), -0.001em 0.007em 0.012em rgb(114,117,123), 0.001em 0.006em 0.012em rgb(114,117,123), 0.002em 0.004em 0.012em rgb(114,117,123), 0.004em 0.002em 0.012em rgb(114,117,123), 0.006em 0.001em 0.012em rgb(114,117,123), 0.007em -0.001em 0.012em rgb(114,117,123), 0.009em -0.003em 0.012em rgb(114,117,123), 0.012em -0.006em 0.012em rgb(114,117,123), 0.016em -0.009em 0.012em rgb(114,117,123), 0.021em -0.012em 0.012em rgb(114,117,123), 0.027em -0.014em 0.012em rgb(114,117,123), 0.035em -0.015em 0.012em rgb(114,117,123), 0.044em -0.015em 0.012em rgb(114,117,123), 0.053em -0.012em 0.012em rgb(114,117,123), 0.062em -0.006em 0.012em rgb(114,117,123), 0.069em 0.002em 0.012em rgb(114,117,123), 0.094em 0.015em 0.012em rgb(90,93,99), 0.098em 0.030em 0.012em rgb(90,93,99), 0.098em 0.045em 0.012em rgb(90,93,99), 0.094em 0.061em 0.012em rgb(90,93,99), 0.086em 0.075em 0.012em rgb(90,93,99), 0.075em 0.086em 0.012em rgb(90,93,99), 0.061em 0.094em 0.012em rgb(90,93,99), 0.045em 0.098em 0.012em rgb(90,93,99), 0.030em 0.098em 0.012em rgb(90,93,99), 0.015em 0.094em 0.012em rgb(90,93,99), 0.002em 0.087em 0.012em rgb(90,93,99), -0.008em 0.077em 0.012em rgb(90,93,99), -0.014em 0.066em 0.012em rgb(90,93,99), -0.018em 0.055em 0.012em rgb(90,93,99), -0.019em 0.044em 0.012em rgb(90,93,99), -0.018em 0.034em 0.012em rgb(90,93,99), -0.015em 0.026em 0.012em rgb(90,93,99), -0.011em 0.020em 0.012em rgb(90,93,99), -0.008em 0.015em 0.012em rgb(90,93,99), -0.004em 0.012em 0.012em rgb(90,93,99), -0.001em 0.009em 0.012em rgb(90,93,99), 0.001em 0.007em 0.012em rgb(90,93,99), 0.003em 0.005em 0.012em rgb(90,93,99), 0.005em 0.003em 0.012em rgb(90,93,99), 0.007em 0.001em 0.012em rgb(90,93,99), 0.009em -0.001em 0.012em rgb(90,93,99), 0.012em -0.004em 0.012em rgb(90,93,99), 0.015em -0.008em 0.012em rgb(90,93,99), 0.020em -0.011em 0.012em rgb(90,93,99), 0.026em -0.015em 0.012em rgb(90,93,99), 0.034em -0.018em 0.012em rgb(90,93,99), 0.044em -0.019em 0.012em rgb(90,93,99), 0.055em -0.018em 0.012em rgb(90,93,99), 0.066em -0.014em 0.012em rgb(90,93,99), 0.077em -0.008em 0.012em rgb(90,93,99), 0.087em 0.002em 0.012em rgb(90,93,99), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }
   .jump, .nav-hint { filter: url(#titleWobble); }
   .jump-arrow { flex: none; margin-bottom: -44px; }
   .ja-line { stroke: #f6f3ea; stroke-width: 6; }
@@ -957,7 +964,7 @@
   .nav-hint { display: none; position: fixed; left: 168px; top: 52px; z-index: 12; pointer-events: none; text-align: right; }
   body.is-home .nav-hint { display: block; }
   .nav-hint svg { display: block; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)); }
-  .nav-hint span { display: block; margin-top: 2px; font-family: "Sedgwick Ave Display", "Segoe Print", cursive; font-size: 22px; color: #f6f3ea; white-space: nowrap; padding: 0.1em 0.2em 0.3em; text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(160,163,168), 0.039em 0.012em 0.012em rgb(160,163,168), 0.039em 0.018em 0.012em rgb(160,163,168), 0.038em 0.024em 0.012em rgb(160,163,168), 0.034em 0.030em 0.012em rgb(160,163,168), 0.030em 0.034em 0.012em rgb(160,163,168), 0.024em 0.038em 0.012em rgb(160,163,168), 0.018em 0.039em 0.012em rgb(160,163,168), 0.012em 0.039em 0.012em rgb(160,163,168), 0.006em 0.038em 0.012em rgb(160,163,168), 0.001em 0.035em 0.012em rgb(160,163,168), -0.003em 0.031em 0.012em rgb(160,163,168), -0.006em 0.026em 0.012em rgb(160,163,168), -0.007em 0.022em 0.012em rgb(160,163,168), -0.008em 0.017em 0.012em rgb(160,163,168), -0.007em 0.014em 0.012em rgb(160,163,168), -0.006em 0.010em 0.012em rgb(160,163,168), -0.005em 0.008em 0.012em rgb(160,163,168), -0.003em 0.006em 0.012em rgb(160,163,168), -0.002em 0.005em 0.012em rgb(160,163,168), -0.000em 0.004em 0.012em rgb(160,163,168), 0.000em 0.003em 0.012em rgb(160,163,168), 0.001em 0.002em 0.012em rgb(160,163,168), 0.002em 0.001em 0.012em rgb(160,163,168), 0.003em 0.000em 0.012em rgb(160,163,168), 0.004em -0.000em 0.012em rgb(160,163,168), 0.005em -0.002em 0.012em rgb(160,163,168), 0.006em -0.003em 0.012em rgb(160,163,168), 0.008em -0.005em 0.012em rgb(160,163,168), 0.010em -0.006em 0.012em rgb(160,163,168), 0.014em -0.007em 0.012em rgb(160,163,168), 0.017em -0.008em 0.012em rgb(160,163,168), 0.022em -0.007em 0.012em rgb(160,163,168), 0.026em -0.006em 0.012em rgb(160,163,168), 0.031em -0.003em 0.012em rgb(160,163,168), 0.035em 0.001em 0.012em rgb(160,163,168), 0.056em 0.009em 0.012em rgb(144,147,152), 0.059em 0.018em 0.012em rgb(144,147,152), 0.059em 0.027em 0.012em rgb(144,147,152), 0.056em 0.036em 0.012em rgb(144,147,152), 0.052em 0.045em 0.012em rgb(144,147,152), 0.045em 0.052em 0.012em rgb(144,147,152), 0.036em 0.056em 0.012em rgb(144,147,152), 0.027em 0.059em 0.012em rgb(144,147,152), 0.018em 0.059em 0.012em rgb(144,147,152), 0.009em 0.056em 0.012em rgb(144,147,152), 0.001em 0.052em 0.012em rgb(144,147,152), -0.005em 0.046em 0.012em rgb(144,147,152), -0.009em 0.040em 0.012em rgb(144,147,152), -0.011em 0.033em 0.012em rgb(144,147,152), -0.011em 0.026em 0.012em rgb(144,147,152), -0.011em 0.020em 0.012em rgb(144,147,152), -0.009em 0.016em 0.012em rgb(144,147,152), -0.007em 0.012em 0.012em rgb(144,147,152), -0.005em 0.009em 0.012em rgb(144,147,152), -0.002em 0.007em 0.012em rgb(144,147,152), -0.001em 0.005em 0.012em rgb(144,147,152), 0.001em 0.004em 0.012em rgb(144,147,152), 0.002em 0.003em 0.012em rgb(144,147,152), 0.003em 0.002em 0.012em rgb(144,147,152), 0.004em 0.001em 0.012em rgb(144,147,152), 0.005em -0.001em 0.012em rgb(144,147,152), 0.007em -0.002em 0.012em rgb(144,147,152), 0.009em -0.005em 0.012em rgb(144,147,152), 0.012em -0.007em 0.012em rgb(144,147,152), 0.016em -0.009em 0.012em rgb(144,147,152), 0.020em -0.011em 0.012em rgb(144,147,152), 0.026em -0.011em 0.012em rgb(144,147,152), 0.033em -0.011em 0.012em rgb(144,147,152), 0.040em -0.009em 0.012em rgb(144,147,152), 0.046em -0.005em 0.012em rgb(144,147,152), 0.052em 0.001em 0.012em rgb(144,147,152), 0.075em 0.012em 0.012em rgb(128,131,137), 0.078em 0.024em 0.012em rgb(128,131,137), 0.079em 0.036em 0.012em rgb(128,131,137), 0.075em 0.049em 0.012em rgb(128,131,137), 0.069em 0.060em 0.012em rgb(128,131,137), 0.060em 0.069em 0.012em rgb(128,131,137), 0.049em 0.075em 0.012em rgb(128,131,137), 0.036em 0.079em 0.012em rgb(128,131,137), 0.024em 0.078em 0.012em rgb(128,131,137), 0.012em 0.075em 0.012em rgb(128,131,137), 0.002em 0.069em 0.012em rgb(128,131,137), -0.006em 0.062em 0.012em rgb(128,131,137), -0.012em 0.053em 0.012em rgb(128,131,137), -0.015em 0.044em 0.012em rgb(128,131,137), -0.015em 0.035em 0.012em rgb(128,131,137), -0.014em 0.027em 0.012em rgb(128,131,137), -0.012em 0.021em 0.012em rgb(128,131,137), -0.009em 0.016em 0.012em rgb(128,131,137), -0.006em 0.012em 0.012em rgb(128,131,137), -0.003em 0.009em 0.012em rgb(128,131,137), -0.001em 0.007em 0.012em rgb(128,131,137), 0.001em 0.006em 0.012em rgb(128,131,137), 0.002em 0.004em 0.012em rgb(128,131,137), 0.004em 0.002em 0.012em rgb(128,131,137), 0.006em 0.001em 0.012em rgb(128,131,137), 0.007em -0.001em 0.012em rgb(128,131,137), 0.009em -0.003em 0.012em rgb(128,131,137), 0.012em -0.006em 0.012em rgb(128,131,137), 0.016em -0.009em 0.012em rgb(128,131,137), 0.021em -0.012em 0.012em rgb(128,131,137), 0.027em -0.014em 0.012em rgb(128,131,137), 0.035em -0.015em 0.012em rgb(128,131,137), 0.044em -0.015em 0.012em rgb(128,131,137), 0.053em -0.012em 0.012em rgb(128,131,137), 0.062em -0.006em 0.012em rgb(128,131,137), 0.069em 0.002em 0.012em rgb(128,131,137), 0.094em 0.015em 0.012em rgb(112,115,121), 0.098em 0.030em 0.012em rgb(112,115,121), 0.098em 0.045em 0.012em rgb(112,115,121), 0.094em 0.061em 0.012em rgb(112,115,121), 0.086em 0.075em 0.012em rgb(112,115,121), 0.075em 0.086em 0.012em rgb(112,115,121), 0.061em 0.094em 0.012em rgb(112,115,121), 0.045em 0.098em 0.012em rgb(112,115,121), 0.030em 0.098em 0.012em rgb(112,115,121), 0.015em 0.094em 0.012em rgb(112,115,121), 0.002em 0.087em 0.012em rgb(112,115,121), -0.008em 0.077em 0.012em rgb(112,115,121), -0.014em 0.066em 0.012em rgb(112,115,121), -0.018em 0.055em 0.012em rgb(112,115,121), -0.019em 0.044em 0.012em rgb(112,115,121), -0.018em 0.034em 0.012em rgb(112,115,121), -0.015em 0.026em 0.012em rgb(112,115,121), -0.011em 0.020em 0.012em rgb(112,115,121), -0.008em 0.015em 0.012em rgb(112,115,121), -0.004em 0.012em 0.012em rgb(112,115,121), -0.001em 0.009em 0.012em rgb(112,115,121), 0.001em 0.007em 0.012em rgb(112,115,121), 0.003em 0.005em 0.012em rgb(112,115,121), 0.005em 0.003em 0.012em rgb(112,115,121), 0.007em 0.001em 0.012em rgb(112,115,121), 0.009em -0.001em 0.012em rgb(112,115,121), 0.012em -0.004em 0.012em rgb(112,115,121), 0.015em -0.008em 0.012em rgb(112,115,121), 0.020em -0.011em 0.012em rgb(112,115,121), 0.026em -0.015em 0.012em rgb(112,115,121), 0.034em -0.018em 0.012em rgb(112,115,121), 0.044em -0.019em 0.012em rgb(112,115,121), 0.055em -0.018em 0.012em rgb(112,115,121), 0.066em -0.014em 0.012em rgb(112,115,121), 0.077em -0.008em 0.012em rgb(112,115,121), 0.087em 0.002em 0.012em rgb(112,115,121), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }
+  .nav-hint span { display: block; margin-top: 2px; font-family: "Sedgwick Ave Display", "Segoe Print", cursive; font-size: 22px; color: #f6f3ea; white-space: nowrap; padding: 0.1em 0.2em 0.3em; text-shadow: 0.019em 0.003em 0.012em rgb(176,179,184), 0.020em 0.006em 0.012em rgb(176,179,184), 0.020em 0.009em 0.012em rgb(176,179,184), 0.019em 0.012em 0.012em rgb(176,179,184), 0.017em 0.015em 0.012em rgb(176,179,184), 0.015em 0.017em 0.012em rgb(176,179,184), 0.012em 0.019em 0.012em rgb(176,179,184), 0.009em 0.020em 0.012em rgb(176,179,184), 0.006em 0.020em 0.012em rgb(176,179,184), 0.003em 0.019em 0.012em rgb(176,179,184), 0.000em 0.017em 0.012em rgb(176,179,184), -0.002em 0.015em 0.012em rgb(176,179,184), -0.003em 0.013em 0.012em rgb(176,179,184), -0.004em 0.011em 0.012em rgb(176,179,184), -0.004em 0.009em 0.012em rgb(176,179,184), -0.004em 0.007em 0.012em rgb(176,179,184), -0.003em 0.005em 0.012em rgb(176,179,184), -0.002em 0.004em 0.012em rgb(176,179,184), -0.002em 0.003em 0.012em rgb(176,179,184), -0.001em 0.002em 0.012em rgb(176,179,184), -0.000em 0.002em 0.012em rgb(176,179,184), 0.000em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.001em 0.012em rgb(176,179,184), 0.001em 0.000em 0.012em rgb(176,179,184), 0.002em -0.000em 0.012em rgb(176,179,184), 0.002em -0.001em 0.012em rgb(176,179,184), 0.003em -0.002em 0.012em rgb(176,179,184), 0.004em -0.002em 0.012em rgb(176,179,184), 0.005em -0.003em 0.012em rgb(176,179,184), 0.007em -0.004em 0.012em rgb(176,179,184), 0.009em -0.004em 0.012em rgb(176,179,184), 0.011em -0.004em 0.012em rgb(176,179,184), 0.013em -0.003em 0.012em rgb(176,179,184), 0.015em -0.002em 0.012em rgb(176,179,184), 0.017em 0.000em 0.012em rgb(176,179,184), 0.038em 0.006em 0.012em rgb(158,161,166), 0.039em 0.012em 0.012em rgb(158,161,166), 0.039em 0.018em 0.012em rgb(158,161,166), 0.038em 0.024em 0.012em rgb(158,161,166), 0.034em 0.030em 0.012em rgb(158,161,166), 0.030em 0.034em 0.012em rgb(158,161,166), 0.024em 0.038em 0.012em rgb(158,161,166), 0.018em 0.039em 0.012em rgb(158,161,166), 0.012em 0.039em 0.012em rgb(158,161,166), 0.006em 0.038em 0.012em rgb(158,161,166), 0.001em 0.035em 0.012em rgb(158,161,166), -0.003em 0.031em 0.012em rgb(158,161,166), -0.006em 0.026em 0.012em rgb(158,161,166), -0.007em 0.022em 0.012em rgb(158,161,166), -0.008em 0.017em 0.012em rgb(158,161,166), -0.007em 0.014em 0.012em rgb(158,161,166), -0.006em 0.010em 0.012em rgb(158,161,166), -0.005em 0.008em 0.012em rgb(158,161,166), -0.003em 0.006em 0.012em rgb(158,161,166), -0.002em 0.005em 0.012em rgb(158,161,166), -0.000em 0.004em 0.012em rgb(158,161,166), 0.000em 0.003em 0.012em rgb(158,161,166), 0.001em 0.002em 0.012em rgb(158,161,166), 0.002em 0.001em 0.012em rgb(158,161,166), 0.003em 0.000em 0.012em rgb(158,161,166), 0.004em -0.000em 0.012em rgb(158,161,166), 0.005em -0.002em 0.012em rgb(158,161,166), 0.006em -0.003em 0.012em rgb(158,161,166), 0.008em -0.005em 0.012em rgb(158,161,166), 0.010em -0.006em 0.012em rgb(158,161,166), 0.014em -0.007em 0.012em rgb(158,161,166), 0.017em -0.008em 0.012em rgb(158,161,166), 0.022em -0.007em 0.012em rgb(158,161,166), 0.026em -0.006em 0.012em rgb(158,161,166), 0.031em -0.003em 0.012em rgb(158,161,166), 0.035em 0.001em 0.012em rgb(158,161,166), 0.056em 0.009em 0.012em rgb(136,139,144), 0.059em 0.018em 0.012em rgb(136,139,144), 0.059em 0.027em 0.012em rgb(136,139,144), 0.056em 0.036em 0.012em rgb(136,139,144), 0.052em 0.045em 0.012em rgb(136,139,144), 0.045em 0.052em 0.012em rgb(136,139,144), 0.036em 0.056em 0.012em rgb(136,139,144), 0.027em 0.059em 0.012em rgb(136,139,144), 0.018em 0.059em 0.012em rgb(136,139,144), 0.009em 0.056em 0.012em rgb(136,139,144), 0.001em 0.052em 0.012em rgb(136,139,144), -0.005em 0.046em 0.012em rgb(136,139,144), -0.009em 0.040em 0.012em rgb(136,139,144), -0.011em 0.033em 0.012em rgb(136,139,144), -0.011em 0.026em 0.012em rgb(136,139,144), -0.011em 0.020em 0.012em rgb(136,139,144), -0.009em 0.016em 0.012em rgb(136,139,144), -0.007em 0.012em 0.012em rgb(136,139,144), -0.005em 0.009em 0.012em rgb(136,139,144), -0.002em 0.007em 0.012em rgb(136,139,144), -0.001em 0.005em 0.012em rgb(136,139,144), 0.001em 0.004em 0.012em rgb(136,139,144), 0.002em 0.003em 0.012em rgb(136,139,144), 0.003em 0.002em 0.012em rgb(136,139,144), 0.004em 0.001em 0.012em rgb(136,139,144), 0.005em -0.001em 0.012em rgb(136,139,144), 0.007em -0.002em 0.012em rgb(136,139,144), 0.009em -0.005em 0.012em rgb(136,139,144), 0.012em -0.007em 0.012em rgb(136,139,144), 0.016em -0.009em 0.012em rgb(136,139,144), 0.020em -0.011em 0.012em rgb(136,139,144), 0.026em -0.011em 0.012em rgb(136,139,144), 0.033em -0.011em 0.012em rgb(136,139,144), 0.040em -0.009em 0.012em rgb(136,139,144), 0.046em -0.005em 0.012em rgb(136,139,144), 0.052em 0.001em 0.012em rgb(136,139,144), 0.075em 0.012em 0.012em rgb(114,117,123), 0.078em 0.024em 0.012em rgb(114,117,123), 0.079em 0.036em 0.012em rgb(114,117,123), 0.075em 0.049em 0.012em rgb(114,117,123), 0.069em 0.060em 0.012em rgb(114,117,123), 0.060em 0.069em 0.012em rgb(114,117,123), 0.049em 0.075em 0.012em rgb(114,117,123), 0.036em 0.079em 0.012em rgb(114,117,123), 0.024em 0.078em 0.012em rgb(114,117,123), 0.012em 0.075em 0.012em rgb(114,117,123), 0.002em 0.069em 0.012em rgb(114,117,123), -0.006em 0.062em 0.012em rgb(114,117,123), -0.012em 0.053em 0.012em rgb(114,117,123), -0.015em 0.044em 0.012em rgb(114,117,123), -0.015em 0.035em 0.012em rgb(114,117,123), -0.014em 0.027em 0.012em rgb(114,117,123), -0.012em 0.021em 0.012em rgb(114,117,123), -0.009em 0.016em 0.012em rgb(114,117,123), -0.006em 0.012em 0.012em rgb(114,117,123), -0.003em 0.009em 0.012em rgb(114,117,123), -0.001em 0.007em 0.012em rgb(114,117,123), 0.001em 0.006em 0.012em rgb(114,117,123), 0.002em 0.004em 0.012em rgb(114,117,123), 0.004em 0.002em 0.012em rgb(114,117,123), 0.006em 0.001em 0.012em rgb(114,117,123), 0.007em -0.001em 0.012em rgb(114,117,123), 0.009em -0.003em 0.012em rgb(114,117,123), 0.012em -0.006em 0.012em rgb(114,117,123), 0.016em -0.009em 0.012em rgb(114,117,123), 0.021em -0.012em 0.012em rgb(114,117,123), 0.027em -0.014em 0.012em rgb(114,117,123), 0.035em -0.015em 0.012em rgb(114,117,123), 0.044em -0.015em 0.012em rgb(114,117,123), 0.053em -0.012em 0.012em rgb(114,117,123), 0.062em -0.006em 0.012em rgb(114,117,123), 0.069em 0.002em 0.012em rgb(114,117,123), 0.094em 0.015em 0.012em rgb(90,93,99), 0.098em 0.030em 0.012em rgb(90,93,99), 0.098em 0.045em 0.012em rgb(90,93,99), 0.094em 0.061em 0.012em rgb(90,93,99), 0.086em 0.075em 0.012em rgb(90,93,99), 0.075em 0.086em 0.012em rgb(90,93,99), 0.061em 0.094em 0.012em rgb(90,93,99), 0.045em 0.098em 0.012em rgb(90,93,99), 0.030em 0.098em 0.012em rgb(90,93,99), 0.015em 0.094em 0.012em rgb(90,93,99), 0.002em 0.087em 0.012em rgb(90,93,99), -0.008em 0.077em 0.012em rgb(90,93,99), -0.014em 0.066em 0.012em rgb(90,93,99), -0.018em 0.055em 0.012em rgb(90,93,99), -0.019em 0.044em 0.012em rgb(90,93,99), -0.018em 0.034em 0.012em rgb(90,93,99), -0.015em 0.026em 0.012em rgb(90,93,99), -0.011em 0.020em 0.012em rgb(90,93,99), -0.008em 0.015em 0.012em rgb(90,93,99), -0.004em 0.012em 0.012em rgb(90,93,99), -0.001em 0.009em 0.012em rgb(90,93,99), 0.001em 0.007em 0.012em rgb(90,93,99), 0.003em 0.005em 0.012em rgb(90,93,99), 0.005em 0.003em 0.012em rgb(90,93,99), 0.007em 0.001em 0.012em rgb(90,93,99), 0.009em -0.001em 0.012em rgb(90,93,99), 0.012em -0.004em 0.012em rgb(90,93,99), 0.015em -0.008em 0.012em rgb(90,93,99), 0.020em -0.011em 0.012em rgb(90,93,99), 0.026em -0.015em 0.012em rgb(90,93,99), 0.034em -0.018em 0.012em rgb(90,93,99), 0.044em -0.019em 0.012em rgb(90,93,99), 0.055em -0.018em 0.012em rgb(90,93,99), 0.066em -0.014em 0.012em rgb(90,93,99), 0.077em -0.008em 0.012em rgb(90,93,99), 0.087em 0.002em 0.012em rgb(90,93,99), 0.05em 0.1em 0.06em rgba(0,0,0,0.35); }
   body.is-home .nav-hint path { stroke-dasharray: 220; stroke-dashoffset: 220; animation: jaDraw 0.9s ease 0.9s forwards; }
   body.is-home .nav-hint path.hd { stroke-dasharray: 60; stroke-dashoffset: 60; animation: jaDraw 0.35s ease 1.8s forwards; }
   body.is-home .nav-hint span { opacity: 0; animation: hintIn 0.6s ease 1.3s forwards; }
@@ -969,6 +976,7 @@
   #view-globe .ch-meta, #view-index .ch-meta { font-size: 12px; margin-top: 8px; }
   .mag-head { display: block; margin: 0 0 14px; }
   .mag-head span { display: block; margin-top: 8px; }
+  .mag-head[hidden] { display: none; }
   .mag-head h1 { font-size: clamp(30px, 4vw, 52px); font-weight: 700; line-height: 1.05; letter-spacing: -0.01em; text-transform: none; }
   .mag-head span { font-size: 12px; }
 
@@ -1209,7 +1217,7 @@
       <div class="mg-info" id="mgInfo"></div>
     </div>
     <div class="mag-viewer" id="magViewer" hidden>
-      <div class="mg-top"><button type="button" class="pill" id="magBack">Leave</button><span class="mv-title" id="mvTitle"></span></div>
+      <div class="mg-top"><button type="button" class="pill" id="magBack" style="min-width:128px">Leave</button><span class="mv-title" id="mvTitle"></span></div>
       <div class="mag-stage">
         <button class="mag-arrow" id="magPrev" aria-label="Previous page">&#8592;</button>
         <div class="mag" id="mag" aria-roledescription="magazine"><div class="mag-book" id="magBook"></div></div>
@@ -1463,6 +1471,7 @@ nav.addEventListener('click', e => {
   const a = e.target.closest('a');
   if (!a) return;
   closedLink = a; clearTimeout(peekTimer2);
+  sidebar.querySelectorAll('.sec.open').forEach(x => x.classList.remove('open'));
   sidebar.classList.remove('exp', 'navpeek');                         // straight back to the condensed headings, with no waiting
   sidebar.classList.add('closed');
   a.blur();                                  // so keyboard focus doesn't hold the sidebar open
@@ -1481,24 +1490,49 @@ function armNavHide(delay) {
   }, delay || 4500);
 }
 /* Hover events can be missed (after a drag, or when the menu changes under a resting cursor), so the cursor's position also decides it. */
-let navOutTimer = 0;
+let navOutTimer = 0, logoMask = null;
+/* the logo counts only where it has actual paint: its see-through corners and the empty space round it do not bring the menu back */
+function buildLogoMask() {
+  const im = $('logoImg'); logoMask = null;
+  if (!im.complete || !im.naturalWidth) return;
+  try {
+    const W = 72, H = Math.max(8, Math.round(W * im.naturalHeight / im.naturalWidth)), c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d'); x.drawImage(im, 0, 0, W, H); const d = x.getImageData(0, 0, W, H).data, a = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) a[i] = d[i * 4 + 3] > 40 ? 1 : 0;
+    logoMask = { W, H, a };
+  } catch (err) { logoMask = null; }
+}
+$('logoImg').addEventListener('load', buildLogoMask); buildLogoMask();
+function overLogo(px, py) {
+  const im = $('logoImg'), r = im.getBoundingClientRect();
+  if (px < r.left || px > r.right || py < r.top || py > r.bottom || !r.width) return false;
+  if (!logoMask) return true;
+  const { W, H, a } = logoMask, u = Math.floor((px - r.left) / r.width * W), v = Math.floor((py - r.top) / r.height * H);
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = u + dx, yy = v + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H && a[yy * W + xx]) return true; }
+  return false;
+}
 document.addEventListener('pointermove', e => {
   if (!window.matchMedia('(hover: hover) and (min-width: 721px)').matches) return;
   const open = parseFloat(getComputedStyle(sidebar).width) || 250;
   if (closedLink && sidebar.classList.contains('closed') && !(e.target.closest && e.target.closest('.nav a') === closedLink)) { sidebar.classList.remove('closed'); closedLink = null; }   // off the chosen topic: headings can open the menu again
-  const lr = $('logoImg').getBoundingClientRect(), inStrip = e.clientX >= lr.left - 6 && e.clientX <= lr.right + 6 && e.clientY >= lr.top - 6 && e.clientY <= lr.bottom + 6, inOpen = e.clientX < Math.min(open, 330);
+  const inStrip = overLogo(e.clientX, e.clientY), inOpen = e.clientX < Math.min(open, 330);
   if (inStrip && !document.body.classList.contains('is-landing')) {
     clearTimeout(navOutTimer); navOutTimer = 0; clearTimeout(peekTimer2);
     if (document.body.classList.contains('nav-hidden')) sidebar.classList.add('navpeek');
   } else if (!inOpen) {
-    sidebar.classList.remove('closed', 'exp');                          // the cursor has really left, so the next visit opens it
+    sidebar.classList.remove('closed', 'exp'); sidebar.querySelectorAll('.sec.open').forEach(x => x.classList.remove('open'));   // the cursor has really left, so the next visit opens it
     if (sidebar.classList.contains('navpeek')) { sidebar.classList.remove('navpeek'); armNavHide(2700); }
   }
 }, { passive: true });
 /* the menu opens out only when the cursor is on a label (not on the empty space around them) */
-sidebar.addEventListener('mouseover', e => { if (e.target.closest('.nav a, .nav .head')) sidebar.classList.add('exp'); });
-sidebar.addEventListener('mouseleave', () => sidebar.classList.remove('exp'));
-$('logoImg').addEventListener('mouseenter', () => { clearTimeout(peekTimer2); sidebar.classList.add('navpeek'); });   // only the logo picture itself, not the empty space round it
+sidebar.addEventListener('mouseover', e => {
+  const lab = e.target.closest('.nav a, .nav .head'); if (!lab) return;
+  sidebar.classList.add('exp');
+  const sec = lab.closest('.sec');                                    // only the heading being pointed at keeps its list open; the one before it folds away
+  sidebar.querySelectorAll('.sec.open').forEach(x => { if (x !== sec) x.classList.remove('open'); });
+  if (sec) sec.classList.add('open');
+});
+sidebar.addEventListener('mouseleave', () => { sidebar.classList.remove('exp'); sidebar.querySelectorAll('.sec.open').forEach(x => x.classList.remove('open')); });
 sidebar.addEventListener('mouseenter', () => clearTimeout(peekTimer2));
 sidebar.addEventListener('mouseleave', () => { clearTimeout(peekTimer2); sidebar.classList.remove('navpeek'); armNavHide(2700); });
 window.addEventListener('hashchange', () => armNavHide(4500));
@@ -1517,7 +1551,8 @@ $('homeNav').addEventListener('click', e => {
 });
 document.addEventListener('click', e => { if (!e.target.closest('#homeNav')) document.querySelectorAll('#homeNav .hn-sec.open').forEach(x => x.classList.remove('open')); });
 
-let entering = false;                                  // true while the Enter-site spray is running
+let entering = false;
+document.body.appendChild($('navHint'));            // directly under the page, so the blur on the home page can never shift where it sits                                  // true while the Enter-site spray is running
 document.body.appendChild($('view-landing'));        // outside <main>, so blurring the page underneath can never shift the photo wall
 function showView(name) {
   views.forEach(v => { if (v === 'landing' && entering && name !== 'landing') return; $('view-' + v).classList.toggle('on', v === name); });   // the live photo wall stays up until it has been painted over
@@ -2767,54 +2802,48 @@ function startLanding() {
     at(1000 + 1200 + 3000, () => v.classList.add('shift'));         // after ~3 s on screen it lifts to reveal Enter site
   });
 }
-/* Enter site: the home page is sprayed on over the photo wall; it stays blurred until the paint has finished. */
+/* Enter site: the home page is sprayed on over the photo wall, from the top left to the bottom right; it stays blurred until the paint has finished.
+   The wipe is one CSS mask whose paint blobs all grow from a single number (--sp) that the browser eases in a straight line, so it never has to
+   build pictures while it runs and cannot skip. It starts from however the photos and logo happen to be at that moment. */
 function enterSite() {
   if (entering) return;
-  const v = $('view-landing');
+  const v = $('view-landing'), B = document.body;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { location.hash = '#home'; return; }
   entering = true;
-  document.body.classList.add('spraying');
+  B.classList.add('spraying');
   location.hash = '#home';
   setTimeout(() => v.classList.add('leaving'), 150);
-  const W = 360, H = Math.max(120, Math.round(360 * innerHeight / innerWidth)), cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const c = cv.getContext('2d'); c.fillStyle = '#000'; c.fillRect(0, 0, W, H); c.globalCompositeOperation = 'destination-out';
-  const PASSES = 7, DUR = 2100, t0 = performance.now(); let last = null, lastDraw = 0;
-  /* the can works across the screen in diagonal passes, starting at the top left and finishing at the bottom right */
-  const DT = W + H, step = DT / PASSES;
-  const pos = u => {
-    const r = Math.min(PASSES - 1, Math.floor(u * PASSES)), f = u * PASSES - r, d = (r + 0.5) * step;
-    const x0 = Math.max(-step * 0.3, d - H - step * 0.3), x1 = Math.min(W + step * 0.3, d + step * 0.3), x = r % 2 ? x1 - f * (x1 - x0) : x0 + f * (x1 - x0);
-    return [x, d - x];
-  };
-  const puff = (x, y, rad) => {                                         // a soft, clean round of paint, with a few small spatters
-    const g = c.createRadialGradient(x, y, 0, x, y, rad); g.addColorStop(0, 'rgba(0,0,0,0.5)'); g.addColorStop(0.55, 'rgba(0,0,0,0.32)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-    c.fillStyle = g; c.beginPath(); c.arc(x, y, rad, 0, 6.2832); c.fill();
-    if (Math.random() < 0.22) { const a = Math.random() * 6.2832, d = rad * (1.0 + Math.random() * 0.55), r2 = 0.8 + Math.random() * 1.9; c.fillStyle = 'rgba(0,0,0,0.85)'; c.beginPath(); c.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, r2, 0, 6.2832); c.fill(); }
-  };
-  const applyMask = url => { v.style.webkitMaskImage = url; v.style.maskImage = url; v.style.webkitMaskSize = '100% 100%'; v.style.maskSize = '100% 100%'; };
-  let pending = false, curUrl = '', done = false;
-  const push = () => {                                                  // the mask picture is encoded off the main thread, one at a time, so the page never waits on it
-    if (pending) return; pending = true;
-    cv.toBlob(bl => { if (!bl) { pending = false; return; } const u = URL.createObjectURL(bl); applyMask('url(' + u + ')'); if (curUrl) { const old = curUrl; setTimeout(() => URL.revokeObjectURL(old), 200); } curUrl = u; pending = false; });
-  };
+  const COLS = 9, ROWS = 5, DUR = 2400, END = 1.15, layers = [];
+  const R = () => Math.random();
+  const grow = t => `clamp(0, (var(--sp) - ${t.toFixed(3)}) / 0.2, 1)`;
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {                 // the big soft rounds of paint
+    const cx = (c + 0.5 + (R() - 0.5) * 0.7) / COLS * 100, cy = (r + 0.5 + (R() - 0.5) * 0.7) / ROWS * 100;
+    const t = (cx + cy) / 200 * 0.82 + R() * 0.1, rad = 14 + R() * 3.5, g = grow(t);
+    layers.push(`radial-gradient(circle at ${cx.toFixed(1)}% ${cy.toFixed(1)}%, #0000 calc(${rad.toFixed(1)}vmax * ${g} * 0.5), #000 calc(${rad.toFixed(1)}vmax * ${g}))`);
+  }
+  for (let k = 0; k < 30; k++) {                                                    // spatters that land just ahead of the spray
+    const cx = R() * 100, cy = R() * 100, t = Math.max(0.01, (cx + cy) / 200 * 0.82 - 0.02 - R() * 0.07), rad = 0.3 + R() * 0.8;
+    const g = `clamp(0, (var(--sp) - ${t.toFixed(3)}) * 30, 1)`;
+    layers.push(`radial-gradient(circle at ${cx.toFixed(1)}% ${cy.toFixed(1)}%, #0000 calc(${rad.toFixed(2)}vmax * ${g}), #000 calc(${(rad + 0.14).toFixed(2)}vmax * ${g}))`);
+  }
+  const img = layers.join(',');
+  v.style.setProperty('--sp', '0');
+  v.style.webkitMaskImage = img; v.style.maskImage = img;
+  v.style.webkitMaskComposite = 'source-in'; v.style.maskComposite = 'intersect';
+  void v.offsetWidth;
+  v.style.transition = `--sp ${DUR}ms linear`;
+  requestAnimationFrame(() => requestAnimationFrame(() => v.style.setProperty('--sp', String(END))));
+  setTimeout(() => B.classList.add('spray-go'), 1100);                              // the home text starts drawing before the wipe is done
+  let fin = false;
   const finish = () => {
-    done = true;
-    document.body.classList.remove('spraying', 'spray-go'); document.body.classList.add('spray-done');
-    v.classList.remove('on', 'in', 'logo', 'shift', 'leaving'); v.style.maskImage = v.style.webkitMaskImage = ''; v.style.maskSize = v.style.webkitMaskSize = '';
-    if (curUrl) URL.revokeObjectURL(curUrl);
-    setTimeout(() => { document.body.classList.remove('spray-done'); entering = false; }, 700);
+    if (fin) return; fin = true;
+    B.classList.remove('spraying', 'spray-go'); B.classList.add('spray-done');
+    v.classList.remove('on', 'in', 'logo', 'shift', 'leaving');
+    v.style.transition = ''; v.style.removeProperty('--sp'); v.style.maskImage = v.style.webkitMaskImage = ''; v.style.maskComposite = v.style.webkitMaskComposite = '';
+    setTimeout(() => { B.classList.remove('spray-done'); entering = false; }, 700);
   };
-  const frame = now => {
-    const u = Math.min(1, (now - t0) / DUR), p = pos(u);
-    const rad = step * 0.62;
-    if (last) { const n = Math.ceil(Math.hypot(p[0] - last[0], p[1] - last[1]) / 7) + 1; for (let i = 1; i <= n; i++) puff(last[0] + (p[0] - last[0]) * i / n, last[1] + (p[1] - last[1]) * i / n, rad); } else puff(p[0], p[1], rad);
-    last = p;
-    if (u > 0.5 && !document.body.classList.contains('spray-go')) document.body.classList.add('spray-go');   // the home text starts drawing before the wipe is done
-    if (u >= 0.88) { c.fillStyle = 'rgba(0,0,0,' + ((u - 0.88) * 2.4).toFixed(3) + ')'; c.fillRect(0, 0, W, H); }   // sweep up any gaps at the very end
-    if (now - lastDraw > 40) { lastDraw = now; push(); }
-    if (u < 1) requestAnimationFrame(frame); else finish();
-  };
-  requestAnimationFrame(frame);
+  v.addEventListener('transitionend', e => { if (e.propertyName === '--sp') finish(); });
+  setTimeout(finish, DUR + 500);
 }
 $('ldEnter').addEventListener('click', e => { e.preventDefault(); enterSite(); });
 document.addEventListener('keydown', e => {
@@ -3153,7 +3182,8 @@ requestAnimationFrame(frame);
     const corners = [[8, 92], [94, 6], [92, 90], [6, 8]];
     corners.forEach(([x, y], k) => { if (rnd() < [0.5, 0.9, 0.7, 0.4][v]) L.push(`radial-gradient(circle at ${x}% ${y}%, rgba(255,255,255,${(0.08 + rnd() * 0.14).toFixed(2)}), transparent ${(12 + rnd() * 18).toFixed(0)}%)`); });
     if (v === 2) for (let k = 0; k < 3; k++) L.push(`radial-gradient(circle at ${(10 + rnd() * 80).toFixed(0)}% ${(10 + rnd() * 80).toFixed(0)}%, rgba(255,240,200,${(0.05 + rnd() * 0.06).toFixed(2)}), transparent ${(6 + rnd() * 9).toFixed(0)}%)`);   // faded patches
-    if (v === 3) L.push(`radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1.4px) 0 0 / 7px 7px`);                                                                                       // faint halftone wear
+    { const ds = 5 + rnd() * 4.5, dr = 0.9 + rnd() * 0.5, da = (0.06 + rnd() * 0.07).toFixed(3), ox = Math.round(rnd() * 9), oy = Math.round(rnd() * 9);   // the halftone dots, a different size and strength on each cover
+      L.push(`radial-gradient(rgba(255,255,255,${v === 3 ? 0.1 : da}) ${dr.toFixed(1)}px, transparent ${(dr + 0.4).toFixed(1)}px) ${ox}px ${oy}px / ${(v === 3 ? 7 : ds).toFixed(1)}px ${(v === 3 ? 7 : ds).toFixed(1)}px`); }
     return { pt: `url("data:image/svg+xml;utf8,${encodeURIComponent(svg).replace(/'/g, '%27')}")`, sc: L.join(', '), po: [0.5, 0.42, 0.55, 0.46][v] };
   }
   /* ---- title: split it like "UNC VS. / NOTRE DAME", and size it to fit the banner (the banner grows a little if it must) ---- */
@@ -3176,18 +3206,16 @@ requestAnimationFrame(frame);
   }
   function fitTitle(title) {
     const lines = titleLines(title), mx = Math.max(...lines.map(emWidth)), n = lines.length;
-    let fs = Math.min(0.072, 0.455 / mx);                              // width: the space between the stamp and the logo
-    const bnr0 = 0.17, need = n * 1.05 * fs;                           // in units of the cover width
-    const avail = bnr0 * 0.74 * 0.8;                                   // the banner's usable height, in the same units
-    let bnr = bnr0;
-    if (need > avail) { bnr = Math.min(0.26, need / (0.74 * 0.8)); if (need / (0.74 * 0.8) > 0.26) fs = (0.26 * 0.74 * 0.8) / (n * 1.05); }
+    const fsW = Math.min(0.12, 0.455 / mx);                            // as large as the space between the stamp and the logo allows
+    const bnr = Math.min(0.26, Math.max(0.17, n * 1.05 * fsW * 0.74 / 0.8));   // the banner is as tall as that size needs (never less than the standard height)
+    const fs = Math.min(fsW, bnr / 0.74 * 0.8 / (n * 1.05));            // and the size is finally limited by the banner's own height
     return { lines, fs: +fs.toFixed(4), bnr: +bnr.toFixed(4) };
   }
   function comicCover(c, i, paper) {
     const ft = fitTitle(c.title);
     return `<span class="mg-cover" style="--pt:${paper.pt.replace(/"/g, "'")};--sc:${paper.sc};--po:${paper.po};--fs:${ft.fs};--bnr:${ft.bnr}"><span class="mg-art"><img src="${esc(coverOf(c))}" alt="" draggable="false"></span>` +
       `<span class="mg-banner hasmark"><span class="ttl">${ft.lines.map(l => `<span class="ln">${esc(l)}</span>`).join('')}</span><span class="vol">Vol. ${i + 1}</span></span>` +
-      `<span class="mg-corner"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i><u>${cmYear(c)}<br>${cmMonth(c)}</u></span></span>` +
+      `<span class="mg-corner"><span class="stp"><b>${c.photos.filter(p => p.src).length}</b><i>PHOTOS</i><u><s>${cmMonth(c)}</s><em>${cmYear(c)}</em></u></span></span>` +
       `<img class="mg-mark" src="${esc(SITE.logo || 'images/logo.png')}" alt="" draggable="false"></span>`;
   }
   const papers = [];
@@ -3313,8 +3341,7 @@ requestAnimationFrame(frame);
     if (instant === true || reduceMotion) { moving = true; hardClose(); return; }
     moving = true;
     if (cur > 0) {                                                    // from any page: turn back to the cover first, so the shrink below never shows a cut
-      const ms = Math.max(240, Math.min(620, 1700 / cur));
-      while (cur > 0) { flip(-1, ms); await new Promise(r => { const t = setInterval(() => { if (!busy) { clearInterval(t); r(); } }, 20); }); }
+      await returnToCover();
     }
     cur = 0; mag.style.transition = 'none'; settle(); show(); void mag.offsetWidth; mag.style.transition = '';
     window.scrollTo(0, 0);
@@ -3343,6 +3370,7 @@ requestAnimationFrame(frame);
   function show() {
     mag.style.transform = cur === 0 ? 'translateX(-25%)' : cur === L ? 'translateX(25%)' : 'none';
     prev.disabled = cur === 0; next.disabled = cur === L;
+    $('magBack').textContent = cur === 0 ? 'Leave' : 'Back to start';
     $('magFoot').textContent = cur === 0 ? 'Cover' : cur === L ? 'Back cover' : `Pages ${cur * 2} – ${cur * 2 + 1} of ${pages.length}`;
   }
 
@@ -3370,6 +3398,32 @@ requestAnimationFrame(frame);
     anims[0].onfinish = () => {
       settle(); anims.forEach(a => a.cancel()); busy = false; show();
     };
+  }
+
+  /* all the pages riffle back to the cover together: quick, overlapping, one smooth sweep */
+  function returnToCover() {
+    if (busy || cur === 0) return Promise.resolve();
+    busy = true;
+    const n = cur, dur = reduceMotion ? 1 : 360, st = reduceMotion ? 0 : Math.min(70, 600 / Math.max(1, n - 1)), N = 16, jobs = [];
+    cur = 0; show();
+    return new Promise(res => {
+      let left = n;
+      for (let k = 0; k < n; k++) {
+        const idx = n - 1 - k, leaf = leaves[idx];
+        setTimeout(() => {
+          const fs = leaf.querySelector('.pg.front .shd'), bs = leaf.querySelector('.pg.back .shd'), lk = [], sk = [];
+          for (let i = 0; i <= N; i++) {
+            const p = i / N, e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2, th = -180 * (1 - e), lean = Math.sin(Math.PI * e) * 3.2;
+            lk.push({ offset: p, transform: `rotateY(${th.toFixed(2)}deg) skewY(${lean.toFixed(2)}deg)` });
+            sk.push({ offset: p, opacity: +(0.5 * (1 - Math.abs(Math.cos(th * Math.PI / 180)))).toFixed(3) });
+          }
+          leaf.style.zIndex = 500; leaf.classList.remove('flipped');
+          const o = { duration: dur, easing: 'linear', fill: 'forwards' };
+          const an = [leaf.animate(lk, o), fs.animate(sk, o), bs.animate(sk, o)]; jobs.push(an);
+          an[0].onfinish = () => { leaf.style.zIndex = L - idx; if (--left === 0) { settle(); jobs.forEach(a => a.forEach(x => x.cancel())); busy = false; show(); res(); } };
+        }, st * k);
+      }
+    });
   }
 
   /* ---- controls ---- */
@@ -3400,7 +3454,10 @@ requestAnimationFrame(frame);
     const now = performance.now(); if (now - pageWheel < 420) return; pageWheel = now;
     flip(d > 0 ? 1 : -1);
   }, { passive: false });
-  $('magBack').addEventListener('click', () => closeMagazine());
+  $('magBack').addEventListener('click', async () => {
+    for (let k = 0; busy && k < 100; k++) await new Promise(r => setTimeout(r, 30));      // a page still turning finishes first
+    if (cur > 0) returnToCover(); else closeMagazine();
+  });
   $('mgEnter').addEventListener('click', () => enterMagazine(eventsWithPhotos[act]));
   prev.addEventListener('click', () => flip(-1));
   next.addEventListener('click', () => flip(1));
