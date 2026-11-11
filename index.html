@@ -847,6 +847,12 @@
     text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad, #0d1b2e), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad, #0d1b2e), calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--ad, #0d1b2e); }
   .edge.el::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.3), rgba(0,0,0,0.05) 65%, transparent); pointer-events: none; }   /* darker at the back, fading to nothing where it meets the cover */
   .edge.el b { font-weight: 600; flex: none; } .edge.el i { font-style: normal; flex: none; } .edge.el span { flex: 1 1 auto; min-height: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; } .edge.el em { font-style: normal; flex: none; font-weight: 500; }
+  /* the Showcase spine ends in an infinity sign: lying flat across the spine, wide and low, so it can't be read as an 8, in gold foil with the same jitter and shadow as the headings */
+  .edge.el em.inf { width: calc(var(--T) * 1.05); height: calc(var(--T) * 0.5); margin-bottom: calc(var(--T) * 0.1);
+    background: linear-gradient(110deg, #c08610 0%, #ffe27a 22%, #f4b81f 42%, #fff4b4 58%, #e3a413 78%, #c08610 100%); background-size: 260% 100%; animation: goldFoil 4.5s ease-in-out infinite alternate;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 24'><path d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / 100% auto no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 24'><path d='M32 12C24 3 6 2 5 12C6 22 24 21 32 12C40 3 58 2 59 12C58 22 40 21 32 12Z' fill='none' stroke='black' stroke-width='5.4' stroke-linejoin='round' stroke-linecap='round'/></svg>") center / 100% auto no-repeat;
+    filter: url(#titleWobble) drop-shadow(calc(var(--u) * 1) calc(var(--u) * 1) 0 #4a3204) drop-shadow(calc(var(--u) * 2) calc(var(--u) * 2) 0 rgba(40, 28, 4, 0.7)); }
   .edge.el.foil { color: #1b2130; animation: foilMove 8s ease-in-out infinite alternate; text-shadow: none; }
   .mg-card.side .edge { filter: brightness(0.62); }
   /* the cards fade through their contents, never as a whole: a faded card is flattened, which made the thickness vanish and then pop back in */
@@ -3526,7 +3532,7 @@ requestAnimationFrame(frame);
     $('magMeta').textContent = plural0(eventsWithPhotos.length, 'magazine');
     eventsWithPhotos.forEach((c, i) => { if (!papers[i]) papers[i] = paperFor(i); });
     stage.innerHTML = eventsWithPhotos.map((c, i) =>
-      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><i>&middot;</i><span>${esc(c.title)}</span>${c.special ? '' : `<em>${cmMonth(c)} ${cmYear(c)}</em>`}</span><span class="dim"></span></div>`).join('');
+      `<div class="mg-card" role="button" tabindex="0" data-i="${i}" aria-label="${esc(c.title)} comic">${comicCover(c, i, papers[i])}<span class="edge er"></span><span class="edge el${c.special ? ' foil' : ''}"><b>Vol ${i === 0 ? '&#9733;' : roman(i)}</b><i>&middot;</i><span>${esc(c.title)}</span>${c.special ? '<em class="inf" aria-hidden="true"></em>' : `<em>${cmMonth(c)} ${cmYear(c)}</em>`}</span><span class="dim"></span></div>`).join('');
     stage.querySelectorAll('.mg-card').forEach(card => { const im = card.querySelector('.mg-art img'), c = eventsWithPhotos[+card.dataset.i]; const go = () => tintCover(im, c); im.complete ? go() : im.addEventListener('load', go, { once: true }); });
     layoutFlow();
   }
