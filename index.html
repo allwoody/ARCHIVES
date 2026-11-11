@@ -211,6 +211,8 @@
     transform-origin: 50% 50%; animation: logo-sway 7s ease-in-out infinite, logo-flick 6s steps(1, end) infinite; }
   .home-logo .logo-text { display: block; text-align: center; font-size: 34px; letter-spacing: 0.04em; }
   body:not(.is-landing) .home-logo { display: none; }
+  .home-logo .logo-vid { display: block; width: 100%; height: 100%; }
+  .home-logo.has-vid { aspect-ratio: var(--va, 2.5); }
   body.is-home { --m-h: clamp(150px, calc(100vh - 470px), 560px); }
 
   /* ---------- home marquee (drag it, or let it drift) ---------- */
@@ -333,9 +335,9 @@
     cursor: default;
   }
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .grail { position: absolute; top: 0; right: 14px; z-index: 2; width: 40px; height: 58px; pointer-events: none; display: block;
-    background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 3px 5px rgba(0,0,0,0.45)); }
-  .grail i { position: absolute; left: 0; right: 0; top: 5px; text-align: center; font-style: normal; font-size: 42px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
+  .grail { position: absolute; top: 0; right: 9px; z-index: 2; width: 20px; height: 29px; pointer-events: none; display: block;
+    background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
+  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
   .grail.big { position: absolute; width: 54px; height: 78px; right: auto; z-index: 3; }
   .grail.big i { top: 7px; font-size: 62px; }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
@@ -1228,6 +1230,7 @@
       <h1 class="sr-only">Allwood Archives</h1>
       <div class="ld-logo">
         <a class="home-logo" href="#home" id="homeLogo" aria-label="Allwood Archives">
+          <canvas id="homeLogoVid" class="logo-vid" aria-hidden="true" hidden></canvas>
           <img id="homeLogoImg" alt="" style="display:none">
           <span class="logo-text" id="homeLogoText" style="display:none"></span>
         </a>
@@ -1461,6 +1464,67 @@ document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0)
   img.onerror = () => { img.style.display = 'none'; txt.style.display = 'block'; };
   img.src = site.logo || 'images/logo.png';
 })();
+
+/* ---------- the animated logo on the landing page ----------
+   The video was shot on a green screen. Each frame is drawn to a canvas and the green is taken out as it goes: where a pixel is part
+   green, that much of it is made transparent (the logo itself is only black and white, so the green is easy to measure and no
+   green is left round the edges). It plays through once, then the last 3 seconds loop for as long as the page is open.
+   The file is  images/allwood_animated.mp4  (or set  logoVideo: "..."  in SITE). If it is missing, the still logo is shown instead. */
+const logoVid = (function () {
+  const cv = $('homeLogoVid'), box = $('homeLogo'), still = $('homeLogoImg'), LOOP = 3;
+  let v = null, ctx = null, W = 0, H = 0, ok = false, raf = 0, running = false, stopT = 0, last = -1;
+  const still_ = () => reduceMotion;
+  function draw() {
+    if (!ok || v.readyState < 2) return;
+    ctx.drawImage(v, 0, 0, W, H);
+    const im = ctx.getImageData(0, 0, W, H), d = im.data;
+    for (let i = 0, n = d.length; i < n; i += 4) {
+      const r = d[i], g = d[i + 1], b = d[i + 2];
+      let a = 1 - (g - r) / 251;                                       // green: 251, red: 0 in the backdrop
+      a = (a - 0.05) / 0.88; a = a < 0 ? 0 : a > 1 ? 1 : a;
+      if (a < 0.004) { d[i + 3] = 0; continue; }
+      let f = (r / a + (b - (1 - a) * 56) / a) / 2; f = f < 0 ? 0 : f > 255 ? 255 : f;
+      d[i] = d[i + 1] = d[i + 2] = f; d[i + 3] = a * 255;
+    }
+    ctx.putImageData(im, 0, 0);
+  }
+  function tick() {
+    raf = 0; if (!running) return;
+    if (v.currentTime !== last) { last = v.currentTime; draw(); }
+    if (v.duration && v.currentTime >= v.duration - 0.06) { v.currentTime = Math.max(0, v.duration - LOOP); const p = v.play(); if (p && p.catch) p.catch(() => {}); }   // after the full play, only the last 3 seconds repeat
+    raf = requestAnimationFrame(tick);
+  }
+  function init() {
+    if (v) return;
+    const src = site.logoVideo || 'images/allwood_animated.mp4';
+    v = document.createElement('video');
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = 'auto'; v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1';
+    v.addEventListener('loadeddata', () => {
+      W = v.videoWidth; H = v.videoHeight; if (!W || !H) return;
+      cv.width = W; cv.height = H; ctx = cv.getContext('2d', { willReadFrequently: true });
+      box.style.setProperty('--va', (W / H).toFixed(4));
+      ok = true; box.classList.add('has-vid'); cv.hidden = false; still.style.display = 'none';
+      if (still_()) { v.currentTime = Math.max(0, v.duration - 0.1); } else { v.currentTime = 0; }
+      v.addEventListener('seeked', draw, { once: true });
+      draw();
+    });
+    v.addEventListener('error', () => { ok = false; cv.hidden = true; box.classList.remove('has-vid'); still.style.display = still.naturalWidth ? 'block' : 'none'; });
+    document.body.appendChild(v);
+    v.src = src; v.load();
+  }
+  return {
+    init,
+    play() {                                                            // called as the logo starts to fade in
+      clearTimeout(stopT); if (!v) init(); if (still_()) return;
+      const go = () => { if (!ok) return; running = true; last = -1; v.currentTime = 0; const p = v.play(); if (p && p.catch) p.catch(() => {}); if (!raf) raf = requestAnimationFrame(tick); };
+      if (ok) go(); else v.addEventListener('loadeddata', () => setTimeout(go, 30), { once: true });
+    },
+    stop() { clearTimeout(stopT); stopT = setTimeout(() => { running = false; if (v) v.pause(); }, 1200); },   // keeps playing while the logo fades out
+    rewind() { clearTimeout(stopT); running = false; if (v && ok) { v.pause(); v.currentTime = 0; } }
+  };
+})();
+logoVid.init();
 
 (function setupTextPages() {
   const about = Array.isArray(site.about) ? site.about : [];
@@ -2969,11 +3033,11 @@ async function renderCollection(c, focusSrc) {
 
 /* ---------- landing page ---------- */
 let ldTimers = [];
-function stopLanding() { ldTimers.forEach(clearTimeout); ldTimers = []; }
+function stopLanding() { ldTimers.forEach(clearTimeout); ldTimers = []; logoVid.stop(); }
 function startLanding() {
   stopLanding();
   const v = $('view-landing'), cols = $('ldCols');
-  v.classList.remove('in', 'logo', 'shift');
+  v.classList.remove('in', 'logo', 'shift'); logoVid.rewind();
   const favs = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []), pool = [];
   BY_DATE.forEach(c => {                                             // the very same picks the Favorites comics use
     const all = c.photos.filter(p => p.src); let picks = all.filter(p => favs.has(p.src));
@@ -3009,7 +3073,7 @@ function startLanding() {
   ready.then(() => {
     if (!v.classList.contains('on')) return;
     v.classList.add('in');                                          // photos fade in
-    at(1000, () => v.classList.add('logo'));                        // about a second later the logo comes in
+    at(1000, () => { v.classList.add('logo'); logoVid.play(); });    // about a second later the logo fades in and starts to play
     at(1000 + 1200 + 3000, () => v.classList.add('shift'));         // after ~3 s on screen it lifts to reveal Enter site
   });
 }
@@ -3310,12 +3374,10 @@ window.addEventListener('hashchange', route);
 route();
 requestAnimationFrame(frame);
 
-/* ---------- paper texture + living dot grid ----------
+/* ---------- paper texture + hand-drawn graph paper ----------
    Two layers. The paper itself (soft blotches, grain, fibres) is drawn once
-   into a tiled image. The dotted graph-paper grid is a live canvas behind the
-   page: every dot is nudged, sized and weighted a little differently, a few
-   of them slowly twinkle, and any dots near the cursor dim at once, then
-   fade back in once the cursor has moved on. */
+   into a tiled image. The graph-paper grid is a second tiled image that
+   slowly slides across behind the page. */
 (function paperTexture() {
   const ink = (getComputedStyle(document.documentElement).getPropertyValue('--rgb-ink').trim() || '241,239,234');
   let seed = 20261109;
@@ -3355,30 +3417,54 @@ requestAnimationFrame(frame);
     document.head.appendChild(st);
   } catch (_) {}
 
-  /* 2. the dots: drawn once into a tile. The tile slides with a CSS animation (no JavaScript each frame),
-        and the dots near the cursor are masked out. Nothing blinks. */
+  /* 2. the graph paper: drawn once into a tile, by hand, so it is never quite right. Every line is a run of strokes of different lengths: some stop short,
+        some fade out, some are pressed harder for a stretch, a few are gone over twice. The tile slides across with a CSS animation (no JavaScript each frame). */
   try {
     const STEP = 24, N = 40, T = STEP * N, dpr = Math.min(2, window.devicePixelRatio || 1);
-    const hash = (a, b, n) => {
-      let h = (a * 374761393 + b * 668265263 + n * 2246822519) >>> 0;
-      h = ((h ^ (h >>> 13)) * 1274126177) >>> 0;
-      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-    };
     const cv = document.createElement('canvas'); cv.width = cv.height = T * dpr;
-    const c = cv.getContext('2d'); c.scale(dpr, dpr);
-    for (let gy = 0; gy < N; gy++) for (let gx = 0; gx < N; gx++) {
-      if (hash(gx, gy, 1) < 0.035) continue;                              // a dot that never printed
-      const major = (gx % 5 === 0 && gy % 5 === 0);
-      const x = gx * STEP + STEP / 2 + (hash(gx, gy, 2) - 0.5) * 2.6, y = gy * STEP + STEP / 2 + (hash(gx, gy, 3) - 0.5) * 2.6;
-      const r = (major ? 1.35 : 0.85) * (0.75 + hash(gx, gy, 4) * 0.6);
-      const a = Math.min(0.85, (major ? 0.44 : 0.27) * (0.45 + hash(gx, gy, 5) * 0.85) * (hash(gx, gy, 6) < 0.2 ? 1.9 : 1));
-      c.fillStyle = 'rgba(' + ink + ',' + a.toFixed(3) + ')';
-      c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill();
+    const c = cv.getContext('2d'); c.scale(dpr, dpr); c.lineCap = 'round';
+    const col = a => 'rgba(' + ink + ',' + a.toFixed(3) + ')';
+    /* one pen stroke from (x0,y0) to (x1,y1): horizontal when h is true. It may fade out at the far end and may be pressed harder over a short stretch. */
+    const stroke = (x0, y0, x1, y1, w, a, fade, h) => {
+      const len = Math.hypot(x1 - x0, y1 - y0);
+      c.lineWidth = w;
+      if (fade > 0 && len > fade) {
+        const g = c.createLinearGradient(x0, y0, x1, y1), k = 1 - fade / len;
+        g.addColorStop(0, col(a)); g.addColorStop(k, col(a)); g.addColorStop(1, col(0));
+        c.strokeStyle = g;
+      } else c.strokeStyle = col(a);
+      c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+    };
+    const lineRun = (pos, major, h) => {
+      const base = major ? 0.85 : 0.55, alpha = major ? 0.075 : 0.042;
+      let t = rnd() * 70;                                              // where the first stroke begins
+      while (t < T) {
+        if (rnd() < 0.2) { t += 8 + rnd() * 70; continue; }              // the pen lifted: a gap
+        const len = 50 + Math.pow(rnd(), 1.6) * (rnd() < 0.15 ? 760 : 330);
+        const drift = (rnd() - 0.5) * 1.5, wob = (rnd() - 0.5) * 1.1;   // a line never stays exactly straight or exactly on its row
+        const w = base * (0.8 + rnd() * 0.55), a = alpha * (0.6 + rnd() * 0.75), fade = rnd() < 0.45 ? 40 + rnd() * 110 : 0;
+        const e = t + len;
+        for (const o of [0, -T]) {                                      // drawn again one tile back, so strokes that run off the edge carry on seamlessly
+          if (e + o < 0) continue;
+          const s0 = t + o, s1 = e + o;
+          if (h) stroke(s0, pos + wob, s1, pos + wob + drift, w, a, fade, true); else stroke(pos + wob, s0, pos + wob + drift, s1, w, a, fade, false);
+          if (rnd() < 0.3) {                                            // pressed harder for a stretch
+            const l2 = 18 + rnd() * 80, st = s0 + rnd() * Math.max(1, len - l2), f = (st - s0) / len;
+            const q = wob + drift * f;
+            if (h) stroke(st, pos + q, st + l2, pos + q + drift * l2 / len, w * (1.5 + rnd() * 0.7), a * 0.7, 0, true); else stroke(pos + q, st, pos + q + drift * l2 / len, st + l2, w * (1.5 + rnd() * 0.7), a * 0.7, 0, false);
+          }
+        }
+        if (rnd() < 0.04) { t += len * (0.4 + rnd() * 0.3); } else t += len + 2 + rnd() * 26;   // sometimes the next stroke starts back over the last one
+      }
+    };
+    for (let i = 0; i < N; i++) {
+      const major = i % 5 === 0;
+      lineRun(i * STEP + STEP / 2 + (rnd() - 0.5) * 1.6, major, true);   // across
+      lineRun(i * STEP + STEP / 2 + (rnd() - 0.5) * 1.6, major, false);  // down
     }
     const url = cv.toDataURL('image/png');
     const st = document.createElement('style');
     st.textContent = '#dotWrap{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;}' +
-      '#dotWrap.dim{-webkit-mask-image:radial-gradient(circle 84px at var(--mx) var(--my),rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 22%,#000 100%);mask-image:radial-gradient(circle 84px at var(--mx) var(--my),rgba(0,0,0,0.06) 0,rgba(0,0,0,0.06) 22%,#000 100%);}' +
       '#dotLayer{position:absolute;left:-' + T + 'px;top:0;width:calc(100% + ' + T + 'px);height:100%;background-image:url(' + url + ');background-size:' + T + 'px ' + T + 'px;background-repeat:repeat;will-change:transform;animation:dotslide 160s linear infinite;}' +
       '@keyframes dotslide{from{transform:translate3d(0,0,0)}to{transform:translate3d(' + T + 'px,0,0)}}' +
       '@media (prefers-reduced-motion:reduce){#dotLayer{animation:none;}}';
@@ -3386,16 +3472,6 @@ requestAnimationFrame(frame);
     const wrap = document.createElement('div'); wrap.id = 'dotWrap'; wrap.setAttribute('aria-hidden', 'true');
     const layer = document.createElement('div'); layer.id = 'dotLayer'; wrap.appendChild(layer);
     document.body.insertBefore(wrap, document.body.firstChild);
-    let px = 0, py = 0, queued = false;
-    const paint = () => { queued = false; wrap.style.setProperty('--mx', px + 'px'); wrap.style.setProperty('--my', py + 'px'); };
-    window.addEventListener('pointermove', e => {
-      if (e.pointerType === 'touch') return;
-      px = e.clientX; py = e.clientY;
-      if (!wrap.classList.contains('dim')) { wrap.classList.add('dim'); paint(); }
-      else if (!queued) { queued = true; requestAnimationFrame(paint); }
-    }, { passive: true });
-    document.addEventListener('pointerleave', () => wrap.classList.remove('dim'));
-    window.addEventListener('blur', () => wrap.classList.remove('dim'));
   } catch (_) {}
 })();
 
