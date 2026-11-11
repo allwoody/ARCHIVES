@@ -152,7 +152,7 @@
     text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    outline: none;
+    outline: none; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55); padding-bottom: 3px; margin-bottom: -3px;
   }
   .nav .head a { color: var(--ink); }
   .nav .head:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
@@ -335,9 +335,9 @@
   .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .grail { position: absolute; top: 0; right: 9px; z-index: 2; width: 20px; height: 29px; pointer-events: none; display: block;
     background: linear-gradient(180deg, #ffffff, #ecedef); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45)); }
-  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; color: #d9a420; filter: url(#starDeboss); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
+  .grail i { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font-style: normal; font-size: 13px; line-height: 1; background: linear-gradient(160deg, #fff0a6 0%, #f6c93a 34%, #d9a01c 62%, #a8740e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: url(#starDebossS); }   /* no drop shadow: a bevel, dark on the top left edge and light on the bottom right, so the star looks pressed in like a cookie-cutter cut */
   .grail.big { position: absolute; width: 34px; height: 50px; right: auto; z-index: 3; }
-  .grail.big i { top: 8px; font-size: 22px; }
+  .grail.big i { top: 8px; font-size: 22px; filter: url(#starDeboss); }
   .tile.glow { z-index: 3; animation: tileGlow 2.4s ease-out both; }
   @keyframes tileGlow { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0), 0 0 0 0 rgba(255,255,255,0); filter: brightness(1); }
     22% { box-shadow: 0 0 0 3px rgba(255,255,255,0.95), 0 0 46px 14px rgba(255,255,255,0.6); filter: brightness(1.14); }
@@ -493,6 +493,7 @@
   main:has(#view-index.on) footer { display: none; }
   .ix-split { display: grid; grid-template-columns: 1fr 1fr; height: calc(100vh - 36px); min-height: 0; }
   .ix-left { min-width: 0; min-height: 0; overflow-y: auto; padding: 0 36px 40px 0; scrollbar-width: thin; }
+  @media (min-width: 721px) { .ix-left { margin: -24px 0 0 -18px; padding: 24px 36px 40px 18px; } }   /* room above and to the left, so the wobbling title is never clipped by the scrolling column */
   .ix-right {                                   /* runs from the top edge to the bottom edge of the screen */
     margin-top: -36px; height: 100vh;
     display: flex; flex-direction: column; min-height: 0; min-width: 0;
@@ -876,7 +877,7 @@
   .mg-corner u { text-decoration: none; display: flex; flex-direction: column; align-items: center; width: 72%; border-top: calc(var(--u) * 1.5) solid rgba(255,244,216,0.8); padding-top: calc(var(--u) * 3); font-weight: 500; }
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
-  /* the Redline book: shiny silver foil, with a slow shimmer */
+  /* the Apex book: shiny silver foil, with a slow shimmer */
   .mg-cover.foil { --ac: linear-gradient(115deg, #aeb4c0 0%, #f3c9dc 9%, #dfe3ea 18%, #b9aee0 27%, #c9ced8 36%, #a6d8ea 45%, #f4f6f9 54%, #f0bfd6 63%, #bfc5d0 72%, #c7b6e8 81%, #e1e5ec 90%, #aeb4c0 100%); --ad: rgba(255, 255, 255, 0.85); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 8s ease-in-out infinite alternate; }
   .mg-cover.foil .ttl, .mg-cover.foil .vol, .mg-cover.foil .stp { color: #1b2130; }
@@ -1154,21 +1155,35 @@
   <ul class="nav" id="nav"></ul>
 </aside>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="starDeboss" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="3" seed="7" result="n"/>
-  <feColorMatrix in="n" type="matrix" values="0.9 0.9 0 0 -0.22  0.9 0.9 0 0 -0.22  0.9 0.9 0 0 -0.22  0 0 0 0 1" result="gray"/>
-  <feComposite in="gray" in2="SourceAlpha" operator="in" result="grayIn"/>
-  <feBlend in="SourceGraphic" in2="grayIn" mode="multiply" result="grit"/>
-  <feOffset in="SourceAlpha" dx="1.7" dy="1.7" result="o1"/>
+  <feGaussianBlur in="SourceAlpha" stdDeviation="1.15" result="dome"/>
+  <feSpecularLighting in="dome" surfaceScale="4" specularConstant="1.2" specularExponent="30" lighting-color="#fffbe2" result="spec"><feDistantLight azimuth="235" elevation="46"/></feSpecularLighting>
+  <feComposite in="spec" in2="SourceAlpha" operator="in" result="gloss"/>
+  <feOffset in="SourceAlpha" dx="2.4" dy="2.4" result="o1"/>
   <feComposite in="SourceAlpha" in2="o1" operator="out" result="edgeTL"/>
-  <feGaussianBlur in="edgeTL" stdDeviation="0.45" result="edgeTLb"/>
-  <feFlood flood-color="#2a1a00" flood-opacity="0.85"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
-  <feOffset in="SourceAlpha" dx="-1.1" dy="-1.1" result="o2"/>
+  <feGaussianBlur in="edgeTL" stdDeviation="0.5" result="edgeTLb"/>
+  <feFlood flood-color="#1c1000" flood-opacity="0.95"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
+  <feOffset in="SourceAlpha" dx="-0.7" dy="-0.7" result="o2"/>
   <feComposite in="SourceAlpha" in2="o2" operator="out" result="edgeBR"/>
-  <feFlood flood-color="#fff2b8" flood-opacity="0.45"/><feComposite in2="edgeBR" operator="in" result="lit"/>
-  <feOffset in="SourceAlpha" dx="0.9" dy="0.9" result="o3"/>
+  <feFlood flood-color="#fff2b8" flood-opacity="0.3"/><feComposite in2="edgeBR" operator="in" result="lit"/>
+  <feOffset in="SourceAlpha" dx="0.6" dy="0.6" result="o3"/>
   <feComposite in="o3" in2="SourceAlpha" operator="out" result="rimBR"/>
-  <feFlood flood-color="#ffffff" flood-opacity="0.75"/><feComposite in2="rimBR" operator="in" result="rim"/>
-  <feMerge><feMergeNode in="grit"/><feMergeNode in="lit"/><feMergeNode in="shade"/><feMergeNode in="rim"/></feMerge>
+  <feFlood flood-color="#ffffff" flood-opacity="0.55"/><feComposite in2="rimBR" operator="in" result="rim"/>
+  <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="gloss"/><feMergeNode in="lit"/><feMergeNode in="shade"/><feMergeNode in="rim"/></feMerge>
+</filter><filter id="starDebossS" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="dome"/>
+  <feSpecularLighting in="dome" surfaceScale="4" specularConstant="1.2" specularExponent="30" lighting-color="#fffbe2" result="spec"><feDistantLight azimuth="235" elevation="46"/></feSpecularLighting>
+  <feComposite in="spec" in2="SourceAlpha" operator="in" result="gloss"/>
+  <feOffset in="SourceAlpha" dx="1.3" dy="1.3" result="o1"/>
+  <feComposite in="SourceAlpha" in2="o1" operator="out" result="edgeTL"/>
+  <feGaussianBlur in="edgeTL" stdDeviation="0.3" result="edgeTLb"/>
+  <feFlood flood-color="#1c1000" flood-opacity="0.95"/><feComposite in2="edgeTLb" operator="in" result="shade"/>
+  <feOffset in="SourceAlpha" dx="-0.4" dy="-0.4" result="o2"/>
+  <feComposite in="SourceAlpha" in2="o2" operator="out" result="edgeBR"/>
+  <feFlood flood-color="#fff2b8" flood-opacity="0.3"/><feComposite in2="edgeBR" operator="in" result="lit"/>
+  <feOffset in="SourceAlpha" dx="0.4" dy="0.4" result="o3"/>
+  <feComposite in="o3" in2="SourceAlpha" operator="out" result="rimBR"/>
+  <feFlood flood-color="#ffffff" flood-opacity="0.55"/><feComposite in2="rimBR" operator="in" result="rim"/>
+  <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="gloss"/><feMergeNode in="lit"/><feMergeNode in="shade"/><feMergeNode in="rim"/></feMerge>
 </filter></svg>
 <div class="music" id="music">
   <button type="button" id="musicBtn" aria-pressed="false" aria-label="Play background music" title="Background music">
@@ -2792,7 +2807,7 @@ function goToTag(k) {
 }
 
 /* ---------- hover preview on a photo tile (desktop only) ---------- */
-const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Redline, and which one
+const grailInfo = src => { const g = window.__grails; return g && g.pos.has(src) ? { n: g.pos.get(src), total: g.total } : null; };   // is this photo one of the Apex, and which one
 const GRAIL_RIBBON = '<span class="grail" aria-label="Portfolio highlight" title="Portfolio highlight"><i>★</i></span>';
 function attachPeek(b, c, p, idx) {
   if (!canHover) return;
@@ -3104,7 +3119,7 @@ function infoHTML(c, p) {
   h += `</div>`;
 
   const gr = p.src ? grailInfo(p.src) : null;
-  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Redline look book</span></div>`;
+  if (gr) h += `<div class="i-grail"><b>★ Portfolio Highlight</b><span>Selection ${gr.n}/${gr.total} · Apex look book</span></div>`;
   const cam = [
     ['Camera', 'camera'], ['Lens', 'lens'], ['Focal length', 'focal'],
     ['Aperture', 'aperture'], ['Shutter', 'shutter'], ['ISO', 'iso']
@@ -3366,12 +3381,22 @@ requestAnimationFrame(frame);
 (function magazines() {
   const grid = $('magGrid'), viewer = $('magViewer'), mag = $('mag'), book = $('magBook'), prev = $('magPrev'), next = $('magNext');
   const SEGS = 26, BEND = 34, FLIP_MS = 1150;
-  /* Vol. 0, "Redline": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
+  /* Vol. 0, "Apex": the all-time favorites from every event. List your own with  allTimeFavorites: ["images/..jpg", ...]  in SETTINGS;
      until you do, it is 15 photos picked at random each time the site opens. */
   const allPics = []; BY_DATE.forEach(c => c.photos.forEach(p => { if (p.src) allPics.push({ c, p }); }));
+  const spreadOut = groups => {                                        // mixes the events at random, never the same event twice in a row (when it can be helped)
+    const g = groups.map(a => a.slice()).filter(a => a.length), out = []; let last = -1;
+    while (g.some(a => a.length)) {
+      const ok = g.map((a, i) => i !== last && a.length ? i : -1).filter(i => i >= 0), pool = ok.length ? ok : g.map((a, i) => a.length ? i : -1).filter(i => i >= 0);
+      const wsum = pool.reduce((t, i) => t + g[i].length, 0); let r = Math.random() * wsum, pick = pool[0];
+      for (const i of pool) { r -= g[i].length; if (r <= 0) { pick = i; break; } }
+      out.push(g[pick].shift()); last = pick;
+    }
+    return out;
+  };
   const FAV_PER = 4, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
-  const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : BY_DATE.flatMap(c => shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER));   // 4 random photos from each event, grouped by event
-  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Redline', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
+  const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : spreadOut(BY_DATE.map(c => shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER)));   // 4 random photos from each event, grouped by event
+  const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Apex', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
   window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
@@ -3513,9 +3538,9 @@ requestAnimationFrame(frame);
   let cur = 0, L = 0, pages = [], leaves = [], busy = false, evt = null;
   const gearHTML = (c, p) => { const h = condensedGear(c, p); return h ? `<div class="gear">${h}</div>` : ''; };
   const photoPage = (c, p) => {
-    const ev = c.special && p._ev ? p._ev : c;                         // in Redline every photo names its own event, and the name is a link to it
+    const ev = c.special && p._ev ? p._ev : c;                         // in Apex every photo names its own event, and the name is a link to it
     const name = c.special && p._ev ? `<a href="#${esc(ev.id)}?photo=${encodeURIComponent(p.src)}" title="Open this event and find the photo">${esc(ev.title)}</a>` : esc(c.title);
-    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Redline pages carry the name, date and score
+    const sp = c.special && p._ev;                                     // the event's own comic already names it at the top, so only Apex pages carry the name, date and score
     const idLine = sp ? `<b>${name}</b><span class="c">${[ev.date, ev.score].filter(Boolean).map(esc).join(' · ')}</span>` : '';
     const head = sp ? `<div class="pg-head"><b>${name}</b>${ev.date ? `<span>${esc(ev.date)}</span>` : ''}${ev.score ? `<span>${esc(ev.score)}</span>` : ''}</div>` : '';
     const photo = `<div class="pg-photo"><img src="${esc(p.src)}" alt="${esc(p.caption || ev.title)}" draggable="false" onload="if(this.naturalWidth/this.naturalHeight<1.12)this.closest('.pg').classList.add('full')"></div>`;
@@ -3556,7 +3581,7 @@ requestAnimationFrame(frame);
     return `<svg viewBox="0 0 ${X + 95 + 9} 68" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="${X + 95 + 9}" height="68" fill="#f4f1e8"/><g fill="#111">${bars.join('')}</g>` +
       `<g fill="#111" font-family="Courier New, monospace" font-size="8.5" font-weight="700">${t(5, d[0])}${t(X + 4, d.slice(1, 7).join(''), 40)}${t(X + 51, d.slice(7).join(''), 40)}</g></svg>`;
   }
-  const faceEl = (pg, side, extra, n) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}${pg.cls === 'cover' || pg.cls === 'endcover' ? '' : `<span class="pg-num">${n}/${pages.length}</span>`}<div class="shd"></div></div>`;
+  const faceEl = (pg, side, extra, n) => `<div class="pg ${side} ${pg.cls} ${extra || ''}">${pg.html}${pg.cls === 'cover' || pg.cls === 'endcover' ? '' : `<span class="pg-num">${n}/${pages.length - 2}</span>`}<div class="shd"></div></div>`;
 
   function openMagazine(c) {
     evt = c; pages = buildPages(c); L = pages.length / 2; cur = 0; busy = false;
