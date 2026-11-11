@@ -1472,13 +1472,13 @@ document.documentElement.style.setProperty('--sway', (Number(CFG.logoSway) || 0)
    green is left round the edges). It plays through once, then the last 3 seconds loop for as long as the page is open.
    The file is  images/allwood_animated.mp4  (or set  logoVideo: "..."  in SITE). If it is missing, the still logo is shown instead. */
 const logoVid = (function () {
-  const cv = $('homeLogoVid'), box = $('homeLogo'), still = $('homeLogoImg');
-  let v = null, ctx = null, W = 0, H = 0, ok = false, raf = 0, running = false, stopT = 0, last = -1;
+  const cv = $('homeLogoVid'), box = $('homeLogo'), still = $('homeLogoImg'), LOOP = 1;
+  let v = null, ctx = null, oc = null, octx = null, W = 0, H = 0, ok = false, raf = 0, running = false, stopT = 0, last = -1;
   const still_ = () => reduceMotion;
   function draw() {
     if (!ok || v.readyState < 2) return;
-    ctx.drawImage(v, 0, 0, W, H);
-    const im = ctx.getImageData(0, 0, W, H), d = im.data;
+    octx.drawImage(v, 0, 0, W, H);
+    const im = octx.getImageData(0, 0, W, H), d = im.data;
     for (let i = 0, n = d.length; i < n; i += 4) {
       const r = d[i], g = d[i + 1], b = d[i + 2];
       let a = 1 - (g - b) / 251;                                       // backdrop is R 56, G 251, B 0
@@ -1487,12 +1487,16 @@ const logoVid = (function () {
       let f = (b / a + (r - (1 - a) * 56) / a) / 2; f = f < 0 ? 0 : f > 255 ? 255 : f;
       d[i] = d[i + 1] = d[i + 2] = f; d[i + 3] = a * 255;
     }
-    ctx.putImageData(im, 0, 0);
+    octx.putImageData(im, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.filter = 'blur(1.7px)';                                          // feathers the keyed edge so it isn't sharp or pixelated
+    ctx.drawImage(oc, 0, 0);
+    ctx.filter = 'none';
   }
   function tick() {
     raf = 0; if (!running) return;
     if (v.currentTime !== last) { last = v.currentTime; draw(); }
-    if (v.ended) { draw(); cv.classList.add('done'); running = false; return; }   // plays once, holds the last frame, then the flicker starts
+    if (v.duration && (v.ended || v.currentTime >= v.duration - 0.05)) { cv.classList.add('done'); v.currentTime = Math.max(0, v.duration - LOOP); const p = v.play(); if (p && p.catch) p.catch(() => {}); }   // after the full play, only the final second repeats (with the flicker)
     raf = requestAnimationFrame(tick);
   }
   function init() {
@@ -1503,7 +1507,7 @@ const logoVid = (function () {
     v.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1';
     v.addEventListener('loadeddata', () => {
       W = v.videoWidth; H = v.videoHeight; if (!W || !H) return;
-      cv.width = W; cv.height = H; ctx = cv.getContext('2d', { willReadFrequently: true });
+      cv.width = W; cv.height = H; ctx = cv.getContext('2d'); oc = document.createElement('canvas'); oc.width = W; oc.height = H; octx = oc.getContext('2d', { willReadFrequently: true });
       box.style.setProperty('--va', (W / H).toFixed(4));
       ok = true; box.classList.add('has-vid'); cv.hidden = false; still.style.display = 'none';
       if (still_()) { v.currentTime = Math.max(0, v.duration - 0.1); } else { v.currentTime = 0; }
