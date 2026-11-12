@@ -876,6 +876,7 @@
   .pg.cover::before, .pg.cover::after { display: none; }
   .mg-banner { position: absolute; left: 0; right: 0; top: 0; height: var(--bn); z-index: 2; background: var(--ac); border-bottom: calc(var(--u) * 3) solid #fff;
     display: flex; align-items: center; gap: 8px; padding: 0 calc(var(--cw) * 0.035) 0 calc(var(--cw) * 0.29); }
+  .mg-banner .ttl .ttl-link { color: inherit; text-decoration: none; display: contents; cursor: pointer; } .mg-banner .ttl .ttl-link:hover .ln { text-decoration: underline; text-underline-offset: 0.12em; text-decoration-thickness: 0.06em; }
   .mg-banner .ttl { flex: 1 1 auto; min-width: 0; font-family: "Oswald", "Arial Narrow", "Franklin Gothic Medium", sans-serif; font-weight: 500; text-transform: uppercase;
     font-size: calc(var(--cw) * var(--fs, 0.06)); line-height: 1.05; letter-spacing: 0.035em; color: #fff4d8; overflow-wrap: break-word; hyphens: none;
     text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 3) 0 var(--ad), calc(var(--u) * 3) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 1) calc(var(--u) * 3) 0 var(--ad), calc(var(--u) * -1) calc(var(--u) * -1) 0 var(--ad);
@@ -3665,7 +3666,8 @@ requestAnimationFrame(frame);
     "images/woodpeckers-jun-2026/first-base-side/180420-a-vu646-1084.jpg",
     "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-2279.jpg"
   ];
-  const SHOWCASE_PICKS = { 'woodpeckers': WOOD_STARS, 'dukesep': dk(['8867','8519','8247','8438','8317','8513','8661','8560','7890','8930','7884']) };
+  const WYO_STARS = [1, 3, 4, 5, 7, 9, 10, 12, 13, 14, 15, 17, 19].map(n => WYO_PAGES[n - 1]);
+  const SHOWCASE_PICKS = { 'wyoming': WYO_STARS, 'woodpeckers': WOOD_STARS, 'dukesep': dk(['8867','8519','8247','8438','8317','8513','8661','8560','7890','8930','7884']) };
   const FAV_PER = 4, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : spreadOut(BY_DATE.map(c => SHOWCASE_PICKS[c.id] ? SHOWCASE_PICKS[c.id].map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER)));   // 4 random photos from each event, grouped by event
   const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Showcase', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
@@ -3830,7 +3832,9 @@ requestAnimationFrame(frame);
     const ci = Math.max(0, eventsWithPhotos.indexOf(c)), sc = stage.children[ci] && stage.children[ci].querySelector('.mg-cover');
     const cov = document.createElement('div'); cov.innerHTML = comicCover(c, ci, papers[ci] || (papers[ci] = paperFor(ci)));
     const mc = cov.firstChild; if (sc) { ['--ac', '--ad', '--fs', '--bnr'].forEach(k => { const v = sc.style.getPropertyValue(k); if (v) mc.style.setProperty(k, v); }); }   // the same colours as on the shelf
-    const list = [{ cls: 'cover', html: mc.outerHTML }];
+    let coverHtml = mc.outerHTML;
+    if (!c.special && c.id) coverHtml = coverHtml.replace(/(<span class="ttl">)([\s\S]*?)(<\/span><span class="vol">)/, (m, a, b, d) => `${a}<a class="ttl-link" href="#${esc(c.id)}" title="Open the ${esc(c.title)} project page">${b}</a>${d}`);
+    const list = [{ cls: 'cover', html: coverHtml }];
     picks.forEach(p => list.push({ cls: c.special ? 'sp' : '', html: photoPage(c, p) }));
     if ((list.length + 1) % 2) list.push({ cls: 'note', html: c.special ? 'More on the way' : 'More favorites coming soon' });
     const lsrc = esc(SITE.logo || 'images/logo.png'), lalt = esc(SITE.name || 'Allwood Archives');
