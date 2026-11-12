@@ -3581,9 +3581,13 @@ requestAnimationFrame(frame);
   window.__grails = { pos: new Map(grails.map((g, i) => [g.p.src, i + 1])), total: grails.length };      // so the event pages can mark these photos
   const eventsWithPhotos = (FAV0 ? [FAV0] : []).concat(BY_DATE.filter(c => c.photos.some(p => p.src)));
   const favSet = new Set(Array.isArray(CFG.favorites) ? CFG.favorites : []);
+  /* hand-picked pages for a look book (in page order); an event not listed here uses its favorites / the automatic spread-out pick */
+  const D = 'images/duke-sep-2026/dsc0';
+  const BOOK_PAGES = { 'dukesep': ['8519','8435','8247','8438','8317','7912','8513','8793','8661','8560','7890','8930','7996','8695','8162','7884'].map(n => D + n + '.jpg') };
   const picksFor = c => {
     if (c.special) return c.photos;
     const all = c.photos.filter(p => p.src);
+    if (BOOK_PAGES[c.id]) { const own = BOOK_PAGES[c.id].map(src => all.find(p => p.src === src)).filter(Boolean); if (own.length) return own; }
     let picks = all.filter(p => favSet.has(p.src));
     if (!picks.length) {
       const n = Math.min(11, all.length);
