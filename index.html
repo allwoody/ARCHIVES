@@ -895,6 +895,11 @@
   .pg.endcover .bcode { position: absolute; right: 8%; bottom: 6%; width: 21%; line-height: 0; opacity: 0.92; }
   .pg.endcover .bcode svg { width: 100%; height: auto; display: block; }
   .pg.endcover img { width: 58%; max-height: 40%; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+  /* the Showcase's back cover: the logo is cut out of the same holo foil as the front */
+  .pg.endcover .foilwrap { position: relative; width: 58%; display: block; isolation: isolate; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+  .pg.endcover .foilwrap img { display: block; width: 100%; height: auto; max-height: none; filter: none; }
+  .pg.endcover .foillogo { position: absolute; inset: 0; mix-blend-mode: multiply; -webkit-mask-image: var(--lg); mask-image: var(--lg); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    background-image: var(--tx1), var(--ac); background-size: 120px 120px, 320% 320%; animation: foilMove 6.4s ease-in-out infinite alternate; animation-delay: -2.7s; }
   /* the corner box is a postage stamp: cream paper with a perforated edge and the coloured panel inside */
   .mg-corner { --r: calc(var(--u) * 3); --st: calc(var(--u) * 10); position: absolute; left: calc(var(--cw) * 0.025); top: calc(var(--cw) * 0.025); z-index: 4; width: calc(var(--cw) * 0.225); height: calc(var(--bn) + var(--cw) * 0.1);
     background: #f4ecd6; padding: calc(var(--u) * 6); transform: rotate(-3deg); transform-origin: 30% 30%; filter: drop-shadow(0 calc(var(--u) * 2) calc(var(--u) * 2) rgba(0,0,0,0.45));
@@ -910,7 +915,7 @@
   .mg-corner u s { text-decoration: none; font-size: calc(var(--cw) * 0.07); letter-spacing: 0.04em; text-shadow: calc(var(--u) * 1) calc(var(--u) * 1) 0 var(--ad), calc(var(--u) * 2) calc(var(--u) * 2) 0 var(--ad); }
   .mg-corner u em { font-style: normal; font-size: calc(var(--cw) * 0.036); font-weight: 600; letter-spacing: 0.14em; margin-top: calc(var(--cw) * 0.006); }
   /* the Showcase book: a reverse-holo foil, mostly silver with rainbow flashes, a crinkled grain, and tiny sparkles. The cover, banner, stamp and volume tab each shimmer on their own clock, so no two are ever in step. */
-  .mg-cover.foil { --ac: linear-gradient(115deg, #a8acb3 0%, #cfd2d8 6%, #f3b9d6 11%, #c8c1f2 15%, #9ed9ef 20%, #b7bcc3 26%, #9da1a9 35%, #ffd49c 41%, #f6a9c9 46%, #b9a8ef 51%, #85d3eb 56%, #d2d5db 63%, #a5a9b0 72%, #cfd1d6 80%, #ead0a8 85%, #b9a8e8 91%, #a8acb3 100%); --ad: rgba(255, 255, 255, 0.85);
+  .mg-cover.foil, .pg.endcover.foil { --ac: linear-gradient(115deg, #a8acb3 0%, #cfd2d8 6%, #f3b9d6 11%, #c8c1f2 15%, #9ed9ef 20%, #b7bcc3 26%, #9da1a9 35%, #ffd49c 41%, #f6a9c9 46%, #b9a8ef 51%, #85d3eb 56%, #d2d5db 63%, #a5a9b0 72%, #cfd1d6 80%, #ead0a8 85%, #b9a8e8 91%, #a8acb3 100%); --ad: rgba(255, 255, 255, 0.85);
     --tx1: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.4 -1.05'/></filter><rect width='100%25' height='100%25' filter='url(%23g)' opacity='0.55'/></svg>"); --tx2: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='a'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.075' numOctaves='3' seed='9'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 3 -1.35'/></filter><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.07 0.022' numOctaves='3' seed='21'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 -1.5'/></filter><rect width='100%25' height='100%25' filter='url(%23a)' opacity='0.4'/><rect width='100%25' height='100%25' filter='url(%23b)' opacity='0.17'/></svg>"); }
   .mg-cover.foil, .mg-cover.foil .mg-banner, .mg-cover.foil .vol, .mg-cover.foil .stp { background-size: 320% 320%; animation: foilMove 6s ease-in-out infinite alternate; }
   .mg-cover.foil { animation-duration: 7.7s; animation-delay: -4s; }
@@ -3806,7 +3811,10 @@ requestAnimationFrame(frame);
     const list = [{ cls: 'cover', html: mc.outerHTML }];
     picks.forEach(p => list.push({ cls: c.special ? 'sp' : '', html: photoPage(c, p) }));
     if ((list.length + 1) % 2) list.push({ cls: 'note', html: c.special ? 'More on the way' : 'More favorites coming soon' });
-    list.push({ cls: 'endcover', html: `<span class="bcode">${barcode(c)}</span><img src="${esc(SITE.logo || 'images/logo.png')}" alt="${esc(SITE.name || 'Allwood Archives')}" draggable="false">` });
+    const lsrc = esc(SITE.logo || 'images/logo.png'), lalt = esc(SITE.name || 'Allwood Archives');
+    list.push({ cls: c.special ? 'endcover foil' : 'endcover', html: `<span class="bcode">${barcode(c)}</span>` + (c.special
+      ? `<span class="foilwrap"><img src="${lsrc}" alt="${lalt}" draggable="false"><span class="foillogo" style="--lg:url('${lsrc}')"></span></span>`
+      : `<img src="${lsrc}" alt="${lalt}" draggable="false">`) });
     return list;
   }
   /* a made-up EAN-13 barcode, where a shop would scan the back of the book: guard bars run down between the two groups of numbers */
