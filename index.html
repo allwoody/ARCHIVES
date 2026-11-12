@@ -3581,7 +3581,7 @@ requestAnimationFrame(frame);
   const DUKE_PAGES = ['8542','8867','8519','8435','8247','8438','8317','7912','8513','8793','8661','8560','7890','8930','7996','8695','8162','7884'];
   const BOOK_PAGES = { 'dukesep': dk(DUKE_PAGES) };
   /* the starred Showcase photos for Duke (replaces the random 4) */
-  const SHOWCASE_PICKS = { 'dukesep': dk(['8519','8247','8438','8317','8513','8661','8560','7890','8930','7884']) };
+  const SHOWCASE_PICKS = { 'dukesep': dk(['8867','8519','8247','8438','8317','8513','8661','8560','7890','8930','7884']) };
   const FAV_PER = 4, fixedFav = Array.isArray(CFG.allTimeFavorites) ? CFG.allTimeFavorites : [];
   const grails = fixedFav.length ? fixedFav.map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : spreadOut(BY_DATE.map(c => SHOWCASE_PICKS[c.id] ? SHOWCASE_PICKS[c.id].map(src => allPics.find(x => x.p.src === src)).filter(Boolean) : shuffled(allPics.filter(x => x.c === c)).slice(0, FAV_PER)));   // 4 random photos from each event, grouped by event
   const FAV0 = grails.length ? { id: '__grails', special: true, title: 'Showcase', date: '', location: 'Hand-picked from every event', cover: grails[0].p.src, photos: grails.map(({ c, p }) => Object.assign({}, p, { _ev: c })) } : null;
