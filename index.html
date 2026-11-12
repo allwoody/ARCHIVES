@@ -864,8 +864,8 @@
   .mg-card.side .edge { filter: brightness(0.62); }
   /* the cards fade through their contents, never as a whole: a faded card is flattened, which made the thickness vanish and then pop back in */
   .mg-card > .mg-cover, .mg-card > .edge { opacity: var(--o, 1); }
-  .mg-card > .mg-cover { transition: opacity var(--ot, 0.45s) ease; }
-  .mg-card > .edge { transition: filter 0.5s ease, opacity var(--ot, 0.45s) ease; }
+  .mg-card > .mg-cover { transition: opacity var(--ot, 0.45s) ease; will-change: opacity; }
+  .mg-card > .edge { transition: filter 0.5s ease, opacity var(--ot, 0.45s) ease; will-change: opacity; }
   /* comic-book cover: a title banner across the top (so nothing sits on the action), a corner box top-left, the logo as a watermark top-right */
   .mg-cover { --ac: #2c5d9a; --ad: #0d1b2e; --pt: none; --sc: none; position: absolute; inset: 0; display: block; border-radius: 3px; overflow: hidden; background: var(--ac); padding: 5px;
     box-shadow: 0 18px 30px rgba(0,0,0,0.5), 0 2px 5px rgba(0,0,0,0.4); }
@@ -3622,7 +3622,29 @@ requestAnimationFrame(frame);
     "images/woodpeckers-jun-2026/first-base-door/180420-a-vu646-2029.jpg",
     "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-3003.jpg"
   ];   // in a fixed, shuffled page order
-  const BOOK_PAGES = { 'dukesep': dk(DUKE_PAGES), 'woodpeckers': WOOD_PAGES };
+  const WYO_PAGES = [
+    "images/wyoming-aug-2026/dsc07494.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07810.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07723.jpg",
+    "images/wyoming-aug-2026/dsc07457.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07718.jpg",
+    "images/wyoming-aug-2026/beam/dsc07846.jpg",
+    "images/wyoming-aug-2026/dsc07333.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07677.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07720.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07710.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07550.jpg",
+    "images/wyoming-aug-2026/dsc07382.jpg",
+    "images/wyoming-aug-2026/day-2/dsc07717.jpg",
+    "images/wyoming-aug-2026/dsc07521.jpg",
+    "images/wyoming-aug-2026/dsc07426.jpg",
+    "images/wyoming-aug-2026/acain/dsc07806.jpg",
+    "images/wyoming-aug-2026/acain/dsc07789.jpg",
+    "images/wyoming-aug-2026/dsc07492.jpg",
+    "images/wyoming-aug-2026/dsc07318.jpg",
+    "images/wyoming-aug-2026/acain/dsc07473.jpg"
+  ];
+  const BOOK_PAGES = { 'dukesep': dk(DUKE_PAGES), 'woodpeckers': WOOD_PAGES, 'wyoming': WYO_PAGES };
   /* the starred Showcase photos for Duke (replaces the random 4) */
   const WOOD_STARS = [
     "images/woodpeckers-jun-2026/homeplate/180420-a-vu646-3211.jpg",
@@ -3867,7 +3889,15 @@ requestAnimationFrame(frame);
     f.style.cssText = `position:fixed;left:${R.left}px;top:${R.top}px;width:${R.width}px;height:${R.height}px;margin:0;transform:none;transform-origin:0 0;` +
       `z-index:500;pointer-events:none;opacity:1;transition:none;scale:1;--cw:${R.width}px;--ch:${R.height}px;`;
     document.body.appendChild(f);
+    syncAnim(card, f);
     return f;
+  }
+  /* a copy of a cover starts its shimmer from zero, which shows as a jump when it takes over from the original: carry the original's place in each animation across */
+  function syncAnim(from, to) {
+    if (!from || !to || !from.getAnimations) return;
+    const idx = (root, el) => el === root ? 0 : [...root.querySelectorAll('*')].indexOf(el) + 1, key = (root, a) => idx(root, a.effect && a.effect.target) + '|' + ((a.effect && a.effect.pseudoElement) || '') + '|' + a.animationName;
+    const t = new Map(); to.getAnimations({ subtree: true }).forEach(a => { if (a.animationName) t.set(key(to, a), a); });
+    from.getAnimations({ subtree: true }).forEach(a => { const b = a.animationName && t.get(key(from, a)); if (b && a.currentTime != null) { try { b.currentTime = a.currentTime; } catch (e) {} } });
   }
   const coverTf = (R, T) => `translate(${T.left - R.left}px, ${T.top - R.top}px) scale(${T.width / R.width})`;
   const ZOOM = 'transform 0.9s cubic-bezier(0.62, 0, 0.22, 1)';
@@ -3889,6 +3919,7 @@ requestAnimationFrame(frame);
     const fcv = fl.querySelector('.mg-cover'); fcv.style.transition = 'box-shadow 0.9s ease'; fcv.style.boxShadow = 'none';   // its shadow eases away as it lands
     void fl.offsetWidth; fl.style.transition = ZOOM; fl.style.transform = coverTf(R, T);
     await wait(920);
+    syncAnim(fcv, leaves[0].querySelector('.mg-cover'));
     viewer.classList.remove('pre'); viewer.classList.add('fadein'); fl.remove();      // same picture, same size: swapped in one frame, nothing fades
     await wait(320);
     viewer.classList.remove('fadein'); grid.classList.remove('going');
@@ -3917,7 +3948,7 @@ requestAnimationFrame(frame);
     [...stage.children].forEach(el => { if (el !== card) { el.style.setProperty('--ot', '0s'); el.style.setProperty('--o', '0'); } });
     const R = card.getBoundingClientRect();
     const fl = makeFlyer(card, R);
-    const fcv = fl.querySelector('.mg-cover'); fcv.style.boxShadow = 'none';
+    const fcv = fl.querySelector('.mg-cover'); fcv.style.boxShadow = 'none'; syncAnim(leaves[0].querySelector('.mg-cover'), fcv);
     fl.style.transform = coverTf(R, T); void fl.offsetWidth;
     book.style.visibility = 'hidden';                                 // the cover is handed to the flyer in one frame
     viewer.style.transition = 'opacity 0.28s ease'; viewer.style.opacity = '0';
@@ -3928,7 +3959,7 @@ requestAnimationFrame(frame);
     mh.style.transition = 'opacity 0.8s ease 0.1s'; mh.style.opacity = '1';        // the heading fades back in as the cover settles
     await wait(900);
     mh.style.transition = ''; mh.style.opacity = '';
-    card.style.visibility = ''; fl.remove();
+    syncAnim(fcv, card.querySelector('.mg-cover')); card.style.visibility = ''; fl.remove();
     resetCards(); layoutFlow(); grid.classList.remove('going');      // the others fall back into their stacks
     moving = false;
   }
